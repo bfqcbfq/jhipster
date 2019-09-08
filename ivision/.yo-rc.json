@@ -1,0 +1,41 @@
+{
+  "generator-jhipster": {
+    "promptValues": {
+      "packageName": "com.ivision.app",
+      "nativeLanguage": "zh-cn"
+    },
+    "jhipsterVersion": "6.2.0",
+    "applicationType": "monolith",
+    "baseName": "ivision",
+    "packageName": "com.ivision.app",
+    "packageFolder": "com/ivision/app",
+    "serverPort": "8080",
+    "authenticationType": "jwt",
+    "cacheProvider": "ehcache",
+    "enableHibernateCache": true,
+    "websocket": false,
+    "databaseType": "sql",
+    "devDatabaseType": "mysql",
+    "prodDatabaseType": "mysql",
+    "searchEngine": false,
+    "messageBroker": false,
+    "serviceDiscoveryType": false,
+    "buildTool": "maven",
+    "enableSwaggerCodegen": false,
+    "jwtSecretKey": "ZTNmZDM5MzVjNmU3MTMzOTUyYmJiZjg3ZDc1ZTI2NWYxOWVkYmNiZDBiNDhiZDlhZDVhODQyNzI4NzY0NGE1ODU3M2FmYmFlYmRlOGFiOWRjMmFmOGQ2ZGJjZmFhMjc0ZTkyNjZiZDFhZWEwYTc1NmZlNzk0NjJhMzZlYWE3N2U=",
+    "useSass": true,
+    "clientPackageManager": "npm",
+    "clientFramework": "react",
+    "clientTheme": "none",
+    "clientThemeVariant": "",
+    "testFrameworks": ["gatling"],
+    "jhiPrefix": "jhi",
+    "entitySuffix": "",
+    "dtoSuffix": "DTO",
+    "otherModules": [],
+    "enableTranslation": true,
+    "nativeLanguage": "zh-cn",
+    "languages": ["zh-cn", "zh-tw", "en", "ja"],
+    "blueprints": []
+  }
+}

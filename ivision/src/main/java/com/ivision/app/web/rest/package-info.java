@@ -1,0 +1,4 @@
+/**
+ * Spring MVC REST controllers.
+ */
+package com.ivision.app.web.rest;
