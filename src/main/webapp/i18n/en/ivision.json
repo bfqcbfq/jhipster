@@ -1,0 +1,25 @@
+{
+  "jhipsterDemoApp": {
+    "ivision": {
+      "home": {
+        "title": "Ivisions",
+        "createLabel": "Create a new Ivision",
+        "createOrEditLabel": "Create or edit a Ivision",
+        "notFound": "No Ivisions found"
+      },
+      "created": "A new Ivision is created with identifier {{ param }}",
+      "updated": "A Ivision is updated with identifier {{ param }}",
+      "deleted": "A Ivision is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Ivision {{ id }}?"
+      },
+      "detail": {
+        "title": "Ivision"
+      },
+      "cust_name": "Cust Name",
+      "cust_source": "Cust Source",
+      "cust_industry": "Cust Industry",
+      "cust_level": "Cust Level"
+    }
+  }
+}

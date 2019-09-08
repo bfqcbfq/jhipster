@@ -1,0 +1,25 @@
+{
+  "jhipsterDemoApp": {
+    "ivision": {
+      "home": {
+        "title": "Ivisions",
+        "createLabel": "创建新 Ivision",
+        "createOrEditLabel": "创建或编辑 Ivision",
+        "notFound": "No Ivisions found"
+      },
+      "created": "Ivision {{ param }} 创建成功",
+      "updated": "Ivision {{ param }} 更新成功",
+      "deleted": "Ivision {{ param }} 删除成功",
+      "delete": {
+        "question": "你确定要删除 Ivision {{ id }} 吗？"
+      },
+      "detail": {
+        "title": "Ivision"
+      },
+      "cust_name": "Cust Name",
+      "cust_source": "Cust Source",
+      "cust_industry": "Cust Industry",
+      "cust_level": "Cust Level"
+    }
+  }
+}
