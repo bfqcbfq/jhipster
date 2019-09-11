@@ -150,3 +150,10 @@ jhipster:
 # ===================================================================
 
 # application:
+iocr:
+  app:
+    id: 17209008
+  api:
+    key: 0FTdfUyOBD0H8QkYsXRmyp3o
+  secret:
+    key: 1eeyziHIjbixQZW4kq4XM8WhPC2PmlCi

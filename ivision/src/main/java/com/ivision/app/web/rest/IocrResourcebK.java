@@ -1,0 +1,156 @@
+package com.ivision.app.web.rest;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.HashMap;
+
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.baidu.aip.ocr.AipOcr;
+
+@RestController
+@RequestMapping("/api")
+public class IocrResourcebK {
+
+	private final Logger log = LoggerFactory.getLogger(IocrResource.class);
+	// 设置APPID/AK/SK
+	@Value("${iocr.app.id}")
+	private String appId;
+
+	@Value("${iocr.api.key}")
+	private String apiKey;
+
+	@Value("${iocr.secret.key}")
+	private String secretKey;
+	
+	 private String filePath="D:\\FilesAndDatas\\download"; //定义上传文件的存放位置
+
+//	public static final String APP_ID = "17209008";
+//	public static final String API_KEY = "0FTdfUyOBD0H8QkYsXRmyp3o";
+//	public static final String SECRET_KEY = "1eeyziHIjbixQZW4kq4XM8WhPC2PmlCi";
+
+	@PostMapping("/upload")
+	public ResponseEntity<String> getfileResult(MultipartFile upload) throws IOException {
+		log.debug("REST request to upload MultipartFile : {}", upload);
+		
+	    //判断文件夹是否存在,不存在则创建
+        File file=new File(filePath); 
+       
+        if(!file.exists()){
+         file.mkdirs();
+        }
+        String originalFileName = upload.getOriginalFilename();//获取原始图片的扩展名
+        //
+  String newFileName = System.currentTimeMillis()+originalFileName;  
+        String newFilePath=filePath+newFileName; //新文件的路径
+         
+        try {
+         upload.transferTo(new File(newFilePath));  //将传来的文件写入新建的文件
+         AipOcr client = new AipOcr(appId, apiKey, secretKey);
+         
+         client.setConnectionTimeoutInMillis(2000);
+         client.setSocketTimeoutInMillis(60000);
+         
+         String sample = getResultByIocr(client,newFilePath);
+         
+         return ResponseEntity.status(HttpStatus.OK).body(sample);
+        }catch (IllegalStateException e ) {
+         //处理异常
+        	throw new IllegalStateException();
+        }catch(IOException e1){
+         //处理异常
+        	throw new IOException();
+        }
+        
+        
+        
+		// 初始化一个AipOcr
+		//AipOcr client = new AipOcr(appId, apiKey, secretKey);
+
+		// 可选：设置网络连接参数
+		//client.setConnectionTimeoutInMillis(2000);
+		//client.setSocketTimeoutInMillis(60000);
+
+		// 可选：设置代理服务器地址, http和socket二选一，或者均不设置
+		// client.setHttpProxy("proxy_host", proxy_port); // 设置http代理
+		// .setSocketProxy("proxy_host", proxy_port); // 设置socket代理
+
+		// 可选：设置log4j日志输出格式，若不设置，则使用默认配置
+		// 也可以直接通过jvm启动参数设置此环境变量
+		// System.setProperty("aip.log4j.conf", "path/to/your/log4j.properties");
+
+		// 调用接口
+		// String path = "E:\\wanglei\\image\\chuhuodan\\chuhuodan_shenfen.jpg";
+		// JSONObject res = client.basicGeneral(path, new HashMap<String, String>());
+		// System.out.println(res.toString(2));
+		
+		//调用位置高精度版方法
+//		String sample = sample(client,newFilePath);
+//		
+//		return ResponseEntity.status(HttpStatus.OK).body(sample);
+
+	}
+
+	// 位置高精度版
+	public  String getResultByIocr(AipOcr client,String filePath) throws IOException {
+		
+		//InvoiceUploadResult uploadResult = new InvoiceUploadResult();
+		// 传入可选参数调用接口
+		HashMap<String, String> options = new HashMap<String, String>();
+		options.put("recognize_granularity", "big");
+		options.put("detect_direction", "true");
+		options.put("vertexes_location", "true");
+		options.put("probability", "true");
+		// client.toString();
+
+		// 参数为本地路径
+		String image = filePath;
+		JSONObject res = client.accurateGeneral(image, options);
+		
+		//Data people = (Data)JSONObject.(res, Data.class);
+		
+
+		// System.out.println(res.toString(2));
+
+		// 参数为二进制数组
+		byte[] file = readFile(image);
+		res = client.accurateGeneral(file, options);
+		return res.toString(2);
+	}
+
+	@SuppressWarnings("resource")
+	private  byte[] readFile(String filePath) throws IOException {
+
+		File file = new File(filePath);
+		long fileSize = file.length();
+		if (fileSize > Integer.MAX_VALUE) {
+			System.out.println("file too big...");
+			return null;
+		}
+		FileInputStream fi = new FileInputStream(file);
+		byte[] buffer = new byte[(int) fileSize];
+		int offset = 0;
+		int numRead = 0;
+		while (offset < buffer.length && (numRead = fi.read(buffer, offset, buffer.length - offset)) >= 0) {
+			offset += numRead;
+		}
+		// 确保所有数据均被读取
+		if (offset != buffer.length) {
+			throw new IOException("Could not completely read file " + file.getName());
+		}
+		fi.close();
+		return buffer;
+
+	}
+
+}
