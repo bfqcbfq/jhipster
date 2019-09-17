@@ -44,7 +44,7 @@ public class IocrResource{
 
 
 	@PostMapping("/upload")
-	public ResponseEntity<String> getfileResult(MultipartFile upload, HttpServletResponse response) throws IOException {
+	public ResponseEntity<String> getfileResult(MultipartFile upload) throws IOException {
 		log.debug("REST request to upload MultipartFile : {}", upload);
 
 		// 判断文件夹是否存在,不存在则创建
@@ -61,9 +61,7 @@ public class IocrResource{
 
 		try {
 			upload.transferTo(new File(newFilePath)); // 将传来的文件写入新建的文件
-			if (new File(newFilePath).exists()) {
-				//TODO
-			}
+		
 			AipOcr client = new AipOcr(appId, apiKey, secretKey);
 
 			client.setConnectionTimeoutInMillis(2000);
@@ -128,20 +126,6 @@ public class IocrResource{
 
 	}
 
-	/*
-	 * public void fileDownLoad(HttpServletResponse response,String fileName,String
-	 * filePath){ File file = new File(filePath);
-	 * 
-	 * response.setContentType("application/force-download");// 设置强制下载不打开    
-	 * 
-	 * response.addHeader("Content-Disposition", "attachment;fileName=" + fileName);
-	 * byte[] buffer = new byte[1024]; FileInputStream fis = null;
-	 * BufferedInputStream bis = null; try { fis = new FileInputStream(file); bis =
-	 * new BufferedInputStream(fis); OutputStream outputStream =
-	 * response.getOutputStream(); int i = bis.read(buffer); while (i != -1) {
-	 * //outputStream.write(buffer, 0, i); //i = bis.read(buffer);                
-	 *  }                               }catch(Exception e) { //e.printStackTrace();
-	 * }          }
-	 */
+	
 
 }
