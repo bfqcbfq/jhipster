@@ -10,7 +10,7 @@ export class Upload extends React.Component {
   render() {
     return (
       <div>
-          <form action="http://localhost:8080/api/upload" method="post">
+          <form action="http://localhost:8080/api/upload" method="post" encType ="multipart/form-data">
               <input type="file" name="file"/>
               <input type="submit" value="上传"/>
           </form>

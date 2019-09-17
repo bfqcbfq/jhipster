@@ -5,8 +5,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -44,7 +43,7 @@ public class IocrResource{
 
 
 	@PostMapping("/upload")
-	public ResponseEntity<String> getfileResult(MultipartFile upload) throws IOException {
+	public ResponseEntity<String> getfileRecord(@RequestParam(value = "file",required = true) MultipartFile upload) throws IOException {
 		log.debug("REST request to upload MultipartFile : {}", upload);
 
 		// 判断文件夹是否存在,不存在则创建
