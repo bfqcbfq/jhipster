@@ -4,7 +4,9 @@ import { Translate } from 'react-jhipster';
 import { NavItem, NavLink, NavbarBrand } from 'reactstrap';
 import { NavLink as Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faStar } from '@fortawesome/free-solid-svg-icons';
+library.add(faStar);
 import appConfig from 'app/config/constants';
 
 export const BrandIcon = props => (
@@ -30,6 +32,15 @@ export const Home = props => (
       <span>
         <Translate contentKey="global.menu.home">Home</Translate>
       </span>
+    </NavLink>
+  </NavItem>
+);
+
+export const Upload = props => (
+  <NavItem>
+    <NavLink tag={Link} to="/upload" className="d-flex align-items-center">
+      <FontAwesomeIcon icon={faStar} />
+      <span>上传文件</span>
     </NavLink>
   </NavItem>
 );
