@@ -37,14 +37,16 @@ public class IocrResource{
 
 	@Value("${iocr.secret.key}")
 	private String secretKey;
-
+	
+	// 定义上传文件的存放位置
 	@Value("${file.downLoad.path}")
-	private String filePath; // 定义上传文件的存放位置
+	private String filePath; 
 
 
 	@PostMapping("/upload")
-	public ResponseEntity<String> getfileRecord(@RequestParam(value = "file",required = true) MultipartFile upload) throws IOException {
-		log.debug("REST request to upload MultipartFile : {}", upload);
+	public ResponseEntity<String> getfileRecord(@RequestParam(value = "file",required = true) MultipartFile uploadFiles) throws IOException {
+		
+		log.debug("REST request to upload MultipartFile : {}", uploadFiles);
 
 		// 判断文件夹是否存在,不存在则创建
 		File file = new File(filePath);
@@ -52,14 +54,17 @@ public class IocrResource{
 		if (!file.exists()) {
 			file.mkdirs();
 		}
-
-		String originalFileName = upload.getOriginalFilename();// 获取原始图片的扩展名
-		//
+		
+		// 获取原始图片的扩展名
+		String originalFileName = uploadFiles.getOriginalFilename();
+		
+		//定义文件下载本地新名称
 		String newFileName = System.currentTimeMillis() + originalFileName;
-		String newFilePath = filePath + newFileName; // 新文件的路径
+		// 新文件的路径
+		String newFilePath = filePath + newFileName;
 
 		try {
-			upload.transferTo(new File(newFilePath)); // 将传来的文件写入新建的文件
+			uploadFiles.transferTo(new File(newFilePath)); // 将传来的文件写入新建的文件
 		
 			AipOcr client = new AipOcr(appId, apiKey, secretKey);
 
@@ -82,7 +87,6 @@ public class IocrResource{
 	// 位置高精度版
 	public String getResultByIocr(AipOcr client, String filePath) throws IOException {
 
-		// InvoiceUploadResult uploadResult = new InvoiceUploadResult();
 		// 传入可选参数调用接口
 		HashMap<String, String> options = new HashMap<String, String>();
 		options.put("recognize_granularity", "big");
@@ -92,38 +96,12 @@ public class IocrResource{
 		// client.toString();
 
 		// 参数为本地路径
-		String image = filePath;
-		JSONObject res = client.accurateGeneral(image, options);
+		JSONObject res = client.accurateGeneral(filePath, options);
 
-		// 参数为二进制数组
-//		byte[] file = readFile(image);
-//		res = client.accurateGeneral(file, options);
 		return res.toString(2);
 	}
 
-	public byte[] readFile(String filePath) throws IOException {
-
-		File file = new File(filePath);
-		long fileSize = file.length();
-		if (fileSize > Integer.MAX_VALUE) {
-			System.out.println("file too big...");
-			return null;
-		}
-		FileInputStream fi = new FileInputStream(file);
-		byte[] buffer = new byte[(int) fileSize];
-		int offset = 0;
-		int numRead = 0;
-		while (offset < buffer.length && (numRead = fi.read(buffer, offset, buffer.length - offset)) >= 0) {
-			offset += numRead;
-		}
-		// 确保所有数据均被读取
-		if (offset != buffer.length) {
-			throw new IOException("Could not completely read file  " + file.getName()) ;
-		}
-		fi.close();
-		return buffer;
-
-	}
+	
 
 	
 
