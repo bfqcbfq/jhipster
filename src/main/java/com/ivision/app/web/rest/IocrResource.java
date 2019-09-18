@@ -2,8 +2,11 @@ package com.ivision.app.web.rest;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +25,7 @@ import com.baidu.aip.ocr.AipOcr;
 @RequestMapping("/api")
 public class IocrResource {
 
-	//private final Logger log = LoggerFactory.getLogger(IocrResource.class);
+	private final Logger log = LoggerFactory.getLogger(IocrResource.class);
 
 	@Value("${jhipster.clientApp.name}")
 	private String applicationName;
@@ -42,13 +45,13 @@ public class IocrResource {
 	private String filePath;
 
 	@PostMapping("/upload")
-	public ResponseEntity<String> getfileRecord(
+	public ResponseEntity<List<String>> getfileRecord(
 			@RequestParam(value = "file", required = true) MultipartFile[] uploadFiles) throws IOException {
 
-		//log.debug("REST request to upload MultipartFile[] : {}", uploadFiles);
+		log.debug("REST request to upload MultipartFile[] : {}", uploadFiles);
 		
 		//定义读取文件返回结果
-		String reslut = null;
+		List<String> reslut = null;
 		// 判断文件夹是否存在,不存在则创建
 		File file = new File(filePath);
 
@@ -87,9 +90,10 @@ public class IocrResource {
 
 	}
 
-	// 位置高精度版
-	public String getResultByIocr(AipOcr client, String filePath) throws IOException {
+	// 百度文字识别位置高精度版API调用
+	public List<String> getResultByIocr(AipOcr client, String filePath) throws IOException {
 
+		List<String> resultList = new ArrayList<String>();
 		// 传入可选参数调用接口
 		HashMap<String, String> options = new HashMap<String, String>();
 		options.put("recognize_granularity", "big");
@@ -100,8 +104,22 @@ public class IocrResource {
 
 		// 参数为本地路径
 		JSONObject res = client.accurateGeneral(filePath, options);
+		JSONArray jsonArray = res.getJSONArray("words_result");
+		
+		for(int i=0;i<jsonArray.length();i++) {
+			String word = jsonArray.getJSONObject(i).getString("words");
+			resultList.add(word);
+		}
+		
 
-		return res.toString(2);
+		return resultList;
 	}
+	
+	@PostMapping("/download")
+	public ResponseEntity<String> downloadFiles(){
+		return null;
+		
+	}
+	
 
 }
