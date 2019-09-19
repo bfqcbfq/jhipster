@@ -1,0 +1,40 @@
+.content{
+	margin: auto;
+	border: 1px solid rgba(178,189,209,.2);
+	height: 300px;
+}
+.changeContent{
+	padding-top: 210px;
+}
+.imgUrlStyle{
+	width: 232px;
+	margin-left: 32px;
+}
+.forlale{
+    width: 100%;
+    padding-left: 43%;
+}
+.firstli{
+    float: left;
+    list-style-type: none;
+    padding-left: 160px;
+}
+.secondli{
+    float: left;
+    padding-left: 400px;
+    list-style-type: none;
+}
+.thirdli{
+    list-style-type: none;
+    padding-left: 400px;
+    float: left;
+}
+.choosefile{
+    color: #487df0;
+}
+.top{
+    border: 1px solid rgba(178,189,209,.2);
+    height: 35px;
+    line-height: 35px;
+    background-color: rgba(178,189,209,.2);
+}
