@@ -2,13 +2,11 @@ import React from 'react';
 import PropTypes, { any, number } from 'prop-types';
 import './upload.css';
 import axios from 'axios';
-
   function guid() {
     function s4() {
       return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
     }
     return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
-
   }
 
   interface ImgProps {
@@ -22,8 +20,9 @@ import axios from 'axios';
     suffixs: [];
     onError: any;
     multiple: false;
+    isDragover: false;
   }
-  class Upload extends React.Component<ImgProps> {
+  class Upload extends React.Component<any, ImgProps> {
     static defaultProps: any =
     { onEnter: () => true,
       onLeave: () => true,
@@ -53,7 +52,16 @@ import axios from 'axios';
       super(props);
       this.state = {
         // 上传的文件列表, 无论上传还是失败，success字段会表示文件是否上传成功
+        maxLength: 5,
         files: [],
+        onLeave: any,
+        url: 'http://localhost:8080/api/upload',
+        cq: 3,
+        onEnter: any,
+        maxSize: 10240000,
+        suffixs: [],
+        onError: any,
+        multiple: false,
         isDragover: false
       };
       // 等待上传的文件队列
@@ -79,7 +87,6 @@ import axios from 'axios';
       event.preventDefault();
       event.stopPropagation();
       this.setState({
-        isDragover: true
       });
     }
 
@@ -87,7 +94,6 @@ import axios from 'axios';
       event.preventDefault();
       event.stopPropagation();
       this.setState({
-        isDragover: true
       });
     }
 
@@ -95,7 +101,6 @@ import axios from 'axios';
       event.preventDefault();
       event.stopPropagation();
       this.setState({
-        isDragover: false
       });
     }
 
@@ -103,7 +108,6 @@ import axios from 'axios';
       event.preventDefault();
       event.stopPropagation();
       this.setState({
-        isDragover: false
       });
     }
 
@@ -128,6 +132,25 @@ import axios from 'axios';
       }
     }
 
+    handleFileChange = (event: { preventDefault: () => void; stopPropagation: () => void; }) => {
+      const { maxLength } = this.props;
+      event.preventDefault();
+      event.stopPropagation();
+      const files = this.inputRef.current.files;
+      if (this.state.files + files.length > maxLength) {
+        return;
+      }
+      // tslint:disable-next-line: prefer-for-of
+      for (let i = 0; i < files.length; i++) {
+        const errMsg = this.check(files[i]);
+        if (errMsg) {
+        } else {
+          files[i].guid = guid();
+          this.addQueue(files[i]);
+        }
+      }
+    }
+
     sumbit = async () => {
       const { onLeave, onError, url } = this.props;
       // tslint:disable-next-line: prefer-for-of
@@ -138,6 +161,8 @@ import axios from 'axios';
         if (guids.indexOf(current.guid) < 0) {
           this.uploadingQueue = [...this.uploadingQueue, current];
           const uploadFile = new FormData();
+          // tslint:disable-next-line: no-console
+          console.log(current);
           uploadFile.append('file', current);
           axios.post(
             'http://localhost:8080/api/upload',
@@ -240,15 +265,23 @@ import axios from 'axios';
           onDrop = {
             this.handleDrop
           } >
-              <input ref={input => this.inputRef = input} style = {{ 'display': 'none' }} type = "file" id = "file" multiple = {multiple}/> ,
+              <input ref={input => this.inputRef = input} onChange={this.handleFileChange} style = {{ 'display': 'none' }} type = "file" id = "file" multiple = {multiple}/> ,
           <label className = "forlale" htmlFor = "file">
           <p className="changeContent">
-          <span className="choosefile">选择文件</span>
-          <span>或<span className="choosefile" >拖拽</span>文件到这里</span>
+          <span>请<span className="choosefile" >拖拽</span>文件到这里</span>
           </p>
           </label>
       </form>
       </div>
+      { /* 上传列表 */ }
+        {
+          // tslint:disable-next-line: ter-arrow-body-style
+          this.state.files.map(file => {
+            return (<div key={file}>
+              <span>{file}</span>
+            </div>);
+          })
+        }
      </div>
       );
     }
