@@ -54,6 +54,7 @@
 		<liquibase.version>3.6.3</liquibase.version>
 		<liquibase-hibernate5.version>3.6</liquibase-hibernate5.version>
 		<java-sdk.version>4.11.3</java-sdk.version>
+		<fastjson.version>1.2.47</fastjson.version>
 		<!-- The hibernate version to be used to override default version of liquibase 
 			maven plugin -->
 		<hibernate-core.version>5.3.8.Final</hibernate-core.version>
@@ -314,13 +315,20 @@
 			<groupId>io.dropwizard.metrics</groupId>
 			<artifactId>metrics-core</artifactId>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/com.baidu.aip/java-sdk -->
 		<dependency>
 			<groupId>com.baidu.aip</groupId>
 			<artifactId>java-sdk</artifactId>
 			<version>${java-sdk.version}</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>${fastjson.version}</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
