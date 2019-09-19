@@ -2,26 +2,13 @@ import React from 'react';
 import PropTypes, { any, number } from 'prop-types';
 import './upload.css';
 import axios from 'axios';
-<<<<<<< HEAD
 
-export class Upload extends React.Component {
-
-  render() {
-    return (
-      <div>
-          <form action="http://localhost:8080/api/upload" method="post" encType ="multipart/form-data">
-              <input type="file" name="file" multiple/>
-              <input type="submit" value="上传"/>
-          </form>
-      </div>
-           );
-=======
   function guid() {
     function s4() {
       return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
     }
     return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
->>>>>>> branch 'master' of http://192.168.20.90/wanglei/jhipster_ivision.git
+
   }
 
   interface ImgProps {
