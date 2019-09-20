@@ -8,14 +8,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import org.json.JSONArray;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,9 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.baidu.aip.ocr.AipOcr;
-import com.ivision.app.domain.Data;
-import com.ivision.app.domain.JsonRootBean;
 import com.ivision.app.domain.Ret;
+import com.ivision.app.service.util.ExcelUtils;
 
 @RestController
 @RequestMapping("/api")
@@ -51,13 +50,11 @@ public class IocrResource {
 	private String filePath;
 
 	@PostMapping("/upload")
-	public String getfileRecord(
-			@RequestParam(value = "file", required = false) MultipartFile[] uploadFiles) throws IOException {
+	public String getfileRecord(@RequestParam(value = "file", required = false) MultipartFile[] uploadFiles)
+			throws IOException {
 
-		// log.debug("REST request to upload MultipartFile[] : {}", uploadFiles);
+		 log.debug("REST request to upload MultipartFile[] : {}", uploadFiles);
 
-		// 定义读取文件返回结果
-		String reslut = null;
 		// 判断文件夹是否存在,不存在则创建
 		File file = new File(filePath);
 
@@ -68,44 +65,74 @@ public class IocrResource {
 		for (MultipartFile uploadFile : uploadFiles) {
 			// 获取原始图片的扩展名
 			String originalFileName = uploadFile.getOriginalFilename();
-			
-			//获取文件类型
+
+			// 获取文件类型
 			String fileType = originalFileName.substring(originalFileName.lastIndexOf("."));
-			
-			Date now = new Date(); 
+
+			Date now = new Date();
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 
 			// 定义文件下载本地新名称
-			String newFileName = dateFormat.format(now) +System.currentTimeMillis()+ fileType;
+			String newFileName = dateFormat.format(now) + System.currentTimeMillis() + fileType;
 			// 新文件的路径
 			String newFilePath = filePath + newFileName;
 
 			try {
 				uploadFile.transferTo(new File(newFilePath)); // 将传来的文件写入新建的文件
-
-//				AipOcr client = new AipOcr(appId, apiKey, secretKey);
-//
-//				client.setConnectionTimeoutInMillis(2000);
-//				client.setSocketTimeoutInMillis(60000);
-//
-//				reslut = getResultByIocr(client, newFilePath);
+				return "上传成功";
 
 			} catch (IllegalStateException e) {
-				// 处理异常
-				throw new IllegalStateException();
+				e.printStackTrace();
 			} catch (IOException e1) {
-				// 处理异常
-				throw new IOException();
+				e1.printStackTrace();
 			}
 		}
-		//return ResponseEntity.status(HttpStatus.OK).body(reslut);
-		return "<h1>上传成功</h1>";
+		return "上传失败";
 
+	}
+
+	/**
+	 * 
+	 * 
+	 * @param response
+	 * @param request
+	 * @param comcomSetQueryDtoStr
+	 * @return
+	 * @throws Exception
+	 */
+	@GetMapping("/download")
+	public String exportExcel(HttpServletResponse response, HttpServletRequest request) throws Exception {
+		// Status status = new Status();
+
+		String templateName = null; // 所属分公司
+		List<Ret> retList = null; // 产品名称
+
+		String filepath = "D:\\FilesAndDatas\\download\\201909191009111568858953094.jpg";
+		// 获取前台参数信息
+		JSONObject jsonObject = getResultByIocr(filepath);
+
+		jsonObject.getJSONObject("data").get("templateName"); // 表格标题
+
+		retList = (List<Ret>) jsonObject.getJSONObject("data").get("ret"); // 产品名称
+		// JsonUtils.jsonToList(string11, Ret.class);
+
+		String fileName = "北京神丰科技有限公司出货单.xls";
+		
+		String [] columnNames= {"编号","仓库","料号","品牌","单位","数量","单重","合计重量","批次号","出货日期","备注","品牌","编号","仓库","料号","品牌"};
+		String [] columns= {"sid","sname","sex","birthday"};
+		ExcelUtils.exportExcel(response, retList, columnNames, columns, "神风科技", fileName);
+
+		return null;
 	}
 
 	// 百度文字识别位置高精度版API调用（返回数据结构不佳）
 	// iOCR自定义模板文字识别（效果较好）
-	public String getResultByIocr(AipOcr client, String filePath) throws IOException {
+	public JSONObject getResultByIocr(String filePath) throws IOException {
+
+		AipOcr client = new AipOcr(appId, apiKey, secretKey);
+
+		client.setConnectionTimeoutInMillis(2000);
+		client.setSocketTimeoutInMillis(60000);
 
 		List<String> resultList = new ArrayList<String>();
 		// 传入可选参数调用接口
@@ -120,15 +147,25 @@ public class IocrResource {
 		// options.put("classifierId", "31232");
 
 		// 参数为本地路径
-		JSONObject res = client.custom(filePath, options);
-		Object object = res.get("data");
-		 Data data = new Data();
-		BeanUtils.copyProperties(object, data);
-		 
+		JSONObject custom = client.custom(filePath, options);
+		
+		
+		
+//		Object object = res.get("data");
+//		
+//		 Data data = new Data();
+//		BeanUtils.copyProperties(object,data);
+//		 
 //		String templateName = data.getTemplateName();
 //		
-//		List<Ret> ret = data.getRet();
-		
+//		List<Ret> retList = data.getRet();
+//		
+//		for(Ret ret : retList) {
+//			String word_name = ret.getWord_name();
+//			String word = ret.getWord();
+//			System.out.println(word_name+word);
+//		}
+
 //		 res.getJSONArray("data");
 //
 //		for (int i = 0; i < jsonArray.length(); i++) {
@@ -137,13 +174,7 @@ public class IocrResource {
 //			resultList.add(word);
 //		}
 
-		return res.toString(2);
-	}
-
-	@PostMapping("/download")
-	public ResponseEntity<String> downloadFiles() {
-		return null;
-
+		return custom;
 	}
 
 }
