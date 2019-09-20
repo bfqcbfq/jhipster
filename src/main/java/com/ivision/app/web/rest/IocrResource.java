@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.baidu.aip.ocr.AipOcr;
+import com.ivision.app.domain.DeliveryDetails;
 import com.ivision.app.domain.Ret;
 import com.ivision.app.service.util.ExcelUtils;
 import com.ivision.app.service.util.FileUtils;
@@ -104,25 +105,27 @@ public class IocrResource {
 	@GetMapping("/download")
 	public String exportExcel(HttpServletResponse response, HttpServletRequest request) throws Exception {
 		// Status status = new Status();
-
+		DeliveryDetails deliveryDetails = null;
 		String templateName = null; // 所属分公司
-		List<Ret> retList = null; // 产品名称
+		List<DeliveryDetails> retList = null; // 产品名称
 
 		String filepath = "D:\\FilesAndDatas\\download\\201909191009111568858953094.jpg";
 		// 获取前台参数信息
 		JSONObject jsonObject = getResultByIocr(filepath);
-
+		deliveryDetails = new DeliveryDetails(1,"仓库1","G-6","三菱","包",100f,25f,300f,1234,"2019-09-20","加急");
 		jsonObject.getJSONObject("data").get("templateName"); // 表格标题
+		
+		retList = new ArrayList<DeliveryDetails>();
+		retList.add(deliveryDetails);
 
-		retList = (List<Ret>) jsonObject.getJSONObject("data").get("ret"); // 产品名称
+		//retList = (List<DeliveryDetails>) jsonObject.getJSONObject("data").get("ret"); // 产品名称
 		// JsonUtils.jsonToList(string11, Ret.class);
 
-		String fileName = "北京神丰科技有限公司出货单.xls";
+		String fileName = "demo";
 		
-		String [] columnNames= {"编号","仓库","料号","品牌","单位","数量","单重","合计重量","批次号","出货日期","备注","品牌","编号","仓库","料号","品牌"};
-		String [] columns= {"sid","sname","sex","birthday"};
-		ExcelUtils.exportExcel(response, retList, columnNames, columns, "神风科技", fileName);
-
+		String [] columnNames= {"编号","仓库","料号","品牌","单位","数量","单重","合计重量","批次号","出货日期","备注"};
+		String [] columns= {"id","storehouseNo","materialNo","brand","unit","quantity","singleWeight","totalWeight","batchNo","date","comment"};
+		ExcelUtils.exportExcel(response, retList, columnNames, columns, "invoiceList", fileName);
 		return null;
 	}
 	
