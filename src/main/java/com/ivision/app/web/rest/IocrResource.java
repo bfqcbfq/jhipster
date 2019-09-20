@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.baidu.aip.ocr.AipOcr;
 import com.ivision.app.domain.Ret;
 import com.ivision.app.service.util.ExcelUtils;
+import com.ivision.app.service.util.FileUtils;
 
 @RestController
 @RequestMapping("/api")
@@ -124,6 +125,33 @@ public class IocrResource {
 
 		return null;
 	}
+	
+	
+	//将Excel表格信息导入到数据库
+	@PostMapping("/uploadFile")
+	public boolean uploadFile(HttpServletRequest request,Ret ret,MultipartFile myfile,HttpServletResponse response) {
+		try {
+			//调用工具类FileUtils上传,前台传来的文件形参为myfile
+			String newFileName = FileUtils.upload(myfile, request);
+			String realPath = request.getSession().getServletContext().getRealPath("file");
+			//将Excel文件的内容放入到String类型的双层数组中
+			String[][] strings = ExcelUtils.readexcell(realPath+File.separator+newFileName, 1);
+			//循环数组,依次拿取数组内的数据放入到实体类的对象里,以便于添加数据到数据库的表单内
+			for (int i = 0; i < strings.length; i++) {
+//				String [] stuData=strings[i];
+//				Student user=new Student();
+//				//从索引为1的开始拿数据,因为Excel表格内第一行是主键id,添加数据不需要id,不过如果在这写了也无所谓,没影响,添加的sql注意就好了.
+//				user.setSname(stuData[1]);
+//				user.setSex(stuData[2]);
+//				user.setBirthday(stuData[3]);
+//				studentMapper.addStu(user);
+			}
+			return true;
+		} catch (Exception e) {
+			// TODO: handle exception
+			return false;
+		}
+	}	
 
 	// 百度文字识别位置高精度版API调用（返回数据结构不佳）
 	// iOCR自定义模板文字识别（效果较好）
