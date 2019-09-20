@@ -1,6 +1,4 @@
-//工具类所在包名
 package com.ivision.app.service.util;
-//导包
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
