@@ -11,7 +11,7 @@ import axios from 'axios';
 
   interface ImgProps {
     maxLength: number;
-    files: [];
+    files: any[];
     onLeave: any;
     url: String;
     cq: 3;
@@ -171,6 +171,7 @@ import axios from 'axios';
             this.setState(prevState => {
               current.success = true;
               return {
+                files: [...prevState.files, current]
               };
             }, () => {
               /* notification.success({ message: `${current.name}, 上传成功` }) */
@@ -183,6 +184,7 @@ import axios from 'axios';
             this.setState(prevState => {
               current.success = false;
               return {
+                files: [...prevState.files, current]
               };
             }, () => {
               /* notification.error({ message: `${current.name}, 上传失败` }) */
@@ -227,6 +229,7 @@ import axios from 'axios';
       // tslint:disable-next-line: ter-arrow-body-style
       this.setState(prevState => {
         return {
+          files: prevState.files.filter(f => f.guid !== guid)
         };
       });
     }
@@ -242,6 +245,18 @@ import axios from 'axios';
               <li className="secondli">状态</li>
               <li className="thirdli">操作</li>
             </ul>
+        { /* 上传列表 */ }
+        {
+          // tslint:disable-next-line: ter-arrow-body-style
+          this.state.files.map(file => {
+            return (<div className="allFile" key={file}>
+              <span className="fileName">{file.name}</span>
+              <span className="state">成功</span>
+              <span className="del" onClick={this.handleCloseClick.bind(this, file.guid)}>删除</span>
+            </div>
+            );
+          })
+        }
         </div>
         <form className = "" method = "post" action = "" encType = "multipart/form-data"
           onDrag = {
@@ -268,20 +283,11 @@ import axios from 'axios';
               <input ref={input => this.inputRef = input} onChange={this.handleFileChange} style = {{ 'display': 'none' }} type = "file" id = "file" multiple = {multiple}/> ,
           <label className = "forlale" htmlFor = "file">
           <p className="changeContent">
-          <span>请<span className="choosefile" >拖拽</span>文件到这里</span>
+          <span>请<span className="choosefile">选择文件</span><span>或</span><span className="choosefile" >拖拽</span>文件到这里</span>
           </p>
           </label>
       </form>
       </div>
-      { /* 上传列表 */ }
-        {
-          // tslint:disable-next-line: ter-arrow-body-style
-          this.state.files.map(file => {
-            return (<div key={file}>
-              <span>{file}</span>
-            </div>);
-          })
-        }
      </div>
       );
     }

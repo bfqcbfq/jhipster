@@ -38,3 +38,19 @@
     line-height: 35px;
     background-color: rgba(178,189,209,.2);
 }
+.fileName{
+    padding-left: 177px;
+    color: blue;
+}
+.state{
+    padding-left: 180px;
+    color: green;
+}
+.del{
+    padding-left: 400px;
+    color: red;
+}
+.allFile{
+    width: 100%;
+    border: 1px solid #ffffff;
+}
