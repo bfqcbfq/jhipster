@@ -11,10 +11,14 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,10 +56,15 @@ public class IocrResource {
 	private String filePath;
 
 	@PostMapping("/upload")
-	public String getfileRecord(@RequestParam(value = "file", required = false) MultipartFile[] uploadFiles)
+	public ResponseEntity<List<String>> getfileRecord(@RequestParam(value = "file", required = false) MultipartFile[] uploadFiles)
 			throws IOException {
 
 		 log.debug("REST request to upload MultipartFile[] : {}", uploadFiles);
+		 
+		//String newFileName = null;
+		 //String newFilePath = null;
+		 List<String> filePathList = new ArrayList<String>();
+		 
 
 		// 判断文件夹是否存在,不存在则创建
 		File file = new File(filePath);
@@ -78,10 +87,10 @@ public class IocrResource {
 			String newFileName = dateFormat.format(now) + System.currentTimeMillis() + fileType;
 			// 新文件的路径
 			String newFilePath = filePath + newFileName;
+			filePathList.add(newFilePath);
 
 			try {
 				uploadFile.transferTo(new File(newFilePath)); // 将传来的文件写入新建的文件
-				return "上传成功";
 
 			} catch (IllegalStateException e) {
 				e.printStackTrace();
@@ -89,7 +98,7 @@ public class IocrResource {
 				e1.printStackTrace();
 			}
 		}
-		return "上传失败";
+		return ResponseEntity.ok(filePathList);
 
 	}
 
@@ -103,20 +112,27 @@ public class IocrResource {
 	 * @throws Exception
 	 */
 	@GetMapping("/download")
-	public String exportExcel(HttpServletResponse response, HttpServletRequest request) throws Exception {
+	public String exportExcel( HttpServletRequest request,HttpServletResponse response) throws Exception {
 		// Status status = new Status();
 		DeliveryDetails deliveryDetails = null;
+		List<Ret> retList = new ArrayList<Ret>();
 		String templateName = null; // 所属分公司
-		List<DeliveryDetails> retList = null; // 产品名称
+		List<DeliveryDetails> deliverDetailsList = null; // 产品详细List
 
-		String filepath = "D:\\FilesAndDatas\\download\\201909191009111568858953094.jpg";
+		String filepath = "D:\\FilesAndDatas\\download\\201909231323141569216194813.jpg";
 		// 获取前台参数信息
 		JSONObject jsonObject = getResultByIocr(filepath);
 		deliveryDetails = new DeliveryDetails(1,"仓库1","G-6","三菱","包",100f,25f,300f,1234,"2019-09-20","加急");
-		jsonObject.getJSONObject("data").get("templateName"); // 表格标题
+		//获得模板名称/或表格
+		templateName =  jsonObject.getJSONObject("data").get("templateName").toString(); // 表格标题
+		Object object = jsonObject.getJSONObject("data").get("ret");
 		
-		retList = new ArrayList<DeliveryDetails>();
-		retList.add(deliveryDetails);
+		JSONArray jsonArray = jsonObject.getJSONObject("data").getJSONArray("ret");
+		List<Object> list = jsonArray.toList();
+		BeanUtils.copyProperties(list, retList);
+		int size = retList.size();
+		deliverDetailsList = new ArrayList<DeliveryDetails>();
+		deliverDetailsList.add(deliveryDetails);
 
 		//retList = (List<DeliveryDetails>) jsonObject.getJSONObject("data").get("ret"); // 产品名称
 		// JsonUtils.jsonToList(string11, Ret.class);
@@ -125,7 +141,7 @@ public class IocrResource {
 		
 		String [] columnNames= {"编号","仓库","料号","品牌","单位","数量","单重","合计重量","批次号","出货日期","备注"};
 		String [] columns= {"id","storehouseNo","materialNo","brand","unit","quantity","singleWeight","totalWeight","batchNo","date","comment"};
-		ExcelUtils.exportExcel(response, retList, columnNames, columns, "invoiceList", fileName);
+		ExcelUtils.exportExcel(response, deliverDetailsList, columnNames, columns, "invoiceList", fileName);
 		return null;
 	}
 	
