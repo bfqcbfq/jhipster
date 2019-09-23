@@ -40,6 +40,7 @@ public class JWTFilter extends GenericFilterBean {
 
     private String resolveToken(HttpServletRequest request){
         //String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+    	//modify by wanglei 2019/09/23
     	String bearerToken =  "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ3YW5nbGVpIiwiYXV0aCI6IlJPTEVfQURNSU4sUk9MRV9VU0VSIiwiZXhwIjoxNTY5Mjk0NjkyfQ.rx5zZ38yQ5yG7XfGdOYHTbBuBARYeXsvXNZhRXeOXzS84Kj_3Aqm6hcdiJfjM0x0xKdIJ-wLSXAtR_DA3wBeug";
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
