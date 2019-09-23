@@ -61,8 +61,6 @@ public class IocrResource {
 
 		 log.debug("REST request to upload MultipartFile[] : {}", uploadFiles);
 		 
-		//String newFileName = null;
-		 //String newFilePath = null;
 		 List<String> filePathList = new ArrayList<String>();
 		 
 
