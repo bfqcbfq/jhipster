@@ -1,0 +1,27 @@
+{
+  "ivisionApp": {
+    "ivision": {
+      "home": {
+        "title": "Ivisions",
+        "createLabel": "Ivision を追加",
+        "createOrEditLabel": "Ivisionを追加または編集",
+        "notFound": "No Ivisions found"
+      },
+      "created": "A new Ivision is created with identifier {{ param }}",
+      "updated": "A Ivision is updated with identifier {{ param }}",
+      "deleted": "A Ivision is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Ivision {{ id }}を削除してもよろしいですか？"
+      },
+      "detail": {
+        "title": "Ivision"
+      },
+      "profile_photo": "Profile Photo",
+      "nickname": "Nickname",
+      "gender": "Gender",
+      "birthday": "Birthday",
+      "telphone": "Telphone",
+      "mailbox": "Mailbox"
+    }
+  }
+}

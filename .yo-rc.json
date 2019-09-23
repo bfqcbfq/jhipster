@@ -28,14 +28,21 @@
     "clientFramework": "react",
     "clientTheme": "none",
     "clientThemeVariant": "",
-    "testFrameworks": ["gatling"],
+    "testFrameworks": [
+      "gatling"
+    ],
     "jhiPrefix": "jhi",
     "entitySuffix": "",
     "dtoSuffix": "DTO",
     "otherModules": [],
     "enableTranslation": true,
     "nativeLanguage": "zh-cn",
-    "languages": ["zh-cn", "zh-tw", "en", "ja"],
+    "languages": [
+      "zh-cn",
+      "zh-tw",
+      "en",
+      "ja"
+    ],
     "blueprints": []
   }
 }
