@@ -99,6 +99,19 @@ public class IocrResource {
 		return ResponseEntity.ok(filePathList);
 
 	}
+	
+	
+	//上传文件明细
+	@GetMapping("/showDetails")
+	public ResponseEntity<JSONObject> showUploadFileDetails(@RequestParam(value = "filePath") String filePath) throws IOException {
+		JSONObject resultByIocr = getResultByIocr(filePath);
+		if(resultByIocr != null) {
+			
+			return ResponseEntity.ok(resultByIocr);
+			
+		}
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
 
 	/**
 	 * 
@@ -120,7 +133,7 @@ public class IocrResource {
 		String filepath = "D:\\FilesAndDatas\\download\\201909231323141569216194813.jpg";
 		// 获取前台参数信息
 		JSONObject jsonObject = getResultByIocr(filepath);
-		deliveryDetails = new DeliveryDetails(1,"仓库1","G-6","三菱","包",100f,25f,300f,1234,"2019-09-20","加急");
+		
 		//获得模板名称/或表格
 		templateName =  jsonObject.getJSONObject("data").get("templateName").toString(); // 表格标题
 		Object object = jsonObject.getJSONObject("data").get("ret");
@@ -128,7 +141,8 @@ public class IocrResource {
 		JSONArray jsonArray = jsonObject.getJSONObject("data").getJSONArray("ret");
 		List<Object> list = jsonArray.toList();
 		BeanUtils.copyProperties(list, retList);
-		int size = retList.size();
+		
+		deliveryDetails = new DeliveryDetails(1,"仓库1","G-6","三菱","包",100f,25f,300f,1234,"2019-09-20","加急");
 		deliverDetailsList = new ArrayList<DeliveryDetails>();
 		deliverDetailsList.add(deliveryDetails);
 
