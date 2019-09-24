@@ -91,7 +91,7 @@ public class IocrResource {
 			// 新文件的路径
 			String newFilePath = filePath + newFileName;
 			filePathList.add(newFilePath);
-			filePathMap.put("filepath", filePathList);
+			filePathMap.put("filepaths", filePathList);
 
 			try {
 				uploadFile.transferTo(new File(newFilePath)); // 将传来的文件写入新建的文件
