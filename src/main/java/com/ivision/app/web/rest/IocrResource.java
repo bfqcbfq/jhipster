@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -56,10 +57,14 @@ public class IocrResource {
 	private String filePath;
 
 	@PostMapping("/upload")
-	public ResponseEntity<List<String>> getfileRecord(@RequestParam(value = "file", required = false) MultipartFile[] uploadFiles)
+	public ResponseEntity<Map<String,List<String>>> getfileRecord(@RequestParam(value = "file", required = false) MultipartFile[] uploadFiles)
 			throws IOException {
 
 		 log.debug("REST request to upload MultipartFile[] : {}", uploadFiles);
+		 
+		 Map<String,List<String>> filePathMap = new HashMap<>();
+		 
+		 
 		 
 		 List<String> filePathList = new ArrayList<String>();
 		 
@@ -86,6 +91,7 @@ public class IocrResource {
 			// 新文件的路径
 			String newFilePath = filePath + newFileName;
 			filePathList.add(newFilePath);
+			filePathMap.put("filepath", filePathList);
 
 			try {
 				uploadFile.transferTo(new File(newFilePath)); // 将传来的文件写入新建的文件
@@ -96,7 +102,7 @@ public class IocrResource {
 				e1.printStackTrace();
 			}
 		}
-		return ResponseEntity.ok(filePathList);
+		return ResponseEntity.ok(filePathMap);
 
 	}
 	
@@ -123,14 +129,16 @@ public class IocrResource {
 	 * @throws Exception
 	 */
 	@GetMapping("/download")
-	public String exportExcel( HttpServletRequest request,HttpServletResponse response) throws Exception {
+	public String exportExcel(@RequestParam(value = "filepath") String filepath, HttpServletRequest request,HttpServletResponse response) throws Exception {
 		// Status status = new Status();
 		DeliveryDetails deliveryDetails = null;
 		List<Ret> retList = new ArrayList<Ret>();
 		String templateName = null; // 所属分公司
 		List<DeliveryDetails> deliverDetailsList = null; // 产品详细List
+		///获取请求路径参数
+		//String parameter = request.getParameter("filePath");
 
-		String filepath = "D:\\FilesAndDatas\\download\\201909231323141569216194813.jpg";
+		//String filepath = "D:\\FilesAndDatas\\download\\201909231323141569216194813.jpg";
 		// 获取前台参数信息
 		JSONObject jsonObject = getResultByIocr(filepath);
 		
@@ -139,6 +147,8 @@ public class IocrResource {
 		Object object = jsonObject.getJSONObject("data").get("ret");
 		
 		JSONArray jsonArray = jsonObject.getJSONObject("data").getJSONArray("ret");
+		
+		
 		List<Object> list = jsonArray.toList();
 		BeanUtils.copyProperties(list, retList);
 		
