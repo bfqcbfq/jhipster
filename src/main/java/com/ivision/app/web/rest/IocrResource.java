@@ -2,6 +2,7 @@ package com.ivision.app.web.rest;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,9 +29,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.baidu.aip.ocr.AipOcr;
+import com.ivision.app.domain.DeliverMessage;
 import com.ivision.app.domain.DeliveryDetails;
+import com.ivision.app.domain.Invoice;
 import com.ivision.app.domain.Ret;
 import com.ivision.app.service.util.ExcelUtils;
+import com.ivision.app.service.util.ExportUtil;
 import com.ivision.app.service.util.FileUtils;
 
 @RestController
@@ -57,17 +61,14 @@ public class IocrResource {
 	private String filePath;
 
 	@PostMapping("/upload")
-	public ResponseEntity<Map<String,List<String>>> getfileRecord(@RequestParam(value = "file", required = false) MultipartFile[] uploadFiles)
-			throws IOException {
+	public ResponseEntity<Map<String, List<String>>> getfileRecord(
+			@RequestParam(value = "file", required = false) MultipartFile[] uploadFiles) throws IOException {
 
-		 log.debug("REST request to upload MultipartFile[] : {}", uploadFiles);
-		 
-		 Map<String,List<String>> filePathMap = new HashMap<>();
-		 
-		 
-		 
-		 List<String> filePathList = new ArrayList<String>();
-		 
+		log.debug("REST request to upload MultipartFile[] : {}", uploadFiles);
+
+		Map<String, List<String>> filePathMap = new HashMap<>();
+
+		List<String> filePathList = new ArrayList<String>();
 
 		// 判断文件夹是否存在,不存在则创建
 		File file = new File(filePath);
@@ -105,22 +106,26 @@ public class IocrResource {
 		return ResponseEntity.ok(filePathMap);
 
 	}
-	
-	
-	//上传文件明细
+
+	// 上传文件明细
 	@GetMapping("/showDetails")
-	public ResponseEntity<JSONObject> showUploadFileDetails(@RequestParam(value = "filePath") String filePath) throws IOException {
+	public ResponseEntity<Invoice> showUploadFileDetails(@RequestParam(value = "filepath") String filepath)
+			throws IOException {
+		//调用百度API
 		JSONObject resultByIocr = getResultByIocr(filePath);
-		if(resultByIocr != null) {
-			
-			return ResponseEntity.ok(resultByIocr);
-			
+		
+		//将返回的数据转换为实体对象
+		Invoice invoice = JsonToObject(resultByIocr);
+		if (invoice != null) {
+
+			return ResponseEntity.ok(invoice);
+
 		}
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	/**
-	 * 
+	 * 实现Excel文件的下载
 	 * 
 	 * @param response
 	 * @param request
@@ -129,55 +134,107 @@ public class IocrResource {
 	 * @throws Exception
 	 */
 	@GetMapping("/download")
-	public String exportExcel(@RequestParam(value = "filepath") String filepath, HttpServletRequest request,HttpServletResponse response) throws Exception {
+	public void exportExcel(HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
 		// Status status = new Status();
 		DeliveryDetails deliveryDetails = null;
 		List<Ret> retList = new ArrayList<Ret>();
 		String templateName = null; // 所属分公司
 		List<DeliveryDetails> deliverDetailsList = null; // 产品详细List
-		///获取请求路径参数
-		//String parameter = request.getParameter("filePath");
+		/// 获取请求路径参数
+		// String parameter = request.getParameter("filePath");
 
-		//String filepath = "D:\\FilesAndDatas\\download\\201909231323141569216194813.jpg";
+		 String filepath = "D:\\FilesAndDatas\\download\\201909231323141569216194813.jpg";
 		// 获取前台参数信息
 		JSONObject jsonObject = getResultByIocr(filepath);
-		
-		//获得模板名称/或表格
-		templateName =  jsonObject.getJSONObject("data").get("templateName").toString(); // 表格标题
+		Invoice jsonToObject = JsonToObject(jsonObject);
+
+		// 获得模板名称/或表格
+		templateName = jsonObject.getJSONObject("data").get("templateName").toString(); // 表格标题
 		Object object = jsonObject.getJSONObject("data").get("ret");
-		
+
 		JSONArray jsonArray = jsonObject.getJSONObject("data").getJSONArray("ret");
-		
-		
+
 		List<Object> list = jsonArray.toList();
 		BeanUtils.copyProperties(list, retList);
-		
-		deliveryDetails = new DeliveryDetails(1,"仓库1","G-6","三菱","包",100f,25f,300f,1234,"2019-09-20","加急");
+
+		deliveryDetails = new DeliveryDetails("仓库1", "G-6", "三菱", "包", 100f, 25f, 300f, 1234, "2019-09-20", "加急");
 		deliverDetailsList = new ArrayList<DeliveryDetails>();
 		deliverDetailsList.add(deliveryDetails);
 
-		//retList = (List<DeliveryDetails>) jsonObject.getJSONObject("data").get("ret"); // 产品名称
+		// retList = (List<DeliveryDetails>)
+		// jsonObject.getJSONObject("data").get("ret"); // 产品名称
 		// JsonUtils.jsonToList(string11, Ret.class);
 
 		String fileName = "demo";
-		
-		String [] columnNames= {"编号","仓库","料号","品牌","单位","数量","单重","合计重量","批次号","出货日期","备注"};
-		String [] columns= {"id","storehouseNo","materialNo","brand","unit","quantity","singleWeight","totalWeight","batchNo","date","comment"};
+
+		String[] columnNames = { "仓库", "料号", "品牌", "单位", "数量", "单重", "合计重量", "批次号", "出货日期", "备注" };
+		String[] columns = { "storehouseNo", "materialNo", "brand", "unit", "quantity", "singleWeight", "totalWeight",
+				"batchNo", "date", "comment" };
 		ExcelUtils.exportExcel(response, deliverDetailsList, columnNames, columns, "invoiceList", fileName);
-		return null;
 	}
-	
-	
-	//将Excel表格信息导入到数据库
+
+//	@GetMapping("/downloadCsv")
+//	public void download(@RequestParam(value = "filepath") String filepath, HttpServletResponse response) {
+//		List<Map<String, Object>> dataList = null;
+//		
+//		//获得导出的数据
+//		JSONObject jsonObject = getResultByIocr(filepath);
+//		
+//		//获得模板名称/或表格
+//			String 	templateName =  jsonObject.getJSONObject("data").get("templateName").toString(); // 表格标题
+//			
+//				Object object = jsonObject.getJSONObject("data").get("ret");
+//				
+//				JSONArray jsonArray = jsonObject.getJSONObject("data").getJSONArray("ret");
+//				
+//				
+//				List<Object> list = jsonArray.toList();
+//				
+//				//TODO 单独定义方法将返回List放在deliveryDetails对象中去
+//
+//        if (list.size() == 0) {
+//            //ResultUtil.failure("无数据导出");
+//        }
+//        String sTitle = "id,用户名,操作类型,操作方法,创建时间";
+//        String fName = "log_";
+//        String mapKey = "id,username,operation,method,createDate";
+//        dataList = new ArrayList<>();
+//        Map<String, Object> map = null;
+//        for (Object order : list) {
+//            map = new HashMap<>();
+//
+//            map.put("id", order.getId());
+//            map.put("username", order.getUsername());
+//            map.put("operation", order.getOperation());
+//            map.put("method", order.getMethod());
+//            map.put("createDate", DateFormatUtils.format(order.getCreateDate(), "yyyy/MM/dd HH:mm"));
+//
+//            dataList.add(map);
+//        }
+//        try (final OutputStream os = response.getOutputStream()) {
+//            ExportUtil.responseSetProperties(fName, response);
+//            ExportUtil.doExport(dataList, sTitle, mapKey, os);
+//            //return null;
+//        } catch (Exception e) {
+//            log.error("生成csv文件失败", e);
+//        }
+//        //return ResultUtil.failure("数据导出出错");
+//    }
+//		
+//		
+//	}
+
+	// 将Excel表格信息导入到数据库
 	@PostMapping("/uploadFile")
-	public boolean uploadFile(HttpServletRequest request,Ret ret,MultipartFile myfile,HttpServletResponse response) {
+	public boolean uploadFile(HttpServletRequest request, Ret ret, MultipartFile myfile, HttpServletResponse response) {
 		try {
-			//调用工具类FileUtils上传,前台传来的文件形参为myfile
+			// 调用工具类FileUtils上传,前台传来的文件形参为myfile
 			String newFileName = FileUtils.upload(myfile, request);
 			String realPath = request.getSession().getServletContext().getRealPath("file");
-			//将Excel文件的内容放入到String类型的双层数组中
-			String[][] strings = ExcelUtils.readexcell(realPath+File.separator+newFileName, 1);
-			//循环数组,依次拿取数组内的数据放入到实体类的对象里,以便于添加数据到数据库的表单内
+			// 将Excel文件的内容放入到String类型的双层数组中
+			String[][] strings = ExcelUtils.readexcell(realPath + File.separator + newFileName, 1);
+			// 循环数组,依次拿取数组内的数据放入到实体类的对象里,以便于添加数据到数据库的表单内
 			for (int i = 0; i < strings.length; i++) {
 //				String [] stuData=strings[i];
 //				Student user=new Student();
@@ -192,7 +249,7 @@ public class IocrResource {
 			// TODO: handle exception
 			return false;
 		}
-	}	
+	}
 
 	// 百度文字识别位置高精度版API调用（返回数据结构不佳）
 	// iOCR自定义模板文字识别（效果较好）
@@ -217,9 +274,7 @@ public class IocrResource {
 
 		// 参数为本地路径
 		JSONObject custom = client.custom(filePath, options);
-		
-		
-		
+
 //		Object object = res.get("data");
 //		
 //		 Data data = new Data();
@@ -245,5 +300,123 @@ public class IocrResource {
 
 		return custom;
 	}
+
+	public Invoice JsonToObject(JSONObject jsonObject) {
+
+		Invoice invoice = new Invoice();
+		DeliverMessage deliverMessage = new DeliverMessage();
+		DeliveryDetails deliveryDetails = new DeliveryDetails();
+		List<DeliveryDetails> deliveryDetailsList = new ArrayList<>();
+		// 获得账票标题
+		String templateName = jsonObject.getJSONObject("data").get("templateName").toString(); 
+		invoice.setTitle(templateName);
+		Object object = jsonObject.getJSONObject("data").get("ret");
+
+		JSONArray jsonArray = jsonObject.getJSONObject("data").getJSONArray("ret");
+		List<Object> list = jsonArray.toList();
+//		HashMap<String,String> map0 =  (HashMap)list.get(0);
+//		HashMap<String,String> map1 =  (HashMap)list.get(1);
+//		HashMap<String,String> map2 =  (HashMap)list.get(2);
+//		HashMap<String,String> map3 =  (HashMap)list.get(3);
+//		HashMap<String,String> map4 =  (HashMap)list.get(4);
+//		HashMap<String,String> map5 =  (HashMap)list.get(5);
+//		HashMap<String,String> map6 =  (HashMap)list.get(6);
+//		HashMap<String,String> map7 =  (HashMap)list.get(7);
+//		HashMap<String,String> map8 =  (HashMap)list.get(8);
+//		
+//		String handler = map0.get("word");
+//	
+//		deliverMessage.setHandler(handler);
+//		invoice.getDeliverMessage().setHandler(handler);
+		
+		
+		for(int i = 0;i<list.size();i++) {
+			
+			HashMap<String,String> map =  (HashMap)list.get(i);
+			
+			
+			String word = map.get("word");
+			switch(i) {
+			
+			case 0:
+				deliverMessage.setHandler(word);
+				break;
+			case 1:
+				deliverMessage.setContactNUmber(word);
+				break;
+			case 2:
+				deliverMessage.setDeliveryCompany(word);
+				break;
+			case 3:
+				deliverMessage.setDeliveryDate(word);
+				break;
+			case 4:
+				deliverMessage.setAddress(word);
+				break;
+			case 5:
+				deliverMessage.setNote(word);
+				break;
+			case 6:
+				deliverMessage.setDeliveryNo(word);
+				break;
+			case 7:
+				deliverMessage.setPicker(word);
+				break;
+			case 8:
+				deliveryDetails.setStorehouseNo(word);
+				break;
+			case 9:
+				deliveryDetails.setMaterialNo(word);
+				break;
+			case 10:
+				deliveryDetails.setBrand(word);
+				break;
+			case 11:
+				deliveryDetails.setUnit(word);
+				break;
+			case 12:
+				deliveryDetails.setQuantity(Float.parseFloat(word));
+				break;
+			case 13:
+				deliveryDetails.setSingleWeight(Float.parseFloat(word));
+				break;
+			case 14:
+				deliveryDetails.setTotalWeight(Float.parseFloat(word));
+				break;
+			case 15:
+				deliveryDetails.setBatchNo(Integer.parseInt(word));
+				break;
+			case 16:
+				deliveryDetails.setDate(word);
+				break;
+			case 17:
+				deliveryDetails.setComment(word);
+				break;
+		}
+//			for(Object object1 : list) {
+//				HashMap<String,String> map = (HashMap)object1;
+//				String string1 = map.get("word_name");
+//				String string2 = map.get("word");
+//				Ret ret = new Ret();
+//				BeanUtils.copyProperties(object1, ret);
+//			System.out.println(ret);
+//		}
+
+//		List<Object> list = jsonArray.toList();
+//		BeanUtils.copyProperties(list, retList);
+//
+//		deliveryDetails = new DeliveryDetails("仓库1", "G-6", "三菱", "包", 100f, 25f, 300f, 1234, "2019-09-20", "加急");
+//		deliverDetailsList = new ArrayList<DeliveryDetails>();
+//		deliverDetailsList.add(deliveryDetails);
+			
+			
+		}
+		invoice.setDeliverMessage(deliverMessage);
+		deliveryDetailsList.add(deliveryDetails);
+		invoice.setDeliveryDetails(deliveryDetailsList);
+		return invoice;
+
+		}
+
 
 }

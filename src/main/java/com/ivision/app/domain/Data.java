@@ -5,7 +5,7 @@ import java.util.List;
  * 返回JSON主数据
  * 
  */
-public class Data extends Object {
+public class Data {
 
     private List<Ret> ret;
     private String templateSign;

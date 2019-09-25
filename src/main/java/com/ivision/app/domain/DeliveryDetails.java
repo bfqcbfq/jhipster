@@ -1,26 +1,8 @@
 package com.ivision.app.domain;
 
-import java.util.Date;
 
 public class DeliveryDetails {
-	 public DeliveryDetails() {
-	}
-	public DeliveryDetails(int id, String storehouseNo, String materialNo, String brand, String unit, float quantity,
-			float singleWeight, float totalWeight, int batchNo, String date, String comment) {
-		super();
-		this.id = id;
-		this.storehouseNo = storehouseNo;
-		this.materialNo = materialNo;
-		this.brand = brand;
-		this.unit = unit;
-		this.quantity = quantity;
-		this.singleWeight = singleWeight;
-		this.totalWeight = totalWeight;
-		this.batchNo = batchNo;
-		this.date = date;
-		this.comment = comment;
-	}
-	private int id;
+
 	 private String storehouseNo;
 	 private String materialNo;
 	 private String brand;
@@ -31,11 +13,23 @@ public class DeliveryDetails {
 	 private int batchNo;
 	 private String date;
 	 private String comment;
-	public int getId() {
-		return id;
+	 
+	 
+	public DeliveryDetails() {
 	}
-	public void setId(int id) {
-		this.id = id;
+	public DeliveryDetails(String storehouseNo, String materialNo, String brand, String unit, float quantity,
+			float singleWeight, float totalWeight, int batchNo, String date, String comment) {
+		super();
+		this.storehouseNo = storehouseNo;
+		this.materialNo = materialNo;
+		this.brand = brand;
+		this.unit = unit;
+		this.quantity = quantity;
+		this.singleWeight = singleWeight;
+		this.totalWeight = totalWeight;
+		this.batchNo = batchNo;
+		this.date = date;
+		this.comment = comment;
 	}
 	public String getStorehouseNo() {
 		return storehouseNo;
@@ -97,6 +91,14 @@ public class DeliveryDetails {
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
+	@Override
+	public String toString() {
+		return "DeliveryDetails [storehouseNo=" + storehouseNo + ", materialNo=" + materialNo + ", brand=" + brand
+				+ ", unit=" + unit + ", quantity=" + quantity + ", singleWeight=" + singleWeight + ", totalWeight="
+				+ totalWeight + ", batchNo=" + batchNo + ", date=" + date + ", comment=" + comment + "]";
+	}
+	
+	
 	 
-
+	 
 }
