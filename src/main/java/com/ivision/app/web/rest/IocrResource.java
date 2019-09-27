@@ -151,7 +151,7 @@ public class IocrResource {
 	 * @return
 	 */
 	@GetMapping("/download")
-	public String export(@RequestParam(value = "filepath") String filepath, HttpServletResponse response) {
+	public String exportExcel(@RequestParam(value = "filepath") String filepath, HttpServletResponse response) {
 		response.setContentType("application/binary;charset=UTF-8");
 
 		try {
@@ -197,21 +197,29 @@ public class IocrResource {
 	 * @throws Exception
 	 */
 	@GetMapping("/download1")
-	public void exportExcel(@RequestParam(value = "filepath") String filepath, HttpServletRequest request,
+	public String exportExcel1(@RequestParam(value = "filepath") String filepath, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		DeliveryDetails deliveryDetails = null;
-		List<DeliveryDetails> deliverDetailsList = null; // 产品详细List
+		
+		try {
+			DeliveryDetails deliveryDetails = null;
+			List<DeliveryDetails> deliverDetailsList = null; // 产品详细List
 
-		deliveryDetails = new DeliveryDetails("仓库1", "G-6", "三菱", "包", "100f", "25f", "300f", "1234", "2019-09-20", "加急");
-		deliverDetailsList = new ArrayList<DeliveryDetails>();
-		deliverDetailsList.add(deliveryDetails);
+			deliveryDetails = new DeliveryDetails("仓库1", "G-6", "三菱", "包", "100f", "25f", "300f", "1234", "2019-09-20", "加急");
+			deliverDetailsList = new ArrayList<DeliveryDetails>();
+			deliverDetailsList.add(deliveryDetails);
 
-		String fileName = "北京神丰科技有限公司出货单";
+			String fileName = "北京神丰科技有限公司出货单";
 
-		String[] columnNames = { "仓库", "料号", "品牌", "单位", "数量", "单重", "合计重量", "批次号", "出货日期", "备注" };
-		String[] columns = { "storehouseNo", "materialNo", "brand", "unit", "quantity", "singleWeight", "totalWeight",
-				"batchNo", "date", "comment" };
-		ExcelUtils.exportExcel(response, deliverDetailsList, columnNames, columns, "invoiceList", fileName);
+			String[] columnNames = { "仓库", "料号", "品牌", "单位", "数量", "单重", "合计重量", "批次号", "出货日期", "备注" };
+			String[] columns = { "storehouseNo", "materialNo", "brand", "unit", "quantity", "singleWeight", "totalWeight",
+					"batchNo", "date", "comment" };
+			ExcelUtils.exportExcel(response, deliverDetailsList, columnNames, columns, "invoiceList", fileName);
+			return "success";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "导出信息失败";
+		}
+		
 	}
 
 	/**
