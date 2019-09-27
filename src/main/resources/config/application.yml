@@ -157,6 +157,9 @@ iocr:
     key: 0FTdfUyOBD0H8QkYsXRmyp3o
   secret:
     key: 1eeyziHIjbixQZW4kq4XM8WhPC2PmlCi
+  template:
+    id: 43005dffcf2a50006c2a35cc9238f5a5
+  
     
 file:
   downLoad:

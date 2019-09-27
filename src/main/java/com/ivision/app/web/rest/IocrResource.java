@@ -2,7 +2,6 @@ package com.ivision.app.web.rest;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -63,6 +62,10 @@ public class IocrResource {
 
 	@Value("${iocr.secret.key}")
 	private String secretKey;
+	
+	//設置模板ID
+	@Value("${iocr.template.id}")
+	private String templateId;
 
 	// 定义上传文件的存放位置
 	@Value("${file.downLoad.path}")
@@ -158,7 +161,7 @@ public class IocrResource {
 			ServletOutputStream out = response.getOutputStream();
 			String newFileName = "北京神丰科技有限公司";
 			//String name = new String(URLEncoder.encode(newFileName, "utf-8"));
-			String fileName = new String((newFileName + new SimpleDateFormat("yyyy-MM-dd").format(new Date())).getBytes(),
+			String fileName = new String((newFileName).getBytes(),
 					"UTF-8");
 			response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
 
@@ -244,7 +247,7 @@ public class IocrResource {
 //		options.put("probability", "true");
 		// client.toString(2);
 
-		options.put("templateSign", "a432753989cd6d48923766dc3bdd3977");
+		options.put("templateSign", templateId);
 		// options.put("classifierId", "31232");
 
 		// 参数为本地路径
