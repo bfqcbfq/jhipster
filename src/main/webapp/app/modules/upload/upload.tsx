@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes, { any, number } from 'prop-types';
 import './upload.css';
+import './detail.css';
 import axios from 'axios';
   function guid() {
     function s4() {
@@ -21,6 +22,31 @@ import axios from 'axios';
     onError: any;
     multiple: false;
     isDragover: false;
+    filepath: any;
+    display: any;
+    title: any;
+    deliverMessage: [];
+    deliveryNo: any;
+    address: any;
+    contactNUmber: any;
+    deliveryCompany: any;
+    deliveryDate: any;
+    handler: any;
+    note: any;
+    picker: any;
+    deliveryDetails: [{
+      batchNo: any;
+      brand: any;
+      comment: any;
+      date: any;
+      materialNo: any;
+      quantity: any;
+      singleWeight: any;
+      storehouseNo: any;
+      totalWeight: any;
+      unit: any;
+
+    }];
   }
   class Upload extends React.Component<any, ImgProps> {
     static defaultProps: any =
@@ -31,7 +57,31 @@ import axios from 'axios';
       multiple: false,
       maxSize: number,
       maxLength: number,
-      suffixs: []
+      suffixs: [],
+      filepath: any,
+      display: any,
+      title: any,
+      deliverMessage: [],
+      deliveryNo: any,
+      address: any,
+      contactNUmber: any,
+      deliveryCompany: any,
+      deliveryDate: any,
+      handler: any,
+      note: any,
+      picker: any,
+      deliveryDetails: [{
+        batchNo: any,
+        brand: any,
+        comment: any,
+        date: any,
+        materialNo: any,
+        quantity: any,
+        singleWeight: any,
+        storehouseNo: any,
+        totalWeight: any,
+        unit: any
+      }]
     };
     static propTypes: any = {
       onEnter: PropTypes.func,
@@ -48,8 +98,8 @@ import axios from 'axios';
     uploadQueue: any[];
     uploadingQueue: any[];
     inputRef: any;
-    constructor(props: any) {
-      super(props);
+    constructor(props: any, context: any) {
+      super(props, context);
       this.state = {
         // 上传的文件列表, 无论上传还是失败，success字段会表示文件是否上传成功
         maxLength: 5,
@@ -62,7 +112,31 @@ import axios from 'axios';
         suffixs: [],
         onError: any,
         multiple: false,
-        isDragover: false
+        isDragover: false,
+        filepath: any,
+        display: 'none',
+        title: any,
+        deliverMessage: [],
+        deliveryNo: any,
+        address: any,
+        contactNUmber: any,
+        deliveryCompany: any,
+        deliveryDate: any,
+        handler: any,
+        note: any,
+        picker: any,
+        deliveryDetails: [{
+          batchNo: any,
+          brand: any,
+          comment: any,
+          date: any,
+          materialNo: any,
+          quantity: any,
+          singleWeight: any,
+          storehouseNo: any,
+          totalWeight: any,
+          unit: any
+        }]
       };
       // 等待上传的文件队列
       this.queue = [];
@@ -71,6 +145,8 @@ import axios from 'axios';
       // 正在上传的队列, 无论上传成功还是上传失败都不会从该队列移除, 避免死循环
       this.uploadingQueue = [];
       this.inputRef = React.createRef();
+
+      this.clockClick = this.clockClick.bind(this);
     }
 
     handleDrag = (event: { preventDefault: () => void; stopPropagation: () => void; }) => {
@@ -161,15 +237,15 @@ import axios from 'axios';
         if (guids.indexOf(current.guid) < 0) {
           this.uploadingQueue = [...this.uploadingQueue, current];
           const uploadFile = new FormData();
-          // tslint:disable-next-line: no-console
-          console.log(current);
           uploadFile.append('file', current);
           axios.post(
             'http://localhost:8080/api/upload',
             uploadFile
           ).then((_: any) => {
+            const filepath = _.data.filepath;
             this.setState(prevState => {
               current.success = true;
+              current.filepath = filepath;
               return {
                 files: [...prevState.files, current]
               };
@@ -183,6 +259,8 @@ import axios from 'axios';
           }).catch((_: any) => {
             this.setState(prevState => {
               current.success = false;
+              const filepath = _.data.filepath;
+              current.filepath = filepath;
               return {
                 files: [...prevState.files, current]
               };
@@ -234,6 +312,88 @@ import axios from 'axios';
       });
     }
 
+    handleDownLoadClick = (filepath: any) => {
+      // tslint:disable-next-line: no-inferrable-types
+      const filepaths: string = 'D:\\FilesAndDatas\\download\\201909241532091569310329853.jpg';
+      axios.get(
+        'http://localhost:8080/api/download',
+        {
+          params: {
+            filepath: filepaths
+          },
+          headers: {
+              'Content-Type': 'application/x-www-form-yrlencoded'
+          },
+          responseType: 'blob'
+        })
+      // tslint:disable-next-line: only-arrow-functions
+      .then(function(response) {
+           if (!response) return;
+           const blob = new Blob([response.data], { type: 'application/vnd.ms-excel;charset=utf8' });
+
+           const downloadElement = document.createElement('a');
+           const href = window.URL.createObjectURL(blob);
+           downloadElement.href = href;
+           downloadElement.download = '123.xls';
+           document.body.appendChild(downloadElement);
+           downloadElement.click();
+           document.body.removeChild(downloadElement);
+           window.URL.revokeObjectURL(href);
+           alert('下载成功');
+      })
+      // tslint:disable-next-line: only-arrow-functions
+      .catch(function(error) {
+          alert('下载失败');
+      });
+    }
+
+    handleShowClick = (filepath: any) => {
+      const filepaths = 'D:\\FilesAndDatas\\download\\201909241532091569310329853.jpg';
+      axios.get(
+        'http://localhost:8080/api/showDetails',
+        {
+          params: {
+            filepath: filepaths
+          }
+        })
+      // tslint:disable-next-line: only-arrow-functions
+      .then((response: any) => {
+           const titles = response.data.title;
+           const deliverMessages = response.data.deliverMessage;
+           const detaildeliveryNo = deliverMessages.deliveryNo;
+           const detailaddress = deliverMessages.address;
+           const detailcontactNUmber = deliverMessages.contactNUmber;
+           const detaildeliveryCompany = deliverMessages.deliveryCompany;
+           const detaildeliveryDate = deliverMessages.deliveryDate;
+           const detailhandler = deliverMessages.handler;
+           const detailnote = deliverMessages.note;
+           const detailpicker = deliverMessages.picker;
+           const deliveryDetailsArr = response.data.deliveryDetails;
+           this.setState({
+            display: 'block',
+            title: titles,
+            deliveryNo: detaildeliveryNo,
+            address: detailaddress,
+            contactNUmber: detailcontactNUmber,
+            deliveryCompany: detaildeliveryCompany,
+            deliveryDate: detaildeliveryDate,
+            handler: detailhandler,
+            note: detailnote,
+            picker: detailpicker,
+            deliveryDetails: deliveryDetailsArr
+          });
+           alert('成功');
+      })
+      // tslint:disable-next-line: only-arrow-functions
+      .catch(function(error) {
+          alert('失败');
+      });
+
+    }
+    clockClick(event: any) {
+      this.setState({ display: 'none' });
+    }
+
     render() {
       const { multiple } = this.props;
       return (
@@ -249,15 +409,18 @@ import axios from 'axios';
         {
           // tslint:disable-next-line: ter-arrow-body-style
           this.state.files.map(file => {
-            return (<div className="allFile" key={file}>
+            return (<div className="allFile" key={file.guid}>
               <span className="fileName">{file.name}</span>
-              <span className="state">成功</span>
+              {file.success ? <span className="state">成功</span> : <span className="state">失败</span>}
+              <span className="show" onClick={this.handleShowClick.bind(this, file.filepath)}>显示</span>
+              <span className="download" onClick={this.handleDownLoadClick.bind(this, file.filepath)}>下载</span>
               <span className="del" onClick={this.handleCloseClick.bind(this, file.guid)}>删除</span>
             </div>
             );
           })
         }
         </div>
+        <div className="formDiv">
         <form className = "" method = "post" action = "" encType = "multipart/form-data"
           onDrag = {
             this.handleDrag
@@ -287,6 +450,71 @@ import axios from 'axios';
           </p>
           </label>
       </form>
+      </div>
+      </div>
+    <div className="popLayer" style = {{ display: this.state.display }}>
+    <span className="close" onClick={this.clockClick}>关闭</span>
+      <div className="popBox">
+           <div className="title">{this.state.title}</div>
+           <div className="leftcontent">
+              <ul>
+                <li>发货单位:{this.state.deliveryCompany}</li>
+                <li>地址:{this.state.address}</li>
+              </ul>
+           </div>
+           <div className="rightcontent">
+             <ul>
+                 <li>发货单号:{this.state.deliveryNo}</li>
+                 <li>发货日期:{this.state.deliveryDate}</li>
+                 <li>联系电话:{this.state.contactNUmber}</li>
+             </ul>
+           </div>
+       <div className="firstdiv">
+           <table>
+                   <thead>
+                       <tr>
+                           <th>仓库</th>
+                           <th>料号</th>
+                           <th>品牌</th>
+                           <th>单位</th>
+                           <th>数量</th>
+                           <th>单重</th>
+                           <th>合计重量</th>
+                           <th>批次号</th>
+                           <th>出货日期</th>
+                           <th>备注</th>
+                       </tr>
+                   </thead>
+                   <tbody>
+                     {
+                       // tslint:disable-next-line: ter-arrow-body-style
+                       this.state.deliveryDetails.map((details, index) => {
+                           return(
+                            // tslint:disable-next-line: jsx-key
+                            <tr key={index}>
+                                <td>{details.storehouseNo}</td>
+                                <td>{details.materialNo}</td>
+                                <td>{details.brand}</td>
+                                <td>{details.unit}</td>
+                                <td>{details.quantity}</td>
+                                <td>{details.singleWeight}</td>
+                                <td>{details.totalWeight}</td>
+                                <td>{details.batchNo}</td>
+                                <td>{details.date}</td>
+                                <td>{details.comment}</td>
+                           </tr>
+                           );
+                       })
+                     }
+                   </tbody>
+               </table>
+           <div className="bottomcontent">备注:{this.state.note}</div>
+           <div>
+              <span>经手人(签字或盖章){this.state.handler}</span>
+              <span className="spantwo">领料人(签字或盖章){this.state.picker}</span>
+           </div>
+           </div>
+           </div>
       </div>
      </div>
       );
