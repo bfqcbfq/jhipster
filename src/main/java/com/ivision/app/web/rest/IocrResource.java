@@ -152,25 +152,23 @@ public class IocrResource {
 	 */
 	@GetMapping("/download")
 	public String exportExcel(@RequestParam(value = "filepath") String filepath, HttpServletResponse response) {
-		response.setContentType("application/binary;charset=UTF-8");
+		response.setContentType("application/force-download;charset=UTF-8");
 
 		try {
 			ServletOutputStream out = response.getOutputStream();
 			String newFileName = "北京神丰科技有限公司";
-			String name = new String(URLEncoder.encode(newFileName, "utf-8"));
-			String fileName = new String((name + new SimpleDateFormat("yyyy-MM-dd").format(new Date())).getBytes(),
+			//String name = new String(URLEncoder.encode(newFileName, "utf-8"));
+			String fileName = new String((newFileName + new SimpleDateFormat("yyyy-MM-dd").format(new Date())).getBytes(),
 					"UTF-8");
 			response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
 
 			// 调用百度API接口
 			JSONObject resultByIocr = getResultByIocr(filepath);
 			Invoice invoice = jsonToObject(resultByIocr);
-			// Events e = eventsdao.getEventsInfoById(ids);
 			String title = invoice.getTitle();
 			DeliverMessage deliverMessage = invoice.getDeliverMessage();
 			List<DeliveryDetails> deliveryDetails = invoice.getDeliveryDetails();
 
-			// String time = raceTime + " " + startTime;
 			// 获取表头1
 			String[] head = { title };
 			String[] headnum = { "0,0,0,15" };
@@ -295,8 +293,6 @@ public class IocrResource {
 
 			String word = map.get("word");
 
-			if (word != null && !StringUtils.isEmpty(word)) {
-
 				switch (i) {
 
 				case 0:
@@ -360,207 +356,207 @@ public class IocrResource {
 					break;
 
 				case 18:
-					deliveryDetails.setStorehouseNo(word);
+					deliveryDetails1.setStorehouseNo(word);
 					break;
 				case 19:
-					deliveryDetails.setMaterialNo(word);
+					deliveryDetails1.setMaterialNo(word);
 					break;
 				case 20:
-					deliveryDetails.setBrand(word);
+					deliveryDetails1.setBrand(word);
 					break;
 				case 21:
-					deliveryDetails.setUnit(word);
+					deliveryDetails1.setUnit(word);
 					break;
 				case 22:
-					deliveryDetails.setQuantity(word);
+					deliveryDetails1.setQuantity(word);
 					break;
 				case 23:
-					deliveryDetails.setSingleWeight(word);
+					deliveryDetails1.setSingleWeight(word);
 					break;
 				case 24:
-					deliveryDetails.setTotalWeight(word);
+					deliveryDetails1.setTotalWeight(word);
 					break;
 				case 25:
-					deliveryDetails.setBatchNo(word);
+					deliveryDetails1.setBatchNo(word);
 					break;
 				case 26:
-					deliveryDetails.setDate(word);
+					deliveryDetails1.setDate(word);
 					break;
 				case 27:
-					deliveryDetails.setComment(word);
+					deliveryDetails1.setComment(word);
 					//表格第二行
 					deliveryDetailsList.add(deliveryDetails1);
 					break;
 
 				case 28:
-					deliveryDetails.setStorehouseNo(word);
+					deliveryDetails2.setStorehouseNo(word);
 					break;
 				case 29:
-					deliveryDetails.setMaterialNo(word);
+					deliveryDetails2.setMaterialNo(word);
 					break;
 				case 30:
-					deliveryDetails.setBrand(word);
+					deliveryDetails2.setBrand(word);
 					break;
 				case 31:
-					deliveryDetails.setUnit(word);
+					deliveryDetails2.setUnit(word);
 					break;
 				case 32:
-					deliveryDetails.setQuantity(word);
+					deliveryDetails2.setQuantity(word);
 					break;
 				case 33:
-					deliveryDetails.setSingleWeight(word);
+					deliveryDetails2.setSingleWeight(word);
 					break;
 				case 34:
-					deliveryDetails.setTotalWeight(word);
+					deliveryDetails2.setTotalWeight(word);
 					break;
 				case 35:
-					deliveryDetails.setBatchNo(word);
+					deliveryDetails2.setBatchNo(word);
 					break;
 				case 36:
-					deliveryDetails.setDate(word);
+					deliveryDetails2.setDate(word);
 					break;
 				case 37:
-					deliveryDetails.setComment(word);
+					deliveryDetails2.setComment(word);
 					//表格第三行
 					deliveryDetailsList.add(deliveryDetails2);
 					break;
 
 				case 38:
-					deliveryDetails.setStorehouseNo(word);
+					deliveryDetails3.setStorehouseNo(word);
 					break;
 				case 39:
-					deliveryDetails.setMaterialNo(word);
+					deliveryDetails3.setMaterialNo(word);
 					break;
 				case 40:
-					deliveryDetails.setBrand(word);
+					deliveryDetails3.setBrand(word);
 					break;
 				case 41:
-					deliveryDetails.setUnit(word);
+					deliveryDetails3.setUnit(word);
 					break;
 				case 42:
-					deliveryDetails.setQuantity(word);
+					deliveryDetails3.setQuantity(word);
 					break;
 				case 43:
-					deliveryDetails.setSingleWeight(word);
+					deliveryDetails3.setSingleWeight(word);
 					break;
 				case 44:
-					deliveryDetails.setTotalWeight(word);
+					deliveryDetails3.setTotalWeight(word);
 					break;
 				case 45:
-					deliveryDetails.setBatchNo(word);
+					deliveryDetails3.setBatchNo(word);
 					break;
 				case 46:
-					deliveryDetails.setDate(word);
+					deliveryDetails3.setDate(word);
 					break;
 				case 47:
-					deliveryDetails.setComment(word);
+					deliveryDetails3.setComment(word);
 					//表格第四行
 					deliveryDetailsList.add(deliveryDetails3);
 					break;
 
 				case 48:
-					deliveryDetails.setStorehouseNo(word);
+					deliveryDetails4.setStorehouseNo(word);
 					break;
 				case 49:
-					deliveryDetails.setMaterialNo(word);
+					deliveryDetails4.setMaterialNo(word);
 					break;
 				case 50:
-					deliveryDetails.setBrand(word);
+					deliveryDetails4.setBrand(word);
 					break;
 				case 51:
-					deliveryDetails.setUnit(word);
+					deliveryDetails4.setUnit(word);
 					break;
 				case 52:
-					deliveryDetails.setQuantity(word);
+					deliveryDetails4.setQuantity(word);
 					break;
 				case 53:
-					deliveryDetails.setSingleWeight(word);
+					deliveryDetails4.setSingleWeight(word);
 					break;
 				case 54:
-					deliveryDetails.setTotalWeight(word);
+					deliveryDetails4.setTotalWeight(word);
 					break;
 				case 55:
-					deliveryDetails.setBatchNo(word);
+					deliveryDetails4.setBatchNo(word);
 					break;
 				case 56:
-					deliveryDetails.setDate(word);
+					deliveryDetails4.setDate(word);
 					break;
 				case 57:
-					deliveryDetails.setComment(word);
+					deliveryDetails4.setComment(word);
 					//表格第五行
 					deliveryDetailsList.add(deliveryDetails4);
 					break;
 					
 				case 58:
-					deliveryDetails.setStorehouseNo(word);
+					deliveryDetails5.setStorehouseNo(word);
 					break;
 				case 59:
-					deliveryDetails.setMaterialNo(word);
+					deliveryDetails5.setMaterialNo(word);
 					break;
 				case 60:
-					deliveryDetails.setBrand(word);
+					deliveryDetails5.setBrand(word);
 					break;
 				case 61:
-					deliveryDetails.setUnit(word);
+					deliveryDetails5.setUnit(word);
 					break;
 				case 62:
-					deliveryDetails.setQuantity(word);
+					deliveryDetails5.setQuantity(word);
 					break;
 				case 63:
-					deliveryDetails.setSingleWeight(word);
+					deliveryDetails5.setSingleWeight(word);
 					break;
 				case 64:
-					deliveryDetails.setTotalWeight(word);
+					deliveryDetails5.setTotalWeight(word);
 					break;
 				case 65:
-					deliveryDetails.setBatchNo(word);
+					deliveryDetails5.setBatchNo(word);
 					break;
 				case 66:
-					deliveryDetails.setDate(word);
+					deliveryDetails5.setDate(word);
 					break;
 				case 67:
-					deliveryDetails.setComment(word);
+					deliveryDetails5.setComment(word);
 					//表格第六行
 					deliveryDetailsList.add(deliveryDetails5);
 					break;
 					
 				case 68:
-					deliveryDetails.setStorehouseNo(word);
+					deliveryDetails6.setStorehouseNo(word);
 					break;
 				case 69:
-					deliveryDetails.setMaterialNo(word);
+					deliveryDetails6.setMaterialNo(word);
 					break;
 				case 70:
-					deliveryDetails.setBrand(word);
+					deliveryDetails6.setBrand(word);
 					break;
 				case 71:
-					deliveryDetails.setUnit(word);
+					deliveryDetails6.setUnit(word);
 					break;
 				case 72:
-					deliveryDetails.setQuantity(word);
+					deliveryDetails6.setQuantity(word);
 					break;
 				case 73:
-					deliveryDetails.setSingleWeight(word);
+					deliveryDetails6.setSingleWeight(word);
 					break;
 				case 74:
-					deliveryDetails.setTotalWeight(word);
+					deliveryDetails6.setTotalWeight(word);
 					break;
 				case 75:
-					deliveryDetails.setBatchNo(word);
+					deliveryDetails6.setBatchNo(word);
 					break;
 				case 76:
-					deliveryDetails.setDate(word);
+					deliveryDetails6.setDate(word);
 					break;
 				case 77:
-					deliveryDetails.setComment(word);
+					deliveryDetails6.setComment(word);
 					//表格第七行
 					deliveryDetailsList.add(deliveryDetails6);
 					break;
 				}
-
+				
 			}
 
-		}
+		
 		
 		invoice.setDeliveryDetails(deliveryDetailsList);
 
