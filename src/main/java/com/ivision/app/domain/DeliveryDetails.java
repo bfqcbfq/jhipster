@@ -7,18 +7,16 @@ public class DeliveryDetails {
 	 private String materialNo;
 	 private String brand;
 	 private String unit;
-	 private float quantity;
-	 private float singleWeight;
-	 private float totalWeight;
-	 private int batchNo;
+	 private String quantity;
+	 private String singleWeight;
+	 private String totalWeight;
+	 private String batchNo;
 	 private String date;
 	 private String comment;
-	 
-	 
 	public DeliveryDetails() {
 	}
-	public DeliveryDetails(String storehouseNo, String materialNo, String brand, String unit, float quantity,
-			float singleWeight, float totalWeight, int batchNo, String date, String comment) {
+	public DeliveryDetails(String storehouseNo, String materialNo, String brand, String unit, String quantity,
+			String singleWeight, String totalWeight, String batchNo, String date, String comment) {
 		super();
 		this.storehouseNo = storehouseNo;
 		this.materialNo = materialNo;
@@ -55,28 +53,28 @@ public class DeliveryDetails {
 	public void setUnit(String unit) {
 		this.unit = unit;
 	}
-	public float getQuantity() {
+	public String getQuantity() {
 		return quantity;
 	}
-	public void setQuantity(float quantity) {
+	public void setQuantity(String quantity) {
 		this.quantity = quantity;
 	}
-	public float getSingleWeight() {
+	public String getSingleWeight() {
 		return singleWeight;
 	}
-	public void setSingleWeight(float singleWeight) {
+	public void setSingleWeight(String singleWeight) {
 		this.singleWeight = singleWeight;
 	}
-	public float getTotalWeight() {
+	public String getTotalWeight() {
 		return totalWeight;
 	}
-	public void setTotalWeight(float totalWeight) {
+	public void setTotalWeight(String totalWeight) {
 		this.totalWeight = totalWeight;
 	}
-	public int getBatchNo() {
+	public String getBatchNo() {
 		return batchNo;
 	}
-	public void setBatchNo(int batchNo) {
+	public void setBatchNo(String batchNo) {
 		this.batchNo = batchNo;
 	}
 	public String getDate() {
@@ -97,7 +95,6 @@ public class DeliveryDetails {
 				+ ", unit=" + unit + ", quantity=" + quantity + ", singleWeight=" + singleWeight + ", totalWeight="
 				+ totalWeight + ", batchNo=" + batchNo + ", date=" + date + ", comment=" + comment + "]";
 	}
-	
 	
 	 
 	 
