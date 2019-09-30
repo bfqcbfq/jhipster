@@ -10,20 +10,21 @@
 .forlale{
     width: 100%;
     padding-left: 43%;
+    margin-top: 3%;
 }
 .firstli{
     float: left;
     list-style-type: none;
-    padding-left: 160px;
+    padding-left: 20%;
 }
 .secondli{
     float: left;
-    padding-left: 400px;
+    padding-left: 20%;
     list-style-type: none;
 }
 .thirdli{
     list-style-type: none;
-    padding-left: 400px;
+    padding-left: 20%;
     float: left;
 }
 .choosefile{
@@ -37,14 +38,14 @@
 }
 .fileName{
     color: blue;
-    width: 294px;
+    width: 37.2%;
     display: inline-block;
     margin-left: 84px;
     text-align: center;
 }
 .state{
     color: green;
-    margin-left: 267px;
+    margin-left: 37px;
 }
 .del{
     color: red;
@@ -62,5 +63,8 @@
     padding-left: 3px;
 }
 .displayshow{
-    padding-left: 369px;
+    padding-left: 326px;
+}
+.upform{
+    height: 164px;
 }

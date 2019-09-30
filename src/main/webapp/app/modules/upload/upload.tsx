@@ -451,7 +451,7 @@ import { equal } from 'assert';
         }
         </div>
         <div className="formDiv">
-        <form className = "" method = "post" action = "" encType = "multipart/form-data"
+        <form className = "upform" method = "post" action = "" encType = "multipart/form-data"
           onDrag = {
             this.handleDrag
           }
@@ -473,7 +473,7 @@ import { equal } from 'assert';
           onDrop = {
             this.handleDrop
           } >
-              <input ref={input => this.inputRef = input} onChange={this.handleFileChange} style = {{ 'display': 'none' }} type = "file" id = "file" multiple = {multiple}/> ,
+              <input ref={input => this.inputRef = input} onChange={this.handleFileChange} style = {{ 'display': 'none' }} type = "file" id = "file" multiple = {multiple}/>
           <label className = "forlale" htmlFor = "file">
           <p className="changeContent">
           <span>请<span className="choosefile">选择文件</span><span>或</span><span className="choosefile" >拖拽</span>文件到这里</span>
