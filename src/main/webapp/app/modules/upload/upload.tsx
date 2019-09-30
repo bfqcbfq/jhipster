@@ -2,7 +2,11 @@ import React from 'react';
 import PropTypes, { any, number } from 'prop-types';
 import './upload.css';
 import './detail.css';
+import './typetwodetail.css';
+import './typethreedetail.css';
+
 import axios from 'axios';
+import { equal } from 'assert';
   function guid() {
     function s4() {
       return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
@@ -20,7 +24,7 @@ import axios from 'axios';
     maxSize: number;
     suffixs: [];
     onError: any;
-    multiple: false;
+    multiple: true;
     isDragover: false;
     filepath: any;
     display: any;
@@ -45,8 +49,9 @@ import axios from 'axios';
       storehouseNo: any;
       totalWeight: any;
       unit: any;
-
     }];
+    displayTwo: any;
+    displayThree: any;
   }
   class Upload extends React.Component<any, ImgProps> {
     static defaultProps: any =
@@ -54,7 +59,7 @@ import axios from 'axios';
       onLeave: () => true,
       onError: () => true,
       cq: number,
-      multiple: false,
+      multiple: true,
       maxSize: number,
       maxLength: number,
       suffixs: [],
@@ -81,7 +86,9 @@ import axios from 'axios';
         storehouseNo: any,
         totalWeight: any,
         unit: any
-      }]
+      }],
+      displayTwo: any,
+      displayThree: any
     };
     static propTypes: any = {
       onEnter: PropTypes.func,
@@ -111,7 +118,7 @@ import axios from 'axios';
         maxSize: 10240000,
         suffixs: [],
         onError: any,
-        multiple: false,
+        multiple: true,
         isDragover: false,
         filepath: any,
         display: 'none',
@@ -136,7 +143,9 @@ import axios from 'axios';
           storehouseNo: any,
           totalWeight: any,
           unit: any
-        }]
+        }],
+        displayTwo: 'none',
+        displayThree: 'none'
       };
       // 等待上传的文件队列
       this.queue = [];
@@ -147,6 +156,8 @@ import axios from 'axios';
       this.inputRef = React.createRef();
 
       this.clockClick = this.clockClick.bind(this);
+      // tslint:disable-next-line: unnecessary-bind
+      this.handleFileChange = this.handleFileChange.bind(this);
     }
 
     handleDrag = (event: { preventDefault: () => void; stopPropagation: () => void; }) => {
@@ -212,7 +223,7 @@ import axios from 'axios';
       const { maxLength } = this.props;
       event.preventDefault();
       event.stopPropagation();
-      const files = this.inputRef.current.files;
+      const files = this.inputRef.files;
       if (this.state.files + files.length > maxLength) {
         return;
       }
@@ -242,7 +253,9 @@ import axios from 'axios';
             'http://localhost:8080/api/upload',
             uploadFile
           ).then((_: any) => {
-            const filepath = _.data.filepath;
+            // tslint:disable-next-line: no-console
+            console.log(_);
+            const filepath = _.data.filepaths;
             this.setState(prevState => {
               current.success = true;
               current.filepath = filepath;
@@ -259,7 +272,7 @@ import axios from 'axios';
           }).catch((_: any) => {
             this.setState(prevState => {
               current.success = false;
-              const filepath = _.data.filepath;
+              const filepath = _.data.filepaths;
               current.filepath = filepath;
               return {
                 files: [...prevState.files, current]
@@ -314,7 +327,9 @@ import axios from 'axios';
 
     handleDownLoadClick = (filepath: any) => {
       // tslint:disable-next-line: no-inferrable-types
-      const filepaths: string = 'D:\\FilesAndDatas\\download\\201909241532091569310329853.jpg';
+      const filepaths: string = filepath[0];
+      // tslint:disable-next-line: no-console
+      console.log(filepaths);
       axios.get(
         'http://localhost:8080/api/download',
         {
@@ -348,7 +363,7 @@ import axios from 'axios';
     }
 
     handleShowClick = (filepath: any) => {
-      const filepaths = 'D:\\FilesAndDatas\\download\\201909241532091569310329853.jpg';
+      const filepaths = filepath[0];
       axios.get(
         'http://localhost:8080/api/showDetails',
         {
@@ -358,31 +373,46 @@ import axios from 'axios';
         })
       // tslint:disable-next-line: only-arrow-functions
       .then((response: any) => {
-           const titles = response.data.title;
-           const deliverMessages = response.data.deliverMessage;
-           const detaildeliveryNo = deliverMessages.deliveryNo;
-           const detailaddress = deliverMessages.address;
-           const detailcontactNUmber = deliverMessages.contactNUmber;
-           const detaildeliveryCompany = deliverMessages.deliveryCompany;
-           const detaildeliveryDate = deliverMessages.deliveryDate;
-           const detailhandler = deliverMessages.handler;
-           const detailnote = deliverMessages.note;
-           const detailpicker = deliverMessages.picker;
-           const deliveryDetailsArr = response.data.deliveryDetails;
-           this.setState({
-            display: 'block',
-            title: titles,
-            deliveryNo: detaildeliveryNo,
-            address: detailaddress,
-            contactNUmber: detailcontactNUmber,
-            deliveryCompany: detaildeliveryCompany,
-            deliveryDate: detaildeliveryDate,
-            handler: detailhandler,
-            note: detailnote,
-            picker: detailpicker,
-            deliveryDetails: deliveryDetailsArr
-          });
-           alert('成功');
+         // tslint:disable-next-line: no-inferrable-types
+         const type: number = 1;
+          if (type === 1) {
+            const titles = response.data.title;
+            const deliverMessages = response.data.deliverMessage;
+            const detaildeliveryNo = deliverMessages.deliveryNo;
+            const detailaddress = deliverMessages.address;
+            const detailcontactNUmber = deliverMessages.contactNUmber;
+            const detaildeliveryCompany = deliverMessages.deliveryCompany;
+            const detaildeliveryDate = deliverMessages.deliveryDate;
+            const detailhandler = deliverMessages.handler;
+            const detailnote = deliverMessages.note;
+            const detailpicker = deliverMessages.picker;
+            const deliveryDetailsArr = response.data.deliveryDetails;
+            this.setState({
+             display: 'block',
+             title: titles,
+             deliveryNo: detaildeliveryNo,
+             address: detailaddress,
+             contactNUmber: detailcontactNUmber,
+             deliveryCompany: detaildeliveryCompany,
+             deliveryDate: detaildeliveryDate,
+             handler: detailhandler,
+             note: detailnote,
+             picker: detailpicker,
+             deliveryDetails: deliveryDetailsArr
+           });
+            alert('成功');
+          } else if (type === 2) {
+            this.setState({
+              displayTwo: 'block'
+            });
+            alert('成功');
+          } else if (type === 3) {
+            this.setState({
+              displayThree: 'block'
+            });
+            alert('成功');
+          }
+
       })
       // tslint:disable-next-line: only-arrow-functions
       .catch(function(error) {
@@ -391,7 +421,7 @@ import axios from 'axios';
 
     }
     clockClick(event: any) {
-      this.setState({ display: 'none' });
+      this.setState({ display: 'none', displayTwo: 'none', displayThree: 'none' });
     }
 
     render() {
@@ -412,7 +442,7 @@ import axios from 'axios';
             return (<div className="allFile" key={file.guid}>
               <span className="fileName">{file.name}</span>
               {file.success ? <span className="state">成功</span> : <span className="state">失败</span>}
-              <span className="show" onClick={this.handleShowClick.bind(this, file.filepath)}>显示</span>
+              <span className="displayshow" onClick={this.handleShowClick.bind(this, file.filepath)}>显示</span>
               <span className="download" onClick={this.handleDownLoadClick.bind(this, file.filepath)}>下载</span>
               <span className="del" onClick={this.handleCloseClick.bind(this, file.guid)}>删除</span>
             </div>
@@ -508,7 +538,7 @@ import axios from 'axios';
                      }
                    </tbody>
                </table>
-           <div className="bottomcontent">备注:{this.state.note}</div>
+           <div className="bottomcontent">{this.state.note}</div>
            <div>
               <span>经手人(签字或盖章){this.state.handler}</span>
               <span className="spantwo">领料人(签字或盖章){this.state.picker}</span>
@@ -516,6 +546,142 @@ import axios from 'axios';
            </div>
            </div>
       </div>
+      <div className="popLayer" style = {{ display: this.state.displayTwo }}>
+      <span className="close" onClick={this.clockClick}>关闭</span>
+      <div className="popBox">
+        <div className="title">易达软件 销售出库单</div>
+        <div className="leftcontent">
+         <ul>
+           <li>客户名称:</li>
+         <li>客户电话:</li>
+         </ul>
+      </div>
+      <div className="midcontent">
+        <ul>
+          <li>日期:</li>
+          <li>发票种类:</li>
+        </ul>
+      </div>
+      <div className="rightcontent">
+        <ul>
+          <li>出库单号:</li>
+          <li>结算方式:</li>
+        </ul>
+      </div>
+    <div className="firstdiv">
+      <table>
+          <thead>
+            <tr>
+              <th>序号</th>
+              <th>配件编号</th>
+              <th>配件名称</th>
+              <th>车型</th>
+              <th>产地</th>
+              <th>单位</th>
+              <th>单价</th>
+              <th>数量</th>
+              <th>金额</th>
+              <th>备注</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td>1</td>
+                <td>2</td>
+                <td>3</td>
+                <td>4</td>
+                <td>5</td>
+                <td>6</td>
+                <td>7</td>
+                <td>8</td>
+                <td>9</td>
+                <td>10</td>
+              </tr>
+          </tbody>
+        </table>
+      <div className="bottomcontent">本页小计金额:</div>
+      <div className="bottomcontent"><span>总合计金额(大写):</span><span className="totalmoneysmall">总合计金额(小写):</span></div>
+      <div>
+         <span>公司电话:</span>
+         <span className="spantwo">地址:</span>
+      </div>
+      <div>
+         <span>制单人:</span>
+         <span className="delivery">发货:</span>
+         <span className="delivery">收款:</span>
+         <span className="delivery">收货:</span>
+         <span className="delivery">客户签字:</span>
+         <span className="delivery">页码:1/1</span>
+      </div>
+      <div>
+         <span>主营:</span>
+      </div>
+      </div>
+      </div>
+    </div>
+    <div className="popLayer" style = {{ display: this.state.displayThree }}>
+      <span className="close">关闭</span>
+      <div className="popBox">
+        <div className="title">东莞明歆制衣有限公司</div>
+      <div><span className="sellorder">出货单</span><span className="page">页码: 1/1</span></div>
+        <div className="leftcontent">
+         <ul>
+           <li>客户代码:</li>
+         <li>客户名称:</li>
+         </ul>
+      </div>
+      <div className="rightcontent">
+        <ul>
+          <li>出货单号:</li>
+          <li>出货日期:</li>
+        </ul>
+      </div>
+    <div className="firstdiv">
+      <table>
+          <thead>
+            <tr>
+              <th>款号</th>
+              <th>款式</th>
+              <th>颜色</th>
+              <th>单位</th>
+              <th>S</th>
+              <th>M</th>
+              <th>L</th>
+              <th>小计</th>
+              <th>单价</th>
+              <th>金额</th>
+              <th>备注</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td>1</td>
+                <td>2</td>
+                <td>3</td>
+                <td>4</td>
+                <td>5</td>
+                <td>6</td>
+                <td>7</td>
+                <td>8</td>
+                <td>9</td>
+                <td>10</td>
+                <td>11</td>
+              </tr>
+          </tbody>
+        </table>
+      <div className="bottomcontent">
+        <span className="totalnum">合计数量:</span>
+        <span className="totalmoney">合计金额:</span>
+      </div>
+      <div>收到货后,请立即验货,货物如有问题,请于一星期内通知,逾期本公司恕不负责.</div>
+      <div>
+        <span>收货人签名:</span>
+        <span className="sig">送货人签名:</span>
+        <span className="sig">制单人:</span>
+      </div>
+      </div>
+      </div>
+    </div>
      </div>
       );
     }
@@ -547,7 +713,7 @@ import axios from 'axios';
       return true;
     },
     cq: 3,
-    multiple: false,
+    multiple: true,
     maxSize: 1024,
     maxLength: 5,
     suffixs: []

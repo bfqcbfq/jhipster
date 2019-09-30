@@ -1,0 +1,89 @@
+table{
+    border-top: 1px solid #000000;
+    border-left: 1px solid #000000;
+    border-collapse: collapse; /*设置单元格的边框合并为1*/
+}
+td{
+    border-bottom: 1px solid #000000;
+    border-right: 1px solid #000000;
+	text-align: center;
+	min-width: 80px;
+	height: 30px;
+}
+.firstdiv{
+	margin-left: 27%;
+}
+.title{
+	margin-left: 47%;
+}
+.leftcontent{
+	float: left;
+	margin-left: 26%;
+}
+.rightcontent{
+	margin-left: 63%;
+}
+.midcontent{
+	float: left;
+	margin-left: 13%;
+}
+.bottomcontent{
+	border: 1px solid;
+	width: 881px;
+	height: 25px;
+	border-top: 0px;
+}
+.spantwo{
+	margin-left: 380px;
+}
+li{
+	list-style: none;
+}
+.popBox{	
+	position: absolute;
+	top: 10%;
+	left: 10%;
+	width: 80%;
+	height: 80%;
+	padding: 16px;
+	border: 5px solid lightblue;
+	background-color: #F8F8F8;
+	z-index: 1002;
+	overflow: auto;
+}
+.popLayer{
+	background-color:#B3B3B3;	
+	position: absolute;	
+	top:0;	
+	right:0;	
+	bottom:0;	
+	left:0;	
+	z-index:10;	
+	-moz-opacity:0.8;	
+	opacity:80;	
+	filter:alpha(opacity=80);/* 只支持IE6、7、8、9 */
+}
+.close{
+	margin-left: 98%;
+}
+.totalmoneysmall{
+	padding-left: 200px;
+}
+.delivery{
+	padding-left: 100px;
+}
+.page{
+	padding-left: 335px;
+}
+.sellorder{
+	padding-left:50%;
+}
+.totalnum{
+	padding-left: 400px;
+}
+.totalmoney{
+	padding-left: 200px;
+}
+.sig{
+	padding-left:250px;
+}
