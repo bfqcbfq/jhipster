@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -62,19 +64,26 @@ public class IocrResource {
 
 	@Value("${iocr.secret.key}")
 	private String secretKey;
-	
-	//設置模板ID
-	@Value("${iocr.template.id}")
-	private String templateId;
+
+	// 設置模板ID
+	@Value("${iocr.template.id1}")
+	private String templateId1;
+
+	@Value("${iocr.template.id2}")
+	private String templateId2;
+
+	@Value("${iocr.template.id3}")
+	private String templateId3;
 
 	// 定义上传文件的存放位置
 	@Value("${file.downLoad.path}")
 	private String filePath;
+	
 
 	/**
 	 * 实现文件上传
 	 * 
-	 * @param uploadFiles
+	 * @param uploadFiles 接收上传文件对象
 	 * @return Map<String, List<String>> 返回文件路径
 	 * @throws IOException
 	 */
@@ -82,9 +91,13 @@ public class IocrResource {
 	public ResponseEntity<Map<String, List<String>>> getfileRecord(
 			@RequestParam(value = "file", required = false) MultipartFile[] uploadFiles) throws IOException {
 
-		Map<String, List<String>> filePathMap = new HashMap<>();
+		Map<String, List<String>> messageAndfilePathMap = new HashMap<>();
 
 		List<String> filePathList = new ArrayList<String>();
+
+		List<String> errorMessageList = new ArrayList<String>();
+
+		String errorMessage = null;
 
 		// 判断文件夹是否存在,不存在则创建
 		File file = new File(filePath);
@@ -107,11 +120,82 @@ public class IocrResource {
 			String newFileName = dateFormat.format(now) + System.currentTimeMillis() + fileType;
 			// 新文件的路径
 			String newFilePath = filePath + newFileName;
-			filePathList.add(newFilePath);
-			filePathMap.put("filepaths", filePathList);
+//
+//			filePathList.add(newFilePath);
+//
+//			messageAndfilePathMap.put("filepaths", filePathList);
 
 			try {
 				uploadFile.transferTo(new File(newFilePath)); // 将传来的文件写入新建的文件
+				
+				AipOcr client = new AipOcr(appId, apiKey, secretKey);
+
+				client.setConnectionTimeoutInMillis(2000);
+				client.setSocketTimeoutInMillis(60000);
+				
+				List<String> templateSignList = new ArrayList<String>();
+				templateSignList.add(templateId1);
+				templateSignList.add(templateId2);
+				templateSignList.add(templateId3);
+				
+				// 传入可选参数调用接口
+				HashMap<String, String> options = new HashMap<String, String>();
+				//Boolean firstTimeFlag = true;
+				for(String templateId : templateSignList) {
+					
+					options.put("templateSign", templateId);
+					// 如有分类器ID,可以传入，此时模板ID可以省略
+					// options.put("classifierId", "31232");
+
+						
+						// 参数为本地路径
+					JSONObject custom = client.custom(newFilePath, options);
+						String errorCode = custom.get("error_code").toString();
+						errorMessageList.add(errorCode);
+						if(errorCode.equals("0")) {
+							return ResponseEntity.ok(messageAndfilePathMap);
+							
+							
+						}
+						
+						
+						//Object object = custom.getJSONObject("data").get("isStructured");
+					 
+					}
+				
+
+				if (!errorMessageList.contains("0")) {
+							
+							errorMessage = "您上传的文件有误，请再确认一下";
+							errorMessageList.add(errorMessage);
+							messageAndfilePathMap.put("errorMessage", errorMessageList);
+							return ResponseEntity.ok(messageAndfilePathMap);
+						}
+				
+				else {
+
+					filePathList.add(newFilePath);
+
+					messageAndfilePathMap.put("filepaths", filePathList);
+					
+					return ResponseEntity.ok(messageAndfilePathMap);
+					
+				}
+				
+
+				// TODO 百度API接口调用
+//				JSONObject resultByIocr = getResultByIocr(newFilePath);
+//
+//				String errorCode = resultByIocr.get("error_code").toString();
+//
+//				if (errorCode != "0") {
+//
+//					errorMessage = "您上传的文件有误，请再确认一下";
+//					errorMessageList.add(errorMessage);
+//
+//					messageAndfilePathMap.put("errorMessage", errorMessageList);
+//					return ResponseEntity.ok(messageAndfilePathMap);
+//				}
 
 			} catch (IllegalStateException e) {
 				e.printStackTrace();
@@ -119,7 +203,8 @@ public class IocrResource {
 				e1.printStackTrace();
 			}
 		}
-		return ResponseEntity.ok(filePathMap);
+		//return ResponseEntity.ok(messageAndfilePathMap);
+		return null;
 
 	}
 
@@ -133,8 +218,61 @@ public class IocrResource {
 	@GetMapping("/showDetails")
 	public ResponseEntity<Invoice> showUploadFileDetails(@RequestParam(value = "filepath") String filepath)
 			throws IOException {
+		
+		Map<String, List<String>> messageAndfilePathMap = new HashMap<>();
+
+		List<String> filePathList = new ArrayList<String>();
+
+		List<String> errorMessageList = new ArrayList<String>();
+
+		String errorMessage = null;
 		// 调用百度API
 		JSONObject resultByIocr = getResultByIocr(filepath);
+		
+		AipOcr client = new AipOcr(appId, apiKey, secretKey);
+
+		client.setConnectionTimeoutInMillis(2000);
+		client.setSocketTimeoutInMillis(60000);
+		
+		List<String> templateSignList = new ArrayList<String>();
+		templateSignList.add(templateId1);
+		templateSignList.add(templateId2);
+		templateSignList.add(templateId3);
+		
+		// 传入可选参数调用接口
+		HashMap<String, String> options = new HashMap<String, String>();
+		//Boolean firstTimeFlag = true;
+		for(String templateId : templateSignList) {
+			
+			options.put("templateSign", templateId);
+			// 如有分类器ID,可以传入，此时模板ID可以省略
+			// options.put("classifierId", "31232");
+
+				
+				// 参数为本地路径
+			JSONObject custom = client.custom(filepath, options);
+				
+				//Object object = custom.getJSONObject("data").get("isStructured");
+			 
+			}
+		
+		
+		if (!errorMessageList.contains("0")) {
+			
+			errorMessage = "您上传的文件有误，请再确认一下";
+			errorMessageList.add(errorMessage);
+			messageAndfilePathMap.put("errorMessage", errorMessageList);
+		}
+
+else {
+
+	filePathList.add(filepath);
+
+	messageAndfilePathMap.put("filepaths", filePathList);
+	
+	
+}
+
 
 		// 将返回的数据转换为实体对象
 		Invoice invoice = jsonToObject(resultByIocr);
@@ -160,9 +298,8 @@ public class IocrResource {
 		try {
 			ServletOutputStream out = response.getOutputStream();
 			String newFileName = "北京神丰科技有限公司";
-			//String name = new String(URLEncoder.encode(newFileName, "utf-8"));
-			String fileName = new String((newFileName).getBytes(),
-					"UTF-8");
+			// String name = new String(URLEncoder.encode(newFileName, "utf-8"));
+			String fileName = new String((newFileName).getBytes(), "UTF-8");
 			response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
 
 			// 调用百度API接口
@@ -200,27 +337,28 @@ public class IocrResource {
 	@GetMapping("/download1")
 	public String exportExcel1(@RequestParam(value = "filepath") String filepath, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		
+
 		try {
 			DeliveryDetails deliveryDetails = null;
 			List<DeliveryDetails> deliverDetailsList = null; // 产品详细List
 
-			deliveryDetails = new DeliveryDetails("仓库1", "G-6", "三菱", "包", "100f", "25f", "300f", "1234", "2019-09-20", "加急");
+			deliveryDetails = new DeliveryDetails("仓库1", "G-6", "三菱", "包", "100f", "25f", "300f", "1234", "2019-09-20",
+					"加急");
 			deliverDetailsList = new ArrayList<DeliveryDetails>();
 			deliverDetailsList.add(deliveryDetails);
 
 			String fileName = "北京神丰科技有限公司出货单";
 
 			String[] columnNames = { "仓库", "料号", "品牌", "单位", "数量", "单重", "合计重量", "批次号", "出货日期", "备注" };
-			String[] columns = { "storehouseNo", "materialNo", "brand", "unit", "quantity", "singleWeight", "totalWeight",
-					"batchNo", "date", "comment" };
+			String[] columns = { "storehouseNo", "materialNo", "brand", "unit", "quantity", "singleWeight",
+					"totalWeight", "batchNo", "date", "comment" };
 			ExcelUtils.exportExcel(response, deliverDetailsList, columnNames, columns, "invoiceList", fileName);
 			return "success";
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "导出信息失败";
 		}
-		
+
 	}
 
 	/**
@@ -234,10 +372,17 @@ public class IocrResource {
 	 */
 	public JSONObject getResultByIocr(String filepath) throws IOException {
 
-		AipOcr client = new AipOcr(appId, apiKey, secretKey);
-
-		client.setConnectionTimeoutInMillis(2000);
-		client.setSocketTimeoutInMillis(60000);
+//		AipOcr client = new AipOcr(appId, apiKey, secretKey);
+//
+//		client.setConnectionTimeoutInMillis(2000);
+//		client.setSocketTimeoutInMillis(60000);
+//		
+//		List<String> templateSignList = new ArrayList<String>();
+//		templateSignList.add(templateId1);
+//		templateSignList.add(templateId2);
+//		templateSignList.add(templateId3);
+		
+		JSONObject custom = null;
 
 		// 传入可选参数调用接口
 		HashMap<String, String> options = new HashMap<String, String>();
@@ -246,14 +391,33 @@ public class IocrResource {
 //		options.put("vertexes_location", "true");
 //		options.put("probability", "true");
 		// client.toString(2);
-
-		options.put("templateSign", templateId);
-		// options.put("classifierId", "31232");
-
-		// 参数为本地路径
-		JSONObject custom = client.custom(filepath, options);
-
+		
+//		for(String templateId : templateSignList) {
+//			
+//		options.put("templateSign", templateId);
+//		// 如有分类器ID,可以传入，此时模板ID可以省略
+//		// options.put("classifierId", "31232");
+//
+//			
+//			// 参数为本地路径
+//			custom = client.custom(filepath, options);
+//			String errorCode = custom.get("error_code").toString();
+//
+//			if (errorCode != "0") {
+//
+//
+//				continue;
+//			} 
+//			
+//			else {
+//				
+//				return custom;
+//			}
+//			
+//		
+//		}
 		return custom;
+
 	}
 
 	/**
@@ -266,21 +430,21 @@ public class IocrResource {
 
 		Invoice invoice = new Invoice();
 		DeliverMessage deliverMessage = new DeliverMessage();
-		
-		//將表格中每行數據放在一個對象中
-		//表格第一行
+
+		// 將表格中每行數據放在一個對象中
+		// 表格第一行
 		DeliveryDetails deliveryDetails = new DeliveryDetails();
-		//表格第二行
+		// 表格第二行
 		DeliveryDetails deliveryDetails1 = new DeliveryDetails();
-		//表格第三行
+		// 表格第三行
 		DeliveryDetails deliveryDetails2 = new DeliveryDetails();
-		//表格第四行
+		// 表格第四行
 		DeliveryDetails deliveryDetails3 = new DeliveryDetails();
-		//表格第五行
+		// 表格第五行
 		DeliveryDetails deliveryDetails4 = new DeliveryDetails();
-		//表格第六行
+		// 表格第六行
 		DeliveryDetails deliveryDetails5 = new DeliveryDetails();
-		//表格第七行
+		// 表格第七行
 		DeliveryDetails deliveryDetails6 = new DeliveryDetails();
 		List<DeliveryDetails> deliveryDetailsList = new ArrayList<>();
 		// 获得账票标题
@@ -296,271 +460,269 @@ public class IocrResource {
 
 			String word = map.get("word");
 
-				switch (i) {
+			switch (i) {
 
-				case 0:
-					deliverMessage.setHandler(word);
-					break;
-				case 1:
-					deliverMessage.setContactNUmber(word);
-					break;
-				case 2:
-					deliverMessage.setDeliveryCompany(word);
-					break;
-				case 3:
-					deliverMessage.setDeliveryDate(word);
-					break;
-				case 4:
-					deliverMessage.setAddress(word);
-					break;
-				case 5:
-					deliverMessage.setNote(word);
-					break;
-				case 6:
-					deliverMessage.setDeliveryNo(word);
-					break;
-				case 7:
-					deliverMessage.setPicker(word);
-					//表格外數據
-					invoice.setDeliverMessage(deliverMessage);
-					break;
+			case 0:
+				deliverMessage.setHandler(word);
+				break;
+			case 1:
+				deliverMessage.setContactNUmber(word);
+				break;
+			case 2:
+				deliverMessage.setDeliveryCompany(word);
+				break;
+			case 3:
+				deliverMessage.setDeliveryDate(word);
+				break;
+			case 4:
+				deliverMessage.setAddress(word);
+				break;
+			case 5:
+				deliverMessage.setNote(word);
+				break;
+			case 6:
+				deliverMessage.setDeliveryNo(word);
+				break;
+			case 7:
+				deliverMessage.setPicker(word);
+				// 表格外數據
+				invoice.setDeliverMessage(deliverMessage);
+				break;
 
-				case 8:
-					deliveryDetails.setStorehouseNo(word);
-					break;
-				case 9:
-					deliveryDetails.setMaterialNo(word);
-					break;
-				case 10:
-					deliveryDetails.setBrand(word);
-					break;
-				case 11:
-					deliveryDetails.setUnit(word);
-					break;
-				case 12:
-					deliveryDetails.setQuantity(word);
-					break;
-				case 13:
-					deliveryDetails.setSingleWeight(word);
-					break;
-				case 14:
-					deliveryDetails.setTotalWeight(word);
-					break;
-				case 15:
-					deliveryDetails.setBatchNo(word);
-					break;
-				case 16:
-					deliveryDetails.setDate(word);
-					break;
-				case 17:
-					deliveryDetails.setComment(word);
-					//表格第一行
-					deliveryDetailsList.add(deliveryDetails);
-					break;
+			case 8:
+				deliveryDetails.setStorehouseNo(word);
+				break;
+			case 9:
+				deliveryDetails.setMaterialNo(word);
+				break;
+			case 10:
+				deliveryDetails.setBrand(word);
+				break;
+			case 11:
+				deliveryDetails.setUnit(word);
+				break;
+			case 12:
+				deliveryDetails.setQuantity(word);
+				break;
+			case 13:
+				deliveryDetails.setSingleWeight(word);
+				break;
+			case 14:
+				deliveryDetails.setTotalWeight(word);
+				break;
+			case 15:
+				deliveryDetails.setBatchNo(word);
+				break;
+			case 16:
+				deliveryDetails.setDate(word);
+				break;
+			case 17:
+				deliveryDetails.setComment(word);
+				// 表格第一行
+				deliveryDetailsList.add(deliveryDetails);
+				break;
 
-				case 18:
-					deliveryDetails1.setStorehouseNo(word);
-					break;
-				case 19:
-					deliveryDetails1.setMaterialNo(word);
-					break;
-				case 20:
-					deliveryDetails1.setBrand(word);
-					break;
-				case 21:
-					deliveryDetails1.setUnit(word);
-					break;
-				case 22:
-					deliveryDetails1.setQuantity(word);
-					break;
-				case 23:
-					deliveryDetails1.setSingleWeight(word);
-					break;
-				case 24:
-					deliveryDetails1.setTotalWeight(word);
-					break;
-				case 25:
-					deliveryDetails1.setBatchNo(word);
-					break;
-				case 26:
-					deliveryDetails1.setDate(word);
-					break;
-				case 27:
-					deliveryDetails1.setComment(word);
-					//表格第二行
-					deliveryDetailsList.add(deliveryDetails1);
-					break;
+			case 18:
+				deliveryDetails1.setStorehouseNo(word);
+				break;
+			case 19:
+				deliveryDetails1.setMaterialNo(word);
+				break;
+			case 20:
+				deliveryDetails1.setBrand(word);
+				break;
+			case 21:
+				deliveryDetails1.setUnit(word);
+				break;
+			case 22:
+				deliveryDetails1.setQuantity(word);
+				break;
+			case 23:
+				deliveryDetails1.setSingleWeight(word);
+				break;
+			case 24:
+				deliveryDetails1.setTotalWeight(word);
+				break;
+			case 25:
+				deliveryDetails1.setBatchNo(word);
+				break;
+			case 26:
+				deliveryDetails1.setDate(word);
+				break;
+			case 27:
+				deliveryDetails1.setComment(word);
+				// 表格第二行
+				deliveryDetailsList.add(deliveryDetails1);
+				break;
 
-				case 28:
-					deliveryDetails2.setStorehouseNo(word);
-					break;
-				case 29:
-					deliveryDetails2.setMaterialNo(word);
-					break;
-				case 30:
-					deliveryDetails2.setBrand(word);
-					break;
-				case 31:
-					deliveryDetails2.setUnit(word);
-					break;
-				case 32:
-					deliveryDetails2.setQuantity(word);
-					break;
-				case 33:
-					deliveryDetails2.setSingleWeight(word);
-					break;
-				case 34:
-					deliveryDetails2.setTotalWeight(word);
-					break;
-				case 35:
-					deliveryDetails2.setBatchNo(word);
-					break;
-				case 36:
-					deliveryDetails2.setDate(word);
-					break;
-				case 37:
-					deliveryDetails2.setComment(word);
-					//表格第三行
-					deliveryDetailsList.add(deliveryDetails2);
-					break;
+			case 28:
+				deliveryDetails2.setStorehouseNo(word);
+				break;
+			case 29:
+				deliveryDetails2.setMaterialNo(word);
+				break;
+			case 30:
+				deliveryDetails2.setBrand(word);
+				break;
+			case 31:
+				deliveryDetails2.setUnit(word);
+				break;
+			case 32:
+				deliveryDetails2.setQuantity(word);
+				break;
+			case 33:
+				deliveryDetails2.setSingleWeight(word);
+				break;
+			case 34:
+				deliveryDetails2.setTotalWeight(word);
+				break;
+			case 35:
+				deliveryDetails2.setBatchNo(word);
+				break;
+			case 36:
+				deliveryDetails2.setDate(word);
+				break;
+			case 37:
+				deliveryDetails2.setComment(word);
+				// 表格第三行
+				deliveryDetailsList.add(deliveryDetails2);
+				break;
 
-				case 38:
-					deliveryDetails3.setStorehouseNo(word);
-					break;
-				case 39:
-					deliveryDetails3.setMaterialNo(word);
-					break;
-				case 40:
-					deliveryDetails3.setBrand(word);
-					break;
-				case 41:
-					deliveryDetails3.setUnit(word);
-					break;
-				case 42:
-					deliveryDetails3.setQuantity(word);
-					break;
-				case 43:
-					deliveryDetails3.setSingleWeight(word);
-					break;
-				case 44:
-					deliveryDetails3.setTotalWeight(word);
-					break;
-				case 45:
-					deliveryDetails3.setBatchNo(word);
-					break;
-				case 46:
-					deliveryDetails3.setDate(word);
-					break;
-				case 47:
-					deliveryDetails3.setComment(word);
-					//表格第四行
-					deliveryDetailsList.add(deliveryDetails3);
-					break;
+			case 38:
+				deliveryDetails3.setStorehouseNo(word);
+				break;
+			case 39:
+				deliveryDetails3.setMaterialNo(word);
+				break;
+			case 40:
+				deliveryDetails3.setBrand(word);
+				break;
+			case 41:
+				deliveryDetails3.setUnit(word);
+				break;
+			case 42:
+				deliveryDetails3.setQuantity(word);
+				break;
+			case 43:
+				deliveryDetails3.setSingleWeight(word);
+				break;
+			case 44:
+				deliveryDetails3.setTotalWeight(word);
+				break;
+			case 45:
+				deliveryDetails3.setBatchNo(word);
+				break;
+			case 46:
+				deliveryDetails3.setDate(word);
+				break;
+			case 47:
+				deliveryDetails3.setComment(word);
+				// 表格第四行
+				deliveryDetailsList.add(deliveryDetails3);
+				break;
 
-				case 48:
-					deliveryDetails4.setStorehouseNo(word);
-					break;
-				case 49:
-					deliveryDetails4.setMaterialNo(word);
-					break;
-				case 50:
-					deliveryDetails4.setBrand(word);
-					break;
-				case 51:
-					deliveryDetails4.setUnit(word);
-					break;
-				case 52:
-					deliveryDetails4.setQuantity(word);
-					break;
-				case 53:
-					deliveryDetails4.setSingleWeight(word);
-					break;
-				case 54:
-					deliveryDetails4.setTotalWeight(word);
-					break;
-				case 55:
-					deliveryDetails4.setBatchNo(word);
-					break;
-				case 56:
-					deliveryDetails4.setDate(word);
-					break;
-				case 57:
-					deliveryDetails4.setComment(word);
-					//表格第五行
-					deliveryDetailsList.add(deliveryDetails4);
-					break;
-					
-				case 58:
-					deliveryDetails5.setStorehouseNo(word);
-					break;
-				case 59:
-					deliveryDetails5.setMaterialNo(word);
-					break;
-				case 60:
-					deliveryDetails5.setBrand(word);
-					break;
-				case 61:
-					deliveryDetails5.setUnit(word);
-					break;
-				case 62:
-					deliveryDetails5.setQuantity(word);
-					break;
-				case 63:
-					deliveryDetails5.setSingleWeight(word);
-					break;
-				case 64:
-					deliveryDetails5.setTotalWeight(word);
-					break;
-				case 65:
-					deliveryDetails5.setBatchNo(word);
-					break;
-				case 66:
-					deliveryDetails5.setDate(word);
-					break;
-				case 67:
-					deliveryDetails5.setComment(word);
-					//表格第六行
-					deliveryDetailsList.add(deliveryDetails5);
-					break;
-					
-				case 68:
-					deliveryDetails6.setStorehouseNo(word);
-					break;
-				case 69:
-					deliveryDetails6.setMaterialNo(word);
-					break;
-				case 70:
-					deliveryDetails6.setBrand(word);
-					break;
-				case 71:
-					deliveryDetails6.setUnit(word);
-					break;
-				case 72:
-					deliveryDetails6.setQuantity(word);
-					break;
-				case 73:
-					deliveryDetails6.setSingleWeight(word);
-					break;
-				case 74:
-					deliveryDetails6.setTotalWeight(word);
-					break;
-				case 75:
-					deliveryDetails6.setBatchNo(word);
-					break;
-				case 76:
-					deliveryDetails6.setDate(word);
-					break;
-				case 77:
-					deliveryDetails6.setComment(word);
-					//表格第七行
-					deliveryDetailsList.add(deliveryDetails6);
-					break;
-				}
-				
+			case 48:
+				deliveryDetails4.setStorehouseNo(word);
+				break;
+			case 49:
+				deliveryDetails4.setMaterialNo(word);
+				break;
+			case 50:
+				deliveryDetails4.setBrand(word);
+				break;
+			case 51:
+				deliveryDetails4.setUnit(word);
+				break;
+			case 52:
+				deliveryDetails4.setQuantity(word);
+				break;
+			case 53:
+				deliveryDetails4.setSingleWeight(word);
+				break;
+			case 54:
+				deliveryDetails4.setTotalWeight(word);
+				break;
+			case 55:
+				deliveryDetails4.setBatchNo(word);
+				break;
+			case 56:
+				deliveryDetails4.setDate(word);
+				break;
+			case 57:
+				deliveryDetails4.setComment(word);
+				// 表格第五行
+				deliveryDetailsList.add(deliveryDetails4);
+				break;
+
+			case 58:
+				deliveryDetails5.setStorehouseNo(word);
+				break;
+			case 59:
+				deliveryDetails5.setMaterialNo(word);
+				break;
+			case 60:
+				deliveryDetails5.setBrand(word);
+				break;
+			case 61:
+				deliveryDetails5.setUnit(word);
+				break;
+			case 62:
+				deliveryDetails5.setQuantity(word);
+				break;
+			case 63:
+				deliveryDetails5.setSingleWeight(word);
+				break;
+			case 64:
+				deliveryDetails5.setTotalWeight(word);
+				break;
+			case 65:
+				deliveryDetails5.setBatchNo(word);
+				break;
+			case 66:
+				deliveryDetails5.setDate(word);
+				break;
+			case 67:
+				deliveryDetails5.setComment(word);
+				// 表格第六行
+				deliveryDetailsList.add(deliveryDetails5);
+				break;
+
+			case 68:
+				deliveryDetails6.setStorehouseNo(word);
+				break;
+			case 69:
+				deliveryDetails6.setMaterialNo(word);
+				break;
+			case 70:
+				deliveryDetails6.setBrand(word);
+				break;
+			case 71:
+				deliveryDetails6.setUnit(word);
+				break;
+			case 72:
+				deliveryDetails6.setQuantity(word);
+				break;
+			case 73:
+				deliveryDetails6.setSingleWeight(word);
+				break;
+			case 74:
+				deliveryDetails6.setTotalWeight(word);
+				break;
+			case 75:
+				deliveryDetails6.setBatchNo(word);
+				break;
+			case 76:
+				deliveryDetails6.setDate(word);
+				break;
+			case 77:
+				deliveryDetails6.setComment(word);
+				// 表格第七行
+				deliveryDetailsList.add(deliveryDetails6);
+				break;
 			}
 
-		
-		
+		}
+
 		invoice.setDeliveryDetails(deliveryDetailsList);
 
 		return invoice;

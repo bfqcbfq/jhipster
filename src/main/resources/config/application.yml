@@ -158,7 +158,9 @@ iocr:
   secret:
     key: 1eeyziHIjbixQZW4kq4XM8WhPC2PmlCi
   template:
-    id: 43005dffcf2a50006c2a35cc9238f5a5
+    id1: 43005dffcf2a50006c2a35cc9238f5a5
+    id2: a8ff0bf74485b85283c934615aaceaa6
+    id3: 51d64f9e16fb3c50027a22886038fb24
   
     
 file:
