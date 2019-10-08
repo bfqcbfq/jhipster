@@ -66,6 +66,7 @@ li{
 .close{
 	margin-left: 98%;
 	font-size: 1px;
+	cursor: pointer;
 }
 tr{
 	text-align: center;

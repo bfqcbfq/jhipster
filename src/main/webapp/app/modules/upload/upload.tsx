@@ -79,6 +79,24 @@ import { equal } from 'assert';
       account: any;
       comment: any;
     }];
+    businessCode: any;
+    deliverySign: any;
+    handlerSign: any;
+    totalAmount: any;
+    totalQuantity: any;
+    MxDeliveryDetails: [{
+       styleNo: any;
+       style: any;
+       color: any;
+       unit: any;
+       modelS: any;
+       modelM: any;
+       modelL: any;
+       Subtotal: any;
+       UnitPrice: any;
+       account: any;
+       comment: any;
+    }];
   }
   class Upload extends React.Component<any, ImgProps> {
     static defaultProps: any =
@@ -142,7 +160,25 @@ import { equal } from 'assert';
         quantity: any,
         account: any,
         comment: any
-      }]
+      }],
+      businessCode: any,
+      deliverySign: any,
+      handlerSign: any,
+      totalAmount: any,
+      totalQuantity: any,
+      MxDeliveryDetails: [{
+        styleNo: any,
+        style: any,
+        color: any,
+        unit: any,
+        modelS: any,
+        modelM: any,
+        modelL: any,
+        Subtotal: any,
+        UnitPrice: any,
+        account: any,
+        comment: any
+     }]
     };
     static propTypes: any = {
       onEnter: PropTypes.func,
@@ -226,7 +262,25 @@ import { equal } from 'assert';
           quantity: any,
           account: any,
           comment: any
-        }]
+        }],
+        businessCode: any,
+        deliverySign: any,
+        handlerSign: any,
+        totalAmount: any,
+        totalQuantity: any,
+        MxDeliveryDetails: [{
+          styleNo: any,
+          style: any,
+          color: any,
+          unit: any,
+          modelS: any,
+          modelM: any,
+          modelL: any,
+          Subtotal: any,
+          UnitPrice: any,
+          account: any,
+          comment: any
+       }]
       };
       // 等待上传的文件队列
       this.queue = [];
@@ -367,7 +421,7 @@ import { equal } from 'assert';
                  };
                }, () => {
                  /* notification.success({ message: `${current.name}, 上传成功` }) */
-                 alert('上传成功');
+                 alert('您上传的文件有误，请再确认一下');
                  onLeave(_);
                  this.uploadQueue = this.uploadQueue.filter(f => f.guid !== current.guid);
                  this.processQueue();
@@ -512,8 +566,33 @@ import { equal } from 'assert';
            });
             alert('成功');
           } else if (type === '2') {
+            const titles = response.data.title;
+            const mxDeliverMessage = response.data.mxDeliverMessage;
+            const deaddress = mxDeliverMessage.address;
+            const debusinessCode = mxDeliverMessage.businessCode;
+            const dedeliveryDate = mxDeliverMessage.deliveryDate;
+            const dedeliveryNo = mxDeliverMessage.deliveryNo;
+            const dedeliverySign = mxDeliverMessage.deliverySign;
+            const dehandlerSign = mxDeliverMessage.handlerSign;
+            const denote = mxDeliverMessage.note;
+            const deorderMaker = mxDeliverMessage.orderMaker;
+            const detotalAmount = mxDeliverMessage.totalAmount;
+            const detotalQuantity = mxDeliverMessage.totalQuantity;
+            const deliveryDetailsArr = response.data.deliveryDetails;
             this.setState({
-              displayTwo: 'block'
+              displayTwo: 'block',
+              title: titles,
+              address: deaddress,
+              businessCode: debusinessCode,
+              deliveryDate: dedeliveryDate,
+              deliveryNo: dedeliveryNo,
+              deliverySign: dedeliverySign,
+              handlerSign: dehandlerSign,
+              note: denote,
+              orderMaker: deorderMaker,
+              totalAmount: detotalAmount,
+              totalQuantity: detotalQuantity,
+              MxDeliveryDetails: deliveryDetailsArr
             });
             alert('成功');
           } else if (type === '3') {
@@ -789,18 +868,18 @@ import { equal } from 'assert';
     <div className="popLayer" style = {{ display: this.state.displayTwo }}>
       <span className="close">关闭</span>
       <div className="popBox">
-        <div className="title">东莞明歆制衣有限公司</div>
+        <div className="title">{this.state.title}</div>
       <div><span className="sellorder">出货单</span><span className="page">页码: 1/1</span></div>
         <div className="leftcontent">
          <ul>
-           <li>客户代码:</li>
-         <li>客户名称:</li>
+           <li>客户代码:{this.state.businessCode}</li>
+         <li>地址:{this.state.address}</li>
          </ul>
       </div>
       <div className="rightcontent">
         <ul>
-          <li>出货单号:</li>
-          <li>出货日期:</li>
+          <li>出货单号:{this.state.deliveryNo}</li>
+          <li>出货日期:{this.state.deliveryDate}</li>
         </ul>
       </div>
     <div className="firstdiv">
@@ -821,30 +900,38 @@ import { equal } from 'assert';
             </tr>
           </thead>
           <tbody>
-              <tr>
-                <td>1</td>
-                <td>2</td>
-                <td>3</td>
-                <td>4</td>
-                <td>5</td>
-                <td>6</td>
-                <td>7</td>
-                <td>8</td>
-                <td>9</td>
-                <td>10</td>
-                <td>11</td>
-              </tr>
+              {
+                       // tslint:disable-next-line: ter-arrow-body-style
+                       this.state.MxDeliveryDetails.map((details, index) => {
+                           return(
+                            // tslint:disable-next-line: jsx-key
+                            <tr key={index}>
+                                  <td>{details.styleNo}</td>
+                                  <td>{details.style}</td>
+                                  <td>{details.color}</td>
+                                  <td>{details.unit}</td>
+                                  <td>{details.modelS}</td>
+                                  <td>{details.modelM}</td>
+                                  <td>{details.modelL}</td>
+                                  <td>{details.Subtotal}</td>
+                                  <td>{details.UnitPrice}</td>
+                                  <td>{details.account}</td>
+                                  <td>{details.comment}</td>
+                          </tr>
+                           );
+                       })
+                     }
           </tbody>
         </table>
       <div className="bottomcontent">
-        <span className="totalnum">合计数量:</span>
-        <span className="totalmoney">合计金额:</span>
+        <span className="totalnum">合计数量:{this.state.totalQuantity}</span>
+        <span className="totalmoney">合计金额:{this.state.totalAmount}</span>
       </div>
       <div>收到货后,请立即验货,货物如有问题,请于一星期内通知,逾期本公司恕不负责.</div>
       <div>
-        <span>收货人签名:</span>
-        <span className="sig">送货人签名:</span>
-        <span className="sig">制单人:</span>
+        <span>收货人签名:{this.state.deliverySign}</span>
+        <span className="sig">送货人签名:{this.state.handlerSign}</span>
+        <span className="sig">制单人:{this.state.orderMaker}</span>
       </div>
       </div>
       </div>
