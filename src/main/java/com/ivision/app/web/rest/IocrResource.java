@@ -21,6 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -270,10 +271,10 @@ public class IocrResource {
 						String[] headnum = { "0,0,0,15" };
 						// 获取表头2
 						String[] head1 = { "发货单号", "发货单位", "发货日期", "地址", "联系电话", "备注", "经手人（签字或盖章）", "领料人（签字或盖章）" };
-						String[] headnum1 = { "1,1,0,15" };
+						//String[] headnum1 = { "1,1,0,15" };
 						String[] titles = { "仓库", "料号", "品牌", "单位", "数量", "单重", "合计重量", "批次号", "出货日期", "备注" };
 
-						this.exportFencers(head, headnum, head1, headnum1, titles, out, deliverMessage, deliveryDetails,
+						this.exportFencers(head, headnum, head1, null, titles, out, deliverMessage, deliveryDetails,
 								null, null, null, null);
 
 					} else if (templateSign.equals(templateId2)) {
@@ -730,7 +731,6 @@ public class IocrResource {
 		// 表格第六行
 		MxDeliveryDetails deliveryDetails5 = new MxDeliveryDetails();
 		// 表格第七行
-		MxDeliveryDetails deliveryDetails6 = new MxDeliveryDetails();
 		List<MxDeliveryDetails> deliveryDetailsList = new ArrayList<>();
 		// 获得账票标题
 		String templateName = jsonObject.getJSONObject("data").get("templateName").toString();
@@ -769,225 +769,219 @@ public class IocrResource {
 				deliverMessage.setAddress(word);
 				break;
 			case 7:
-				deliverMessage.setDeliveryDate(word);
-				break;
-			case 8:
-				deliverMessage.setNote(word);
-				break;
-			case 9:
 				deliverMessage.setDeliverySign(word);
 				break;
-			case 10:
+			case 8:
 				deliverMessage.setHandlerSign(word);
 				// 表格外数据
 				invoice.setMxDeliverMessage(deliverMessage);
 				break;
 
-			case 12:
+			case 9:
 				deliveryDetails.setStyleNo(word);
 				break;
-			case 13:
+			case 10:
 				deliveryDetails.setStyle(word);
 				break;
-			case 14:
+			case 11:
 				deliveryDetails.setColor(word);
 				break;
-			case 15:
+			case 12:
 				deliveryDetails.setUnit(word);
 				break;
-			case 16:
+			case 13:
 				deliveryDetails.setModelS(word);
 				break;
-			case 17:
+			case 14:
 				deliveryDetails.setModelM(word);
-			case 18:
+			case 15:
 				deliveryDetails.setModelL(word);
 				break;
-			case 19:
+			case 16:
 				deliveryDetails.setSubtotal(word);
 				break;
-			case 20:
+			case 17:
 				deliveryDetails.setUnitPrice(word);
 				break;
-			case 21:
+			case 18:
 				deliveryDetails1.setAccount(word);
 				break;
-			case 22:
+			case 19:
 				deliveryDetails1.setComment(word);
 				// 表格第一行
 				deliveryDetailsList.add(deliveryDetails);
 				break;
 
-			case 23:
+			case 20:
 				deliveryDetails.setStyleNo(word);
 				break;
-			case 24:
+			case 21:
 				deliveryDetails.setStyle(word);
 				break;
-			case 25:
+			case 22:
 				deliveryDetails.setColor(word);
 				break;
-			case 26:
+			case 23:
 				deliveryDetails.setUnit(word);
 				break;
-			case 27:
+			case 24:
 				deliveryDetails.setModelS(word);
 				break;
-			case 28:
+			case 25:
 				deliveryDetails.setModelM(word);
-			case 29:
+			case 26:
 				deliveryDetails.setModelL(word);
 				break;
-			case 30:
+			case 27:
 				deliveryDetails.setSubtotal(word);
 				break;
-			case 31:
+			case 28:
 				deliveryDetails.setUnitPrice(word);
 				break;
-			case 32:
+			case 29:
 				deliveryDetails1.setAccount(word);
 				break;
-			case 33:
+			case 30:
 				deliveryDetails1.setComment(word);
 				// 表格第二行
 				deliveryDetailsList.add(deliveryDetails1);
 				break;
 
-			case 34:
+			case 31:
 				deliveryDetails2.setStyleNo(word);
 				break;
-			case 35:
+			case 32:
 				deliveryDetails2.setStyle(word);
 				break;
-			case 36:
+			case 33:
 				deliveryDetails2.setColor(word);
 				break;
-			case 37:
+			case 34:
 				deliveryDetails2.setUnit(word);
 				break;
-			case 38:
+			case 35:
 				deliveryDetails2.setModelS(word);
 				break;
-			case 39:
+			case 36:
 				deliveryDetails2.setModelM(word);
-			case 40:
+			case 37:
 				deliveryDetails2.setModelL(word);
 				break;
-			case 41:
+			case 38:
 				deliveryDetails2.setSubtotal(word);
 				break;
-			case 42:
+			case 39:
 				deliveryDetails2.setUnitPrice(word);
 				break;
-			case 43:
+			case 40:
 				deliveryDetails2.setAccount(word);
 				break;
-			case 44:
+			case 41:
 				deliveryDetails2.setComment(word);
 				// 表格第三行
 				deliveryDetailsList.add(deliveryDetails2);
 				break;
 
-			case 45:
+			case 42:
 				deliveryDetails3.setStyleNo(word);
 				break;
-			case 46:
+			case 43:
 				deliveryDetails3.setStyle(word);
 				break;
-			case 47:
+			case 44:
 				deliveryDetails3.setColor(word);
 				break;
-			case 48:
+			case 45:
 				deliveryDetails3.setUnit(word);
 				break;
-			case 49:
+			case 46:
 				deliveryDetails3.setModelS(word);
 				break;
-			case 50:
+			case 47:
 				deliveryDetails3.setModelM(word);
-			case 51:
+			case 48:
 				deliveryDetails3.setModelL(word);
 				break;
-			case 52:
+			case 49:
 				deliveryDetails3.setSubtotal(word);
 				break;
-			case 53:
+			case 50:
 				deliveryDetails3.setUnitPrice(word);
 				break;
-			case 54:
+			case 51:
 				deliveryDetails3.setAccount(word);
 				break;
-			case 55:
+			case 52:
 				deliveryDetails3.setComment(word);
 				// 表格第四行
 				deliveryDetailsList.add(deliveryDetails3);
 				break;
 
-			case 56:
+			case 53:
 				deliveryDetails4.setStyleNo(word);
 				break;
-			case 57:
+			case 54:
 				deliveryDetails4.setStyle(word);
 				break;
-			case 58:
+			case 55:
 				deliveryDetails4.setColor(word);
 				break;
-			case 59:
+			case 56:
 				deliveryDetails4.setUnit(word);
 				break;
-			case 60:
+			case 57:
 				deliveryDetails4.setModelS(word);
 				break;
-			case 61:
+			case 58:
 				deliveryDetails4.setModelM(word);
-			case 62:
+			case 59:
 				deliveryDetails4.setModelL(word);
 				break;
-			case 63:
+			case 60:
 				deliveryDetails4.setSubtotal(word);
 				break;
-			case 64:
+			case 61:
 				deliveryDetails4.setUnitPrice(word);
 				break;
-			case 65:
+			case 62:
 				deliveryDetails4.setAccount(word);
 				break;
-			case 66:
+			case 63:
 				deliveryDetails4.setComment(word);
 				// 表格第五行
 				deliveryDetailsList.add(deliveryDetails4);
 				break;
 
-			case 67:
+			case 64:
 				deliveryDetails5.setStyleNo(word);
 				break;
-			case 68:
+			case 65:
 				deliveryDetails5.setStyle(word);
 				break;
-			case 69:
+			case 66:
 				deliveryDetails5.setColor(word);
 				break;
-			case 70:
+			case 67:
 				deliveryDetails5.setUnit(word);
 				break;
-			case 71:
+			case 68:
 				deliveryDetails5.setModelS(word);
 				break;
-			case 72:
+			case 69:
 				deliveryDetails5.setModelM(word);
-			case 73:
+			case 70:
 				deliveryDetails5.setModelL(word);
 				break;
-			case 74:
+			case 71:
 				deliveryDetails5.setSubtotal(word);
 				break;
-			case 75:
+			case 72:
 				deliveryDetails5.setUnitPrice(word);
 				break;
-			case 76:
+			case 73:
 				deliveryDetails5.setAccount(word);
 				break;
-			case 77:
+			case 74:
 				deliveryDetails5.setComment(word);
 				// 表格第六行
 				deliveryDetailsList.add(deliveryDetails5);
@@ -1383,16 +1377,16 @@ public class IocrResource {
 
 			}
 
-			for (int i = 0; i < headnum1.length; i++) {
-
-				hssfSheet.autoSizeColumn(i, true);
-				String[] temp = headnum1[i].split(",");
-				Integer startrow = Integer.parseInt(temp[0]);
-				Integer overrow = Integer.parseInt(temp[1]);
-				Integer startcol = Integer.parseInt(temp[2]);
-				Integer overcol = Integer.parseInt(temp[3]);
-				hssfSheet.addMergedRegion(new CellRangeAddress(startrow, overrow, startcol, overcol));
-			}
+//			for (int i = 0; i < headnum1.length; i++) {
+//
+//				hssfSheet.autoSizeColumn(i, true);
+//				String[] temp = headnum1[i].split(",");
+//				Integer startrow = Integer.parseInt(temp[0]);
+//				Integer overrow = Integer.parseInt(temp[1]);
+//				Integer startcol = Integer.parseInt(temp[2]);
+//				Integer overcol = Integer.parseInt(temp[3]);
+//				hssfSheet.addMergedRegion(new CellRangeAddress(startrow, overrow, startcol, overcol));
+//			}
 			// 第三行表头 不需要合并单元格
 			for (int i = 0; i < titles.length; i++) {
 				hssfCell2 = hssfRow2.createCell(i);// 列索引从0开始
