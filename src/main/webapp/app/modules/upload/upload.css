@@ -50,6 +50,7 @@
 .del{
     color: red;
     margin-left: 3px;
+    cursor: pointer;
 }
 .allFile{
     width: 100%;
@@ -61,9 +62,11 @@
 }
 .download{
     padding-left: 3px;
+    cursor: pointer;
 }
 .displayshow{
     padding-left: 326px;
+    cursor: pointer;
 }
 .upform{
     height: 164px;

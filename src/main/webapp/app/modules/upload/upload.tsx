@@ -52,6 +52,33 @@ import { equal } from 'assert';
     }];
     displayTwo: any;
     displayThree: any;
+    adress: any;
+    companyPhone: any;
+    csahier: any;
+    customerName: any;
+    customerPhone: any;
+    customerSign: any;
+    deliveryer: any;
+    invoiceType: any;
+    mainBusiness: any;
+    orderMaker: any;
+    page: any;
+    receiver: any;
+    settleStyle: any;
+    totalAccount: any;
+    totalAmountBig: any;
+    totalAmountSmall: any;
+    ydDeliveryDetails: [{
+      orderNumber: any;
+      partsNumber: any;
+      partsName: any;
+      VehicleType: any;
+      ProductionAarea: any;
+      unitPrice: any;
+      quantity: any;
+      account: any;
+      comment: any;
+    }];
   }
   class Upload extends React.Component<any, ImgProps> {
     static defaultProps: any =
@@ -88,7 +115,34 @@ import { equal } from 'assert';
         unit: any
       }],
       displayTwo: any,
-      displayThree: any
+      displayThree: any,
+      adress: any,
+      companyPhone: any,
+      csahier: any,
+      customerName: any,
+      customerPhone: any,
+      customerSign: any,
+      deliveryer: any,
+      invoiceType: any,
+      mainBusiness: any,
+      orderMaker: any,
+      page: any,
+      receiver: any,
+      settleStyle: any,
+      totalAccount: any,
+      totalAmountBig: any,
+      totalAmountSmall: any,
+      ydDeliveryDetails: [{
+        orderNumber: any,
+        partsNumber: any,
+        partsName: any,
+        VehicleType: any,
+        ProductionAarea: any,
+        unitPrice: any,
+        quantity: any,
+        account: any,
+        comment: any
+      }]
     };
     static propTypes: any = {
       onEnter: PropTypes.func,
@@ -145,7 +199,34 @@ import { equal } from 'assert';
           unit: any
         }],
         displayTwo: 'none',
-        displayThree: 'none'
+        displayThree: 'none',
+        adress: any,
+        companyPhone: any,
+        csahier: any,
+        customerName: any,
+        customerPhone: any,
+        customerSign: any,
+        deliveryer: any,
+        invoiceType: any,
+        mainBusiness: any,
+        orderMaker: any,
+        page: any,
+        receiver: any,
+        settleStyle: any,
+        totalAccount: any,
+        totalAmountBig: any,
+        totalAmountSmall: any,
+        ydDeliveryDetails: [{
+          orderNumber: any,
+          partsNumber: any,
+          partsName: any,
+          VehicleType: any,
+          ProductionAarea: any,
+          unitPrice: any,
+          quantity: any,
+          account: any,
+          comment: any
+        }]
       };
       // 等待上传的文件队列
       this.queue = [];
@@ -158,6 +239,8 @@ import { equal } from 'assert';
       this.clockClick = this.clockClick.bind(this);
       // tslint:disable-next-line: unnecessary-bind
       this.handleFileChange = this.handleFileChange.bind(this);
+      this.showError = this.showError.bind(this);
+      this.downLoadError = this.downLoadError.bind(this);
     }
 
     handleDrag = (event: { preventDefault: () => void; stopPropagation: () => void; }) => {
@@ -256,19 +339,40 @@ import { equal } from 'assert';
             // tslint:disable-next-line: no-console
             console.log(_);
             const filepath = _.data.filepaths;
-            this.setState(prevState => {
-              current.success = true;
-              current.filepath = filepath;
-              return {
-                files: [...prevState.files, current]
-              };
-            }, () => {
-              /* notification.success({ message: `${current.name}, 上传成功` }) */
-            alert('上传成功');
-              onLeave(_);
-              this.uploadQueue = this.uploadQueue.filter(f => f.guid !== current.guid);
-              this.processQueue();
-            });
+            const message = _.data.errorMessage;
+            if (filepath !== undefined) {
+             // tslint:disable-next-line: no-console
+                console.log(filepath);
+                this.setState(prevState => {
+                  current.success = true;
+                  current.filepath = filepath;
+                  return {
+                    files: [...prevState.files, current]
+                  };
+                }, () => {
+                  /* notification.success({ message: `${current.name}, 上传成功` }) */
+                  alert('上传成功');
+                  onLeave(_);
+                  this.uploadQueue = this.uploadQueue.filter(f => f.guid !== current.guid);
+                  this.processQueue();
+                });
+            } else if (message !== undefined) {
+               // tslint:disable-next-line: no-console
+               console.log(message);
+               this.setState(prevState => {
+                 current.success = false;
+                 current.filepath = filepath;
+                 return {
+                   files: [...prevState.files, current]
+                 };
+               }, () => {
+                 /* notification.success({ message: `${current.name}, 上传成功` }) */
+                 alert('上传成功');
+                 onLeave(_);
+                 this.uploadQueue = this.uploadQueue.filter(f => f.guid !== current.guid);
+                 this.processQueue();
+               });
+            }
           }).catch((_: any) => {
             this.setState(prevState => {
               current.success = false;
@@ -326,6 +430,8 @@ import { equal } from 'assert';
     }
 
     handleDownLoadClick = (filepath: any) => {
+      // tslint:disable-next-line: no-console
+      console.log(filepath);
       // tslint:disable-next-line: no-inferrable-types
       const filepaths: string = filepath[0];
       // tslint:disable-next-line: no-console
@@ -343,6 +449,8 @@ import { equal } from 'assert';
         })
       // tslint:disable-next-line: only-arrow-functions
       .then(function(response) {
+        // tslint:disable-next-line: no-console
+        console.log(response);
            if (!response) return;
            const blob = new Blob([response.data], { type: 'application/vnd.ms-excel;charset=utf8' });
 
@@ -363,7 +471,7 @@ import { equal } from 'assert';
     }
 
     handleShowClick = (filepath: any) => {
-      const filepaths = filepath[0];
+      const filepaths: string = filepath[0];
       axios.get(
         'http://localhost:8080/api/showDetails',
         {
@@ -373,9 +481,11 @@ import { equal } from 'assert';
         })
       // tslint:disable-next-line: only-arrow-functions
       .then((response: any) => {
+         // tslint:disable-next-line: no-console
+        console.log(response);
          // tslint:disable-next-line: no-inferrable-types
-         const type: number = 1;
-          if (type === 1) {
+         const type = response.data.type;
+          if (type === '1') {
             const titles = response.data.title;
             const deliverMessages = response.data.deliverMessage;
             const detaildeliveryNo = deliverMessages.deliveryNo;
@@ -401,14 +511,55 @@ import { equal } from 'assert';
              deliveryDetails: deliveryDetailsArr
            });
             alert('成功');
-          } else if (type === 2) {
+          } else if (type === '2') {
             this.setState({
               displayTwo: 'block'
             });
             alert('成功');
-          } else if (type === 3) {
+          } else if (type === '3') {
+            const titles = response.data.title;
+            const ydDeliverMessages = response.data.ydDeliverMessage;
+            const detailadress = ydDeliverMessages.adress;
+            const detailcompanyPhone = ydDeliverMessages.companyPhone;
+            const detailcsahier = ydDeliverMessages.csahier;
+            const detailcustomerName = ydDeliverMessages.customerName;
+            const detailcustomerPhone = ydDeliverMessages.customerPhone;
+            const detailcustomerSign = ydDeliverMessages.customerSign;
+            const detaildeliveryDate = ydDeliverMessages.deliveryDate;
+            const detaildeliveryNo = ydDeliverMessages.deliveryNo;
+            const detaildeliveryer = ydDeliverMessages.deliveryer;
+            const detailinvoiceType = ydDeliverMessages.invoiceType;
+            const detailmainBusiness = ydDeliverMessages.mainBusiness;
+            const detailorderMaker = ydDeliverMessages.orderMaker;
+            const detailpage = ydDeliverMessages.page;
+            const detailreceiver = ydDeliverMessages.receiver;
+            const detailsettleStyle = ydDeliverMessages.settleStyle;
+            const detailtotalAccount = ydDeliverMessages.totalAccount;
+            const detailtotalAmountBig = ydDeliverMessages.totalAmountBig;
+            const detailtotalAmountSmall = ydDeliverMessages.totalAmountSmall;
+            const ydDeliveryDetailsArr = response.data.ydDeliveryDetails;
             this.setState({
-              displayThree: 'block'
+              displayThree: 'block',
+              title: titles,
+              adress: detailadress,
+              companyPhone: detailcompanyPhone,
+              csahier: detailcsahier,
+              customerName: detailcustomerName,
+              customerPhone: detailcustomerPhone,
+              customerSign: detailcustomerSign,
+              deliveryer: detaildeliveryer,
+              invoiceType: detailinvoiceType,
+              mainBusiness: detailmainBusiness,
+              orderMaker: detailorderMaker,
+              page: detailpage,
+              receiver: detailreceiver,
+              settleStyle: detailsettleStyle,
+              totalAccount: detailtotalAccount,
+              totalAmountBig: detailtotalAmountBig,
+              totalAmountSmall: detailtotalAmountSmall,
+              deliveryDate: detaildeliveryDate,
+              deliveryNo: detaildeliveryNo,
+              ydDeliveryDetails: ydDeliveryDetailsArr
             });
             alert('成功');
           }
@@ -422,6 +573,12 @@ import { equal } from 'assert';
     }
     clockClick(event: any) {
       this.setState({ display: 'none', displayTwo: 'none', displayThree: 'none' });
+    }
+    showError(event: any) {
+       alert('上传模板有误无法显示，请确认模板');
+    }
+    downLoadError(event: any) {
+      alert('上传模板有误无法下载，请确认模板');
     }
 
     render() {
@@ -442,8 +599,10 @@ import { equal } from 'assert';
             return (<div className="allFile" key={file.guid}>
               <span className="fileName">{file.name}</span>
               {file.success ? <span className="state">成功</span> : <span className="state">失败</span>}
-              <span className="displayshow" onClick={this.handleShowClick.bind(this, file.filepath)}>显示</span>
-              <span className="download" onClick={this.handleDownLoadClick.bind(this, file.filepath)}>下载</span>
+              {file.success ? <span className="displayshow" onClick={this.handleShowClick.bind(this, file.filepath)}>显示</span> :
+                              <span className="displayshow" onClick={this.showError}>显示</span>}
+              {file.success ? <span className="download" onClick={this.handleDownLoadClick.bind(this, file.filepath)}>下载</span> :
+                              <span className="download" onClick={this.downLoadError}>下载</span>}
               <span className="del" onClick={this.handleCloseClick.bind(this, file.guid)}>删除</span>
             </div>
             );
@@ -546,26 +705,26 @@ import { equal } from 'assert';
            </div>
            </div>
       </div>
-      <div className="popLayer" style = {{ display: this.state.displayTwo }}>
+      <div className="popLayer" style = {{ display: this.state.displayThree }}>
       <span className="close" onClick={this.clockClick}>关闭</span>
       <div className="popBox">
-        <div className="title">易达软件 销售出库单</div>
+        <div className="title">{this.state.title}</div>
         <div className="leftcontent">
          <ul>
-           <li>客户名称:</li>
-         <li>客户电话:</li>
+           <li>客户名称:{this.state.customerName}</li>
+         <li>客户电话:{this.state.customerPhone}</li>
          </ul>
       </div>
       <div className="midcontent">
         <ul>
-          <li>日期:</li>
-          <li>发票种类:</li>
+          <li>日期:{this.state.deliveryDate}</li>
+          <li>发票种类:{this.state.invoiceType}</li>
         </ul>
       </div>
       <div className="rightcontent">
         <ul>
-          <li>出库单号:</li>
-          <li>结算方式:</li>
+          <li>出库单号:{this.state.deliveryNo}</li>
+          <li>结算方式:{this.state.settleStyle}</li>
         </ul>
       </div>
     <div className="firstdiv">
@@ -585,41 +744,49 @@ import { equal } from 'assert';
             </tr>
           </thead>
           <tbody>
-              <tr>
-                <td>1</td>
-                <td>2</td>
-                <td>3</td>
-                <td>4</td>
-                <td>5</td>
-                <td>6</td>
-                <td>7</td>
-                <td>8</td>
-                <td>9</td>
-                <td>10</td>
-              </tr>
+              {
+                       // tslint:disable-next-line: ter-arrow-body-style
+                       this.state.ydDeliveryDetails.map((details, index) => {
+                           return(
+                            // tslint:disable-next-line: jsx-key
+                            <tr key={index}>
+                            <td>{details.orderNumber}</td>
+                            <td>{details.partsNumber}</td>
+                            <td>{details.partsName}</td>
+                            <td>{details.VehicleType}</td>
+                            <td>{details.ProductionAarea}</td>
+                            <td>{details.unitPrice}</td>
+                            <td>{details.quantity}</td>
+                            <td>{details.account}</td>
+                            <td>{details.comment}</td>
+                            <td>{details.partsNumber}</td>
+                          </tr>
+                           );
+                       })
+                     }
           </tbody>
         </table>
-      <div className="bottomcontent">本页小计金额:</div>
-      <div className="bottomcontent"><span>总合计金额(大写):</span><span className="totalmoneysmall">总合计金额(小写):</span></div>
+      <div className="bottomcontent">本页小计金额:{this.state.totalAccount}</div>
+      <div className="bottomcontent"><span>总合计金额(大写):{this.state.totalAmountBig}</span><span className="totalmoneysmall">总合计金额(小写):{this.state.totalAmountSmall}</span></div>
       <div>
-         <span>公司电话:</span>
-         <span className="spantwo">地址:</span>
+         <span>公司电话:{this.state.totalAmountSmall}</span>
+         <span className="spantwo">地址:{this.state.address}</span>
       </div>
       <div>
-         <span>制单人:</span>
-         <span className="delivery">发货:</span>
-         <span className="delivery">收款:</span>
-         <span className="delivery">收货:</span>
-         <span className="delivery">客户签字:</span>
+         <span>制单人:{this.state.orderMaker}</span>
+         <span className="delivery">发货:{this.state.deliveryer}</span>
+         <span className="delivery">收款:{this.state.csahier}</span>
+         <span className="delivery">收货:{this.state.receiver}</span>
+         <span className="delivery">客户签字:{this.state.customerSign}</span>
          <span className="delivery">页码:1/1</span>
       </div>
       <div>
-         <span>主营:</span>
+         <span>主营:{this.state.mainBusiness}</span>
       </div>
       </div>
       </div>
     </div>
-    <div className="popLayer" style = {{ display: this.state.displayThree }}>
+    <div className="popLayer" style = {{ display: this.state.displayTwo }}>
       <span className="close">关闭</span>
       <div className="popBox">
         <div className="title">东莞明歆制衣有限公司</div>
