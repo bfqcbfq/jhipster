@@ -169,7 +169,7 @@ public class IocrResource {
 	 * @throws IOException
 	 */
 	@GetMapping("/showDetails")
-	public ResponseEntity<Map<String,Object>> showUploadFileDetails(@RequestParam(value = "filepath") String filepath)
+	public ResponseEntity<Object> showUploadFileDetails(@RequestParam(value = "filepath") String filepath)
 			throws IOException {
 
 		String errorCode = null;
@@ -193,19 +193,20 @@ public class IocrResource {
 				continue;
 			}else {
 				if(templateSign.equals(templateId1)) {
-					 type = "1";
+					//type = "1";
+					invoice.setType("1");
 					 invoice = jsonToInvoiceF(jsonObject);
-					 invoiceMap.put(type, invoice);
-					 return ResponseEntity.ok(invoiceMap);
+					 //invoiceMap.put(type, invoice);
+					 return ResponseEntity.ok(invoice);
 				}else if (templateSign.equals(templateId2)) {
-					 type = "2";
+					 //type = "2";
 					 mxInvoice = jsonToMxInvoice(jsonObject);
-					 invoiceMap.put(type, mxInvoice);
+					 //invoiceMap.put(type, mxInvoice);
 					 return ResponseEntity.ok(invoiceMap);
 				}else if(templateSign.equals(templateId3)) {
-					 type = "3";
+					 //type = "3";
 					 ydInvoice = jsonToYdInvoice(jsonObject);
-					 invoiceMap.put(type, invoice);
+					 //invoiceMap.put(type, invoice);
 					 return ResponseEntity.ok(invoiceMap);
 				}
 				
