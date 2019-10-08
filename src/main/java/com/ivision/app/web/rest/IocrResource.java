@@ -173,10 +173,10 @@ public class IocrResource {
 			throws IOException {
 
 		String errorCode = null;
-		Invoice invoice = null;
-		MxInvoice mxInvoice =null;
-		YdInvoice ydInvoice =null;
-		String type = null;
+		Invoice invoice = new Invoice();
+		MxInvoice mxInvoice =new MxInvoice();
+		YdInvoice ydInvoice = new YdInvoice();
+		//String type = null;
 		
 		//返回后台数据
 		Map<String,Object> invoiceMap = new HashMap<>();
@@ -194,20 +194,23 @@ public class IocrResource {
 			}else {
 				if(templateSign.equals(templateId1)) {
 					//type = "1";
-					invoice.setType("1");
 					 invoice = jsonToInvoiceF(jsonObject);
+					 invoice.setType("1");
 					 //invoiceMap.put(type, invoice);
 					 return ResponseEntity.ok(invoice);
 				}else if (templateSign.equals(templateId2)) {
 					 //type = "2";
 					 mxInvoice = jsonToMxInvoice(jsonObject);
+					 mxInvoice.setType("2");
 					 //invoiceMap.put(type, mxInvoice);
-					 return ResponseEntity.ok(invoiceMap);
+					 return ResponseEntity.ok(mxInvoice);
 				}else if(templateSign.equals(templateId3)) {
 					 //type = "3";
 					 ydInvoice = jsonToYdInvoice(jsonObject);
+					 ydInvoice.setType("3");
+					 
 					 //invoiceMap.put(type, invoice);
-					 return ResponseEntity.ok(invoiceMap);
+					 return ResponseEntity.ok(ydInvoice);
 				}
 				
 			}

@@ -4,6 +4,7 @@ import java.util.List;
 
 public class YdInvoice {
 	
+	private String type;
 	private String title;
 	private YdDeliverMessage ydDeliverMessage;
 //	private String deliveryNo;
@@ -20,11 +21,19 @@ public class YdInvoice {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public YdInvoice(String title, YdDeliverMessage ydDeliverMessage, List<YdDeliveryDetails> ydDeliveryDetails) {
+	public YdInvoice(String type, String title, YdDeliverMessage ydDeliverMessage,
+			List<YdDeliveryDetails> ydDeliveryDetails) {
 		super();
+		this.type = type;
 		this.title = title;
 		this.ydDeliverMessage = ydDeliverMessage;
 		this.ydDeliveryDetails = ydDeliveryDetails;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
 	}
 	public String getTitle() {
 		return title;
@@ -46,9 +55,11 @@ public class YdInvoice {
 	}
 	@Override
 	public String toString() {
-		return "YdInvoice [title=" + title + ", ydDeliverMessage=" + ydDeliverMessage + ", ydDeliveryDetails="
-				+ ydDeliveryDetails + "]";
+		return "YdInvoice [type=" + type + ", title=" + title + ", ydDeliverMessage=" + ydDeliverMessage
+				+ ", ydDeliveryDetails=" + ydDeliveryDetails + "]";
 	}
+	
+	
 	
 	
 

@@ -4,6 +4,7 @@ import java.util.List;
 
 public class MxInvoice {
 	
+	private String type;
 	private String title;
 	private MxDeliverMessage mxDeliverMessage;
 //	private String deliveryNo;
@@ -20,11 +21,19 @@ public class MxInvoice {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public MxInvoice(String title, MxDeliverMessage mxDeliverMessage, List<MxDeliveryDetails> deliveryDetails) {
+	public MxInvoice(String type, String title, MxDeliverMessage mxDeliverMessage,
+			List<MxDeliveryDetails> deliveryDetails) {
 		super();
+		this.type = type;
 		this.title = title;
 		this.mxDeliverMessage = mxDeliverMessage;
 		this.deliveryDetails = deliveryDetails;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
 	}
 	public String getTitle() {
 		return title;
@@ -46,9 +55,10 @@ public class MxInvoice {
 	}
 	@Override
 	public String toString() {
-		return "MxInvoice [title=" + title + ", mxDeliverMessage=" + mxDeliverMessage + ", deliveryDetails="
-				+ deliveryDetails + "]";
+		return "MxInvoice [type=" + type + ", title=" + title + ", mxDeliverMessage=" + mxDeliverMessage
+				+ ", deliveryDetails=" + deliveryDetails + "]";
 	}
+	
 	
 
 }
