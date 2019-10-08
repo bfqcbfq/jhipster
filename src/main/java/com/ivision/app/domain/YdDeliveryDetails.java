@@ -7,6 +7,7 @@ public class YdDeliveryDetails {
 	private String partsName;
 	private String VehicleType;
 	private String ProductionAarea;
+	private String unit;
 	private String unitPrice;
 	private String quantity;
 	private String account;
@@ -16,13 +17,14 @@ public class YdDeliveryDetails {
 		// TODO Auto-generated constructor stub
 	}
 	public YdDeliveryDetails(String orderNumber, String partsNumber, String partsName, String vehicleType,
-			String productionAarea, String unitPrice, String quantity, String account, String comment) {
+			String productionAarea, String unit, String unitPrice, String quantity, String account, String comment) {
 		super();
 		this.orderNumber = orderNumber;
 		this.partsNumber = partsNumber;
 		this.partsName = partsName;
 		VehicleType = vehicleType;
 		ProductionAarea = productionAarea;
+		this.unit = unit;
 		this.unitPrice = unitPrice;
 		this.quantity = quantity;
 		this.account = account;
@@ -58,6 +60,12 @@ public class YdDeliveryDetails {
 	public void setProductionAarea(String productionAarea) {
 		ProductionAarea = productionAarea;
 	}
+	public String getUnit() {
+		return unit;
+	}
+	public void setUnit(String unit) {
+		this.unit = unit;
+	}
 	public String getUnitPrice() {
 		return unitPrice;
 	}
@@ -85,13 +93,11 @@ public class YdDeliveryDetails {
 	@Override
 	public String toString() {
 		return "YdDeliveryDetails [orderNumber=" + orderNumber + ", partsNumber=" + partsNumber + ", partsName="
-				+ partsName + ", VehicleType=" + VehicleType + ", ProductionAarea=" + ProductionAarea + ", unitPrice="
-				+ unitPrice + ", quantity=" + quantity + ", account=" + account + ", comment=" + comment + "]";
+				+ partsName + ", VehicleType=" + VehicleType + ", ProductionAarea=" + ProductionAarea + ", unit=" + unit
+				+ ", unitPrice=" + unitPrice + ", quantity=" + quantity + ", account=" + account + ", comment="
+				+ comment + "]";
 	}
 	
 	
 	
-	
-	
-
 }

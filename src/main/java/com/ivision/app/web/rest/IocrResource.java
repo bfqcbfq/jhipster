@@ -21,7 +21,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -126,11 +125,11 @@ public class IocrResource {
 
 				List<JSONObject> jsonObjectList = getResultByIocr(newFilePath);
 				String errorCode = null;
-				
-				for(JSONObject jsonObject : jsonObjectList) {
+
+				for (JSONObject jsonObject : jsonObjectList) {
 					errorCode = jsonObject.get("error_code").toString();
 					errorMessageList.add(errorCode);
-					
+
 				}
 
 				if (!errorMessageList.contains("0")) {
@@ -174,47 +173,47 @@ public class IocrResource {
 
 		String errorCode = null;
 		Invoice invoice = new Invoice();
-		MxInvoice mxInvoice =new MxInvoice();
+		MxInvoice mxInvoice = new MxInvoice();
 		YdInvoice ydInvoice = new YdInvoice();
-		//String type = null;
-		
-		//返回后台数据
-		Map<String,Object> invoiceMap = new HashMap<>();
+		// String type = null;
+
+		// 返回后台数据
+		//Map<String, Object> invoiceMap = new HashMap<>();
 
 		// 调用百度API
 		List<JSONObject> jsonObjectList = getResultByIocr(filepath);
-		
-		for(JSONObject jsonObject : jsonObjectList) {
+
+		for (JSONObject jsonObject : jsonObjectList) {
 			errorCode = jsonObject.get("error_code").toString();
 			String templateSign = jsonObject.getJSONObject("data").get("templateSign").toString();
-			
-			if(!errorCode.equals("0")) {
-				
+
+			if (!errorCode.equals("0")) {
+
 				continue;
-			}else {
-				if(templateSign.equals(templateId1)) {
-					//type = "1";
-					 invoice = jsonToInvoiceF(jsonObject);
-					 invoice.setType("1");
-					 //invoiceMap.put(type, invoice);
-					 return ResponseEntity.ok(invoice);
-				}else if (templateSign.equals(templateId2)) {
-					 //type = "2";
-					 mxInvoice = jsonToMxInvoice(jsonObject);
-					 mxInvoice.setType("2");
-					 //invoiceMap.put(type, mxInvoice);
-					 return ResponseEntity.ok(mxInvoice);
-				}else if(templateSign.equals(templateId3)) {
-					 //type = "3";
-					 ydInvoice = jsonToYdInvoice(jsonObject);
-					 ydInvoice.setType("3");
-					 
-					 //invoiceMap.put(type, invoice);
-					 return ResponseEntity.ok(ydInvoice);
+			} else {
+				if (templateSign.equals(templateId1)) {
+					// type = "1";
+					invoice = jsonToInvoiceF(jsonObject);
+					invoice.setType("1");
+					// invoiceMap.put(type, invoice);
+					return ResponseEntity.ok(invoice);
+				} else if (templateSign.equals(templateId2)) {
+					// type = "2";
+					mxInvoice = jsonToMxInvoice(jsonObject);
+					mxInvoice.setType("2");
+					// invoiceMap.put(type, mxInvoice);
+					return ResponseEntity.ok(mxInvoice);
+				} else if (templateSign.equals(templateId3)) {
+					// type = "3";
+					ydInvoice = jsonToYdInvoice(jsonObject);
+					ydInvoice.setType("3");
+
+					// invoiceMap.put(type, invoice);
+					return ResponseEntity.ok(ydInvoice);
 				}
-				
+
 			}
-			
+
 		}
 		return null;
 
@@ -229,6 +228,12 @@ public class IocrResource {
 	 */
 	@GetMapping("/download")
 	public String exportExcel(@RequestParam(value = "filepath") String filepath, HttpServletResponse response) {
+
+		String errorCode = null;
+		Invoice invoice = new Invoice();
+		MxInvoice mxInvoice = new MxInvoice();
+		YdInvoice ydInvoice = new YdInvoice();
+
 		response.setContentType("application/force-download;charset=UTF-8");
 
 		try {
@@ -239,22 +244,81 @@ public class IocrResource {
 			response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
 
 			// 调用百度API接口
-			//TODO 测试上传接口后修改
-			//JSONObject resultByIocr = getResultByIocr(filepath);
-			Invoice invoice = null;
-			String title = invoice.getTitle();
-			DeliverMessage deliverMessage = invoice.getDeliverMessage();
-			List<DeliveryDetails> deliveryDetails = invoice.getDeliveryDetails();
+			// TODO 测试上传接口后修改
+			// JSONObject resultByIocr = getResultByIocr(filepath);
 
-			// 获取表头1
-			String[] head = { title };
-			String[] headnum = { "0,0,0,15" };
-			// 获取表头2
-			String[] head1 = { "发货单号", "发货单位", "发货日期", "地址", "联系电话", "备注", "经手人（签字或盖章）", "领料人（签字或盖章）" };
-			String[] headnum1 = { "1,1,0,15" };
-			String[] titles = { "仓库", "料号", "品牌", "单位", "数量", "单重", "合计重量", "批次号", "出货日期", "备注" };
+			List<JSONObject> resultByIocrList = getResultByIocr(filepath);
 
-			this.exportFencers(head, headnum, head1, headnum1, titles, out, deliverMessage, deliveryDetails);
+			for (JSONObject jsonObject : resultByIocrList) {
+
+				errorCode = jsonObject.get("error_code").toString();
+				String templateSign = jsonObject.getJSONObject("data").get("templateSign").toString();
+
+				if (!errorCode.equals("0")) {
+
+					continue;
+				} else {
+					if (templateSign.equals(templateId1)) {
+						invoice = jsonToInvoiceF(jsonObject);
+
+						String title = invoice.getTitle();
+						DeliverMessage deliverMessage = invoice.getDeliverMessage();
+						List<DeliveryDetails> deliveryDetails = invoice.getDeliveryDetails();
+
+						// 获取表头1
+						String[] head = { title };
+						String[] headnum = { "0,0,0,15" };
+						// 获取表头2
+						String[] head1 = { "发货单号", "发货单位", "发货日期", "地址", "联系电话", "备注", "经手人（签字或盖章）", "领料人（签字或盖章）" };
+						String[] headnum1 = { "1,1,0,15" };
+						String[] titles = { "仓库", "料号", "品牌", "单位", "数量", "单重", "合计重量", "批次号", "出货日期", "备注" };
+
+						this.exportFencers(head, headnum, head1, headnum1, titles, out, deliverMessage, deliveryDetails,
+								null, null, null, null);
+
+					} else if (templateSign.equals(templateId2)) {
+						mxInvoice = jsonToMxInvoice(jsonObject);
+
+						String title = mxInvoice.getTitle();
+						MxDeliverMessage deliverMessage = mxInvoice.getMxDeliverMessage();
+						List<MxDeliveryDetails> deliveryDetails = mxInvoice.getDeliveryDetails();
+
+						// 获取表头1
+						String[] head = { title };
+						String[] headnum = { "0,0,0,15" };
+						// 获取表头2
+						String[] head1 = { "客户代码", "出货单号", "地址", "出货日期", "合计数量", "合计金额", "备注", "经手人签名", "送货人签名",
+								"制单人" };
+						String[] headnum1 = { "1,1,0,15" };
+						String[] titles = { "款号", "款式", "颜色", "单位", "S", "M", "L", "小计", "单价", "金额", "备注" };
+
+						this.exportFencers(head, headnum, head1, headnum1, titles, out, null, null, deliverMessage,
+								deliveryDetails, null, null);
+
+					} else if (templateSign.equals(templateId3)) {
+
+						ydInvoice = jsonToYdInvoice(jsonObject);
+
+						String title = ydInvoice.getTitle();
+						YdDeliverMessage deliverMessage = ydInvoice.getYdDeliverMessage();
+						List<YdDeliveryDetails> deliveryDetails = ydInvoice.getYdDeliveryDetails();
+
+						// 获取表头1
+						String[] head = { title };
+						String[] headnum = { "0,0,0,15" };
+						// 获取表头2
+						String[] head1 = { "客户名称", "日期", "出库单号", "客户电话", "发票种类", "结算方式", "本页小计金额：￥", "总合计金额（大写）",
+								"总合计金额（小写）：￥", "公司电话", "地址", "制单人", "发货", "收款", "收货", "客户签字", "主营" };
+						String[] headnum1 = { "1,1,0,15" };
+						String[] titles = { "序号", "配件编号", "配件名称", "车型", "产地", "单位", "单价", "数量", "金额", "备注" };
+
+						this.exportFencers(head, headnum, head1, headnum1, titles, out, null, null, null, null,
+								deliverMessage, deliveryDetails);
+					}
+
+				}
+
+			}
 
 			return "success";
 		} catch (Exception e) {
@@ -323,7 +387,7 @@ public class IocrResource {
 
 		// 传入可选参数调用接口
 		HashMap<String, String> options = new HashMap<String, String>();
-		
+
 		for (String templateId : templateSignList) {
 
 			options.put("templateSign", templateId);
@@ -333,7 +397,7 @@ public class IocrResource {
 			jbList.add(custom);
 
 		}
-		
+
 		return jbList;
 
 	}
@@ -646,7 +710,7 @@ public class IocrResource {
 		return invoice;
 
 	}
-	
+
 	public MxInvoice jsonToMxInvoice(JSONObject jsonObject) {
 
 		MxInvoice invoice = new MxInvoice();
@@ -715,10 +779,10 @@ public class IocrResource {
 				break;
 			case 10:
 				deliverMessage.setHandlerSign(word);
-				//表格外数据
+				// 表格外数据
 				invoice.setMxDeliverMessage(deliverMessage);
 				break;
-				
+
 			case 12:
 				deliveryDetails.setStyleNo(word);
 				break;
@@ -753,7 +817,7 @@ public class IocrResource {
 				// 表格第一行
 				deliveryDetailsList.add(deliveryDetails);
 				break;
-				
+
 			case 23:
 				deliveryDetails.setStyleNo(word);
 				break;
@@ -788,7 +852,7 @@ public class IocrResource {
 				// 表格第二行
 				deliveryDetailsList.add(deliveryDetails1);
 				break;
-				
+
 			case 34:
 				deliveryDetails2.setStyleNo(word);
 				break;
@@ -823,7 +887,7 @@ public class IocrResource {
 				// 表格第三行
 				deliveryDetailsList.add(deliveryDetails2);
 				break;
-				
+
 			case 45:
 				deliveryDetails3.setStyleNo(word);
 				break;
@@ -858,7 +922,7 @@ public class IocrResource {
 				// 表格第四行
 				deliveryDetailsList.add(deliveryDetails3);
 				break;
-				
+
 			case 56:
 				deliveryDetails4.setStyleNo(word);
 				break;
@@ -893,7 +957,7 @@ public class IocrResource {
 				// 表格第五行
 				deliveryDetailsList.add(deliveryDetails4);
 				break;
-				
+
 			case 67:
 				deliveryDetails5.setStyleNo(word);
 				break;
@@ -928,7 +992,7 @@ public class IocrResource {
 				// 表格第六行
 				deliveryDetailsList.add(deliveryDetails5);
 				break;
-			
+
 			}
 
 		}
@@ -938,8 +1002,7 @@ public class IocrResource {
 		return invoice;
 
 	}
-	
-	
+
 	public YdInvoice jsonToYdInvoice(JSONObject jsonObject) {
 
 		YdInvoice invoice = new YdInvoice();
@@ -956,7 +1019,7 @@ public class IocrResource {
 		YdDeliveryDetails deliveryDetails3 = new YdDeliveryDetails();
 		// 表格第五行
 		YdDeliveryDetails deliveryDetails4 = new YdDeliveryDetails();
-		
+
 		List<YdDeliveryDetails> deliveryDetailsList = new ArrayList<>();
 		// 获得账票标题
 		String templateName = jsonObject.getJSONObject("data").get("templateName").toString();
@@ -1040,10 +1103,10 @@ public class IocrResource {
 				deliveryDetails.setVehicleType(word);
 				break;
 			case 21:
-				deliveryDetails.setQuantity(word);
+				deliveryDetails.setProductionAarea(word);
 				break;
 			case 22:
-				deliveryDetails.setProductionAarea(word);
+				deliveryDetails.setUnit(word);
 				break;
 			case 23:
 				deliveryDetails.setUnitPrice(word);
@@ -1073,10 +1136,10 @@ public class IocrResource {
 				deliveryDetails1.setVehicleType(word);
 				break;
 			case 31:
-				deliveryDetails1.setQuantity(word);
+				deliveryDetails1.setProductionAarea(word);
 				break;
 			case 32:
-				deliveryDetails1.setProductionAarea(word);
+				deliveryDetails1.setUnit(word);
 				break;
 			case 33:
 				deliveryDetails1.setUnitPrice(word);
@@ -1089,7 +1152,7 @@ public class IocrResource {
 				break;
 			case 36:
 				deliveryDetails1.setComment(word);
-				// 表格第二行
+				// 表格第一行
 				deliveryDetailsList.add(deliveryDetails1);
 				break;
 
@@ -1106,10 +1169,10 @@ public class IocrResource {
 				deliveryDetails2.setVehicleType(word);
 				break;
 			case 41:
-				deliveryDetails2.setQuantity(word);
+				deliveryDetails2.setProductionAarea(word);
 				break;
 			case 42:
-				deliveryDetails2.setProductionAarea(word);
+				deliveryDetails2.setUnit(word);
 				break;
 			case 43:
 				deliveryDetails2.setUnitPrice(word);
@@ -1122,7 +1185,7 @@ public class IocrResource {
 				break;
 			case 46:
 				deliveryDetails2.setComment(word);
-				// 表格第三行
+				// 表格第一行
 				deliveryDetailsList.add(deliveryDetails2);
 				break;
 
@@ -1139,10 +1202,10 @@ public class IocrResource {
 				deliveryDetails3.setVehicleType(word);
 				break;
 			case 51:
-				deliveryDetails3.setQuantity(word);
+				deliveryDetails3.setProductionAarea(word);
 				break;
 			case 52:
-				deliveryDetails3.setProductionAarea(word);
+				deliveryDetails3.setUnit(word);
 				break;
 			case 53:
 				deliveryDetails3.setUnitPrice(word);
@@ -1155,7 +1218,7 @@ public class IocrResource {
 				break;
 			case 56:
 				deliveryDetails3.setComment(word);
-				// 表格第四行
+				// 表格第一行
 				deliveryDetailsList.add(deliveryDetails3);
 				break;
 
@@ -1172,10 +1235,10 @@ public class IocrResource {
 				deliveryDetails4.setVehicleType(word);
 				break;
 			case 61:
-				deliveryDetails4.setQuantity(word);
+				deliveryDetails4.setProductionAarea(word);
 				break;
 			case 62:
-				deliveryDetails4.setProductionAarea(word);
+				deliveryDetails4.setUnit(word);
 				break;
 			case 63:
 				deliveryDetails4.setUnitPrice(word);
@@ -1188,10 +1251,9 @@ public class IocrResource {
 				break;
 			case 66:
 				deliveryDetails4.setComment(word);
-				// 表格第五行
+				// 表格第一行
 				deliveryDetailsList.add(deliveryDetails4);
 				break;
-		
 			}
 
 		}
@@ -1216,8 +1278,9 @@ public class IocrResource {
 	 * @throws Exception
 	 */
 	private void exportFencers(String[] head, String[] headnum, String[] head1, String[] headnum1, String[] titles,
-			ServletOutputStream out, DeliverMessage deliverMessage, List<DeliveryDetails> deliveryDetails)
-			throws Exception {
+			ServletOutputStream out, DeliverMessage deliverMessage, List<DeliveryDetails> deliveryDetails,
+			MxDeliverMessage mxDeliverMessage, List<MxDeliveryDetails> mxDeliveryDetails,
+			YdDeliverMessage ydDeliverMessage, List<YdDeliveryDetails> ydDeliveryDetails) throws Exception {
 		try {
 			HSSFWorkbook workbook = new HSSFWorkbook();
 			// 第二步，在webbook中添加一个sheet,对应Excel文件中的sheet

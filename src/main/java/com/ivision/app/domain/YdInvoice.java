@@ -18,8 +18,7 @@ public class YdInvoice {
 	private List<YdDeliveryDetails>  ydDeliveryDetails;
 //	private List<DeliveryDetails> deliveryDetails;
 	public YdInvoice() {
-		super();
-		// TODO Auto-generated constructor stub
+		
 	}
 	public YdInvoice(String type, String title, YdDeliverMessage ydDeliverMessage,
 			List<YdDeliveryDetails> ydDeliveryDetails) {
