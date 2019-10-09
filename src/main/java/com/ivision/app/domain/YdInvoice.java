@@ -5,6 +5,9 @@ import java.util.List;
 public class YdInvoice {
 	
 	private String type;
+	private String templateType;
+	private String errorMessage;
+	private String filepath;
 	private String title;
 	private YdDeliverMessage ydDeliverMessage;
 //	private String deliveryNo;
@@ -20,10 +23,13 @@ public class YdInvoice {
 	public YdInvoice() {
 		
 	}
-	public YdInvoice(String type, String title, YdDeliverMessage ydDeliverMessage,
-			List<YdDeliveryDetails> ydDeliveryDetails) {
+	public YdInvoice(String type, String templateType, String errorMessage, String filepath, String title,
+			YdDeliverMessage ydDeliverMessage, List<YdDeliveryDetails> ydDeliveryDetails) {
 		super();
 		this.type = type;
+		this.templateType = templateType;
+		this.errorMessage = errorMessage;
+		this.filepath = filepath;
 		this.title = title;
 		this.ydDeliverMessage = ydDeliverMessage;
 		this.ydDeliveryDetails = ydDeliveryDetails;
@@ -33,6 +39,24 @@ public class YdInvoice {
 	}
 	public void setType(String type) {
 		this.type = type;
+	}
+	public String getTemplateType() {
+		return templateType;
+	}
+	public void setTemplateType(String templateType) {
+		this.templateType = templateType;
+	}
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+	}
+	public String getFilepath() {
+		return filepath;
+	}
+	public void setFilepath(String filepath) {
+		this.filepath = filepath;
 	}
 	public String getTitle() {
 		return title;
@@ -54,13 +78,11 @@ public class YdInvoice {
 	}
 	@Override
 	public String toString() {
-		return "YdInvoice [type=" + type + ", title=" + title + ", ydDeliverMessage=" + ydDeliverMessage
+		return "YdInvoice [type=" + type + ", templateType=" + templateType + ", errorMessage=" + errorMessage
+				+ ", filepath=" + filepath + ", title=" + title + ", ydDeliverMessage=" + ydDeliverMessage
 				+ ", ydDeliveryDetails=" + ydDeliveryDetails + "]";
 	}
 	
 	
-	
-	
-
 	
 }

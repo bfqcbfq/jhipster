@@ -5,6 +5,9 @@ import java.util.List;
 public class MxInvoice {
 	
 	private String type;
+	private String templateType;
+	private String errorMessage;
+	private String filepath;
 	private String title;
 	private MxDeliverMessage mxDeliverMessage;
 //	private String deliveryNo;
@@ -18,13 +21,15 @@ public class MxInvoice {
 	private List<MxDeliveryDetails>  deliveryDetails;
 //	private List<DeliveryDetails> deliveryDetails;
 	public MxInvoice() {
-		super();
-		// TODO Auto-generated constructor stub
+		
 	}
-	public MxInvoice(String type, String title, MxDeliverMessage mxDeliverMessage,
-			List<MxDeliveryDetails> deliveryDetails) {
+	public MxInvoice(String type, String templateType, String errorMessage, String filepath, String title,
+			MxDeliverMessage mxDeliverMessage, List<MxDeliveryDetails> deliveryDetails) {
 		super();
 		this.type = type;
+		this.templateType = templateType;
+		this.errorMessage = errorMessage;
+		this.filepath = filepath;
 		this.title = title;
 		this.mxDeliverMessage = mxDeliverMessage;
 		this.deliveryDetails = deliveryDetails;
@@ -34,6 +39,24 @@ public class MxInvoice {
 	}
 	public void setType(String type) {
 		this.type = type;
+	}
+	public String getTemplateType() {
+		return templateType;
+	}
+	public void setTemplateType(String templateType) {
+		this.templateType = templateType;
+	}
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+	}
+	public String getFilepath() {
+		return filepath;
+	}
+	public void setFilepath(String filepath) {
+		this.filepath = filepath;
 	}
 	public String getTitle() {
 		return title;
@@ -55,10 +78,10 @@ public class MxInvoice {
 	}
 	@Override
 	public String toString() {
-		return "MxInvoice [type=" + type + ", title=" + title + ", mxDeliverMessage=" + mxDeliverMessage
+		return "MxInvoice [type=" + type + ", templateType=" + templateType + ", errorMessage=" + errorMessage
+				+ ", filepath=" + filepath + ", title=" + title + ", mxDeliverMessage=" + mxDeliverMessage
 				+ ", deliveryDetails=" + deliveryDetails + "]";
 	}
 	
 	
-
 }

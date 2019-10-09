@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import com.baidu.aip.ocr.AipOcr;
+import com.ivision.app.domain.BeanRsource;
 import com.ivision.app.domain.DeliverMessage;
 import com.ivision.app.domain.DeliveryDetails;
 import com.ivision.app.domain.Invoice;
@@ -87,17 +88,21 @@ public class IocrResource {
 	 * @throws IOException
 	 */
 	@PostMapping("/upload")
-	public ResponseEntity<Map<String, List<String>>> getfileRecord(
+	public ResponseEntity<Object> getfileRecord(
 			@RequestParam(value = "file", required = false) MultipartFile[] uploadFiles) throws IOException {
 
-		Map<String, List<String>> messageAndfilePathMap = new HashMap<>();
-
-		List<String> filePathList = new ArrayList<String>();
-
 		List<String> errorMessageList = new ArrayList<String>();
-
-		String errorMessage = null;
-
+		
+		String templateSign = null;
+		
+		Invoice invoice = new Invoice();
+		
+		MxInvoice mxInvoice = new MxInvoice();
+		
+		YdInvoice ydInvoice = new YdInvoice();
+		
+		BeanRsource beanRsource = new BeanRsource();
+		
 		// 判断文件夹是否存在,不存在则创建
 		File file = new File(filePath);
 
@@ -128,25 +133,41 @@ public class IocrResource {
 
 				for (JSONObject jsonObject : jsonObjectList) {
 					errorCode = jsonObject.get("error_code").toString();
+					templateSign = jsonObject.getJSONObject("data").get("templateSign").toString();
 					errorMessageList.add(errorCode);
 
 				}
 
 				if (!errorMessageList.contains("0")) {
 					errorMessageList.clear();
-					errorMessage = "您上传的文件有误，请再确认一下";
-					errorMessageList.add(errorMessage);
-					messageAndfilePathMap.put("errorMessage", errorMessageList);
-					return ResponseEntity.ok(messageAndfilePathMap);
+					beanRsource.setErrorMessage("您上传的文件有误，请再确认一下");
+					
+					return ResponseEntity.ok(beanRsource);
 				}
 
 				else {
+					
+					if (templateSign.equals(templateId1)) {
+						invoice.setType("1");
+						
+						invoice.setFilepath(newFilePath);
+						
+						return ResponseEntity.ok(invoice);
+					} else if (templateSign.equals(templateId2)) {
+						
+						mxInvoice.setType("1");
+						
+						mxInvoice.setFilepath(newFilePath);
+						
+						return ResponseEntity.ok(mxInvoice);
+					} else if (templateSign.equals(templateId3)) {
 
-					filePathList.add(newFilePath);
-
-					messageAndfilePathMap.put("filepaths", filePathList);
-
-					return ResponseEntity.ok(messageAndfilePathMap);
+						ydInvoice.setType("1");
+						
+						ydInvoice.setFilepath(newFilePath);
+						
+						return ResponseEntity.ok(ydInvoice);
+					}
 
 				}
 
