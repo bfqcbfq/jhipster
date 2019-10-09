@@ -21,7 +21,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -804,39 +803,39 @@ public class IocrResource {
 				deliveryDetails.setUnitPrice(word);
 				break;
 			case 18:
-				deliveryDetails1.setAccount(word);
+				deliveryDetails.setAccount(word);
 				break;
 			case 19:
-				deliveryDetails1.setComment(word);
+				deliveryDetails.setComment(word);
 				// 表格第一行
 				deliveryDetailsList.add(deliveryDetails);
 				break;
 
 			case 20:
-				deliveryDetails.setStyleNo(word);
+				deliveryDetails1.setStyleNo(word);
 				break;
 			case 21:
-				deliveryDetails.setStyle(word);
+				deliveryDetails1.setStyle(word);
 				break;
 			case 22:
-				deliveryDetails.setColor(word);
+				deliveryDetails1.setColor(word);
 				break;
 			case 23:
-				deliveryDetails.setUnit(word);
+				deliveryDetails1.setUnit(word);
 				break;
 			case 24:
-				deliveryDetails.setModelS(word);
+				deliveryDetails1.setModelS(word);
 				break;
 			case 25:
-				deliveryDetails.setModelM(word);
+				deliveryDetails1.setModelM(word);
 			case 26:
-				deliveryDetails.setModelL(word);
+				deliveryDetails1.setModelL(word);
 				break;
 			case 27:
-				deliveryDetails.setSubtotal(word);
+				deliveryDetails1.setSubtotal(word);
 				break;
 			case 28:
-				deliveryDetails.setUnitPrice(word);
+				deliveryDetails1.setUnitPrice(word);
 				break;
 			case 29:
 				deliveryDetails1.setAccount(word);
