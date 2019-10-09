@@ -92,8 +92,8 @@ import axios from 'axios';
        modelS: any;
        modelM: any;
        modelL: any;
-       Subtotal: any;
-       UnitPrice: any;
+       subtotal: any;
+       unitPrice: any;
        account: any;
        comment: any;
     }];
@@ -178,8 +178,8 @@ import axios from 'axios';
         modelS: any,
         modelM: any,
         modelL: any,
-        Subtotal: any,
-        UnitPrice: any,
+        subtotal: any,
+        unitPrice: any,
         account: any,
         comment: any
      }],
@@ -284,8 +284,8 @@ import axios from 'axios';
           modelS: any,
           modelM: any,
           modelL: any,
-          Subtotal: any,
-          UnitPrice: any,
+          subtotal: any,
+          unitPrice: any,
           account: any,
           comment: any
        }],
@@ -465,8 +465,6 @@ import axios from 'axios';
           }).catch((_: any) => {
             this.setState(prevState => {
               current.success = false;
-              const filepath = _.data.filepaths;
-              current.filepath = filepath;
               return {
                 files: [...prevState.files, current]
               };
@@ -525,7 +523,7 @@ import axios from 'axios';
       // tslint:disable-next-line: no-console
       console.log(filepath);
       // tslint:disable-next-line: no-inferrable-types
-      const filepaths: string = filepath[0];
+      const filepaths: string = filepath;
       // tslint:disable-next-line: no-console
       console.log(filepaths);
       axios.get(
@@ -563,7 +561,7 @@ import axios from 'axios';
     }
 
     handleShowClick = (filepath: any) => {
-      const filepaths: string = filepath[0];
+      const filepaths: string = filepath;
       axios.get(
         'http://localhost:8080/api/showDetails',
         {
@@ -720,7 +718,7 @@ import axios from 'axios';
             return (<div className="allFile" key={file.guid}>
               <span className="fileName">{file.name}</span>
               {file.success ? <span className="state">成功</span> : <span className="state">失败</span>}
-              {file.success ? <span className="state">{file.templatetype}</span> : <span className="state">无文件类型</span>}
+              {file.success ? <span className="type">{file.templatetype}</span> : <span className="type">无</span>}
               {file.success ? <span className="displayshow" onClick={this.handleShowClick.bind(this, file.filepath)}>显示</span> :
                               <span className="displayshow" onClick={this.showError}>显示</span>}
               {file.success ? <span className="download" onClick={this.handleDownLoadClick.bind(this, file.filepath)}>下载</span> :
@@ -956,8 +954,8 @@ import axios from 'axios';
                                   <td>{details.modelS}</td>
                                   <td>{details.modelM}</td>
                                   <td>{details.modelL}</td>
-                                  <td>{details.Subtotal}</td>
-                                  <td>{details.UnitPrice}</td>
+                                  <td>{details.subtotal}</td>
+                                  <td>{details.unitPrice}</td>
                                   <td>{details.account}</td>
                                   <td>{details.comment}</td>
                           </tr>
