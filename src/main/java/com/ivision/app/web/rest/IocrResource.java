@@ -211,7 +211,9 @@ public class IocrResource {
 		List<JSONObject> jsonObjectList = getResultByIocr(filepath);
 
 		for (JSONObject jsonObject : jsonObjectList) {
+			
 			errorCode = jsonObject.get("error_code").toString();
+			
 			String templateSign = jsonObject.getJSONObject("data").get("templateSign").toString();
 
 			if (!errorCode.equals("0")) {
