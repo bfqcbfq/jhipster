@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -138,8 +137,6 @@ public class IocrResource {
 					templateSign = jsonObject.getJSONObject("data").get("templateSign").toString();
 					errorMessageList.add(errorCode);
 
-				}
-
 				if (!errorMessageList.contains("0")) {
 					errorMessageList.clear();
 					beanRsource.setErrorMessage("您上传的文件有误，请再确认一下");
@@ -171,6 +168,8 @@ public class IocrResource {
 						return ResponseEntity.ok(ydInvoice);
 					}
 
+				}
+				
 				}
 
 			} catch (IllegalStateException e) {
