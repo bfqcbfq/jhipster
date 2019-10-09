@@ -9,8 +9,8 @@ public class MxDeliveryDetails {
 	 private String modelS;
 	 private String modelM;
 	 private String modelL;
-	 private String Subtotal;
-	 private String UnitPrice;
+	 private String subtotal;
+	 private String unitPrice;
 	 private String account;
 	 private String comment;
 	public MxDeliveryDetails() {
@@ -26,8 +26,8 @@ public class MxDeliveryDetails {
 		this.modelS = modelS;
 		this.modelM = modelM;
 		this.modelL = modelL;
-		Subtotal = subtotal;
-		UnitPrice = unitPrice;
+		this.subtotal = subtotal;
+		this.unitPrice = unitPrice;
 		this.account = account;
 		this.comment = comment;
 	}
@@ -74,16 +74,16 @@ public class MxDeliveryDetails {
 		this.modelL = modelL;
 	}
 	public String getSubtotal() {
-		return Subtotal;
+		return subtotal;
 	}
 	public void setSubtotal(String subtotal) {
-		Subtotal = subtotal;
+		this.subtotal = subtotal;
 	}
 	public String getUnitPrice() {
-		return UnitPrice;
+		return unitPrice;
 	}
 	public void setUnitPrice(String unitPrice) {
-		UnitPrice = unitPrice;
+		this.unitPrice = unitPrice;
 	}
 	public String getAccount() {
 		return account;
@@ -100,10 +100,10 @@ public class MxDeliveryDetails {
 	@Override
 	public String toString() {
 		return "MxDeliveryDetails [styleNo=" + styleNo + ", style=" + style + ", color=" + color + ", unit=" + unit
-				+ ", modelS=" + modelS + ", modelM=" + modelM + ", modelL=" + modelL + ", Subtotal=" + Subtotal
-				+ ", UnitPrice=" + UnitPrice + ", account=" + account + ", comment=" + comment + "]";
+				+ ", modelS=" + modelS + ", modelM=" + modelM + ", modelL=" + modelL + ", subtotal=" + subtotal
+				+ ", unitPrice=" + unitPrice + ", account=" + account + ", comment=" + comment + "]";
 	}
-	 
-	 
-
+	
+	
+	
 }
