@@ -6,7 +6,6 @@ public class Invoice {
 
 	private String type;
 	private String templateType;
-	private String errorMessage;
 	private String filepath;
 	private String title;
 	private DeliverMessage deliverMessage;
@@ -15,12 +14,11 @@ public class Invoice {
 	public Invoice() {
 	}
 
-	public Invoice(String type, String templateType, String errorMessage, String filepath, String title,
+	public Invoice(String type, String templateType,  String filepath, String title,
 			DeliverMessage deliverMessage, List<DeliveryDetails> deliveryDetails) {
 		super();
 		this.type = type;
 		this.templateType = templateType;
-		this.errorMessage = errorMessage;
 		this.filepath = filepath;
 		this.title = title;
 		this.deliverMessage = deliverMessage;
@@ -41,14 +39,6 @@ public class Invoice {
 
 	public void setTemplateType(String templateType) {
 		this.templateType = templateType;
-	}
-
-	public String getErrorMessage() {
-		return errorMessage;
-	}
-
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
 	}
 
 	public String getFilepath() {
@@ -85,7 +75,7 @@ public class Invoice {
 
 	@Override
 	public String toString() {
-		return "Invoice [type=" + type + ", templateType=" + templateType + ", errorMessage=" + errorMessage
+		return "Invoice [type=" + type + ", templateType=" + templateType + ", errorMessage=" 
 				+ ", filepath=" + filepath + ", title=" + title + ", deliverMessage=" + deliverMessage
 				+ ", deliveryDetails=" + deliveryDetails + "]";
 	}

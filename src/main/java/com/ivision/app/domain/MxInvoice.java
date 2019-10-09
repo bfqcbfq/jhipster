@@ -6,7 +6,6 @@ public class MxInvoice {
 	
 	private String type;
 	private String templateType;
-	private String errorMessage;
 	private String filepath;
 	private String title;
 	private MxDeliverMessage mxDeliverMessage;
@@ -23,12 +22,11 @@ public class MxInvoice {
 	public MxInvoice() {
 		
 	}
-	public MxInvoice(String type, String templateType, String errorMessage, String filepath, String title,
+	public MxInvoice(String type, String templateType, String filepath, String title,
 			MxDeliverMessage mxDeliverMessage, List<MxDeliveryDetails> deliveryDetails) {
 		super();
 		this.type = type;
 		this.templateType = templateType;
-		this.errorMessage = errorMessage;
 		this.filepath = filepath;
 		this.title = title;
 		this.mxDeliverMessage = mxDeliverMessage;
@@ -45,12 +43,6 @@ public class MxInvoice {
 	}
 	public void setTemplateType(String templateType) {
 		this.templateType = templateType;
-	}
-	public String getErrorMessage() {
-		return errorMessage;
-	}
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
 	}
 	public String getFilepath() {
 		return filepath;
@@ -78,7 +70,7 @@ public class MxInvoice {
 	}
 	@Override
 	public String toString() {
-		return "MxInvoice [type=" + type + ", templateType=" + templateType + ", errorMessage=" + errorMessage
+		return "MxInvoice [type=" + type + ", templateType=" + templateType + ", errorMessage="
 				+ ", filepath=" + filepath + ", title=" + title + ", mxDeliverMessage=" + mxDeliverMessage
 				+ ", deliveryDetails=" + deliveryDetails + "]";
 	}

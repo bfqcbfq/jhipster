@@ -126,7 +126,9 @@ public class IocrResource {
 			String newFilePath = filePath + newFileName;
 
 			try {
-				uploadFile.transferTo(new File(newFilePath)); // 将传来的文件写入新建的文件
+				
+				// 将传来的文件写入新建的文件
+				uploadFile.transferTo(new File(newFilePath)); 
 
 				List<JSONObject> jsonObjectList = getResultByIocr(newFilePath);
 				String errorCode = null;
@@ -148,21 +150,21 @@ public class IocrResource {
 				else {
 					
 					if (templateSign.equals(templateId1)) {
-						invoice.setType("1");
+						invoice.setTemplateType("发货单");
 						
 						invoice.setFilepath(newFilePath);
 						
 						return ResponseEntity.ok(invoice);
 					} else if (templateSign.equals(templateId2)) {
 						
-						mxInvoice.setType("1");
+						mxInvoice.setTemplateType("出货单");
 						
 						mxInvoice.setFilepath(newFilePath);
 						
 						return ResponseEntity.ok(mxInvoice);
 					} else if (templateSign.equals(templateId3)) {
 
-						ydInvoice.setType("1");
+						ydInvoice.setTemplateType("销售出库单");
 						
 						ydInvoice.setFilepath(newFilePath);
 						

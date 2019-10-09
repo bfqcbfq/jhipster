@@ -6,7 +6,6 @@ public class YdInvoice {
 	
 	private String type;
 	private String templateType;
-	private String errorMessage;
 	private String filepath;
 	private String title;
 	private YdDeliverMessage ydDeliverMessage;
@@ -23,12 +22,11 @@ public class YdInvoice {
 	public YdInvoice() {
 		
 	}
-	public YdInvoice(String type, String templateType, String errorMessage, String filepath, String title,
+	public YdInvoice(String type, String templateType, String filepath, String title,
 			YdDeliverMessage ydDeliverMessage, List<YdDeliveryDetails> ydDeliveryDetails) {
 		super();
 		this.type = type;
 		this.templateType = templateType;
-		this.errorMessage = errorMessage;
 		this.filepath = filepath;
 		this.title = title;
 		this.ydDeliverMessage = ydDeliverMessage;
@@ -45,12 +43,6 @@ public class YdInvoice {
 	}
 	public void setTemplateType(String templateType) {
 		this.templateType = templateType;
-	}
-	public String getErrorMessage() {
-		return errorMessage;
-	}
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
 	}
 	public String getFilepath() {
 		return filepath;
@@ -78,7 +70,7 @@ public class YdInvoice {
 	}
 	@Override
 	public String toString() {
-		return "YdInvoice [type=" + type + ", templateType=" + templateType + ", errorMessage=" + errorMessage
+		return "YdInvoice [type=" + type + ", templateType=" + templateType + ", errorMessage="
 				+ ", filepath=" + filepath + ", title=" + title + ", ydDeliverMessage=" + ydDeliverMessage
 				+ ", ydDeliveryDetails=" + ydDeliveryDetails + "]";
 	}
