@@ -4,9 +4,9 @@ import './upload.css';
 import './detail.css';
 import './typetwodetail.css';
 import './typethreedetail.css';
+import './loading.css';
 
 import axios from 'axios';
-import { equal } from 'assert';
   function guid() {
     function s4() {
       return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
@@ -97,6 +97,10 @@ import { equal } from 'assert';
        account: any;
        comment: any;
     }];
+    loading: any;
+    name: any;
+    namedisplay: any;
+    documenttype: any;
   }
   class Upload extends React.Component<any, ImgProps> {
     static defaultProps: any =
@@ -178,7 +182,11 @@ import { equal } from 'assert';
         UnitPrice: any,
         account: any,
         comment: any
-     }]
+     }],
+     loading: any,
+     name: any,
+     namedisplay: 'none',
+     documenttype: any
     };
     static propTypes: any = {
       onEnter: PropTypes.func,
@@ -280,7 +288,11 @@ import { equal } from 'assert';
           UnitPrice: any,
           account: any,
           comment: any
-       }]
+       }],
+       loading: 'none',
+       name: any,
+       namedisplay: 'none',
+       documenttype: any
       };
       // 等待上传的文件队列
       this.queue = [];
@@ -381,36 +393,55 @@ import { equal } from 'assert';
       for (let i = 0; i < this.uploadQueue.length; i++) {
         // 避免重复的上传
         const current = this.uploadQueue[i];
+        // tslint:disable-next-line: no-console
+        console.log(current);
+        const fliename = current.name;
+         // tslint:disable-next-line: no-console
+         console.log(fliename);
+        this.setState({
+               name: fliename,
+               namedisplay: 'block'
+        });
         const guids = this.uploadingQueue.map(f => f.guid);
         if (guids.indexOf(current.guid) < 0) {
           this.uploadingQueue = [...this.uploadingQueue, current];
           const uploadFile = new FormData();
           uploadFile.append('file', current);
+           // tslint:disable-next-line: no-console
+          console.log(uploadFile);
+          this.setState({
+            loading: 'block'
+          });
           axios.post(
             'http://localhost:8080/api/upload',
             uploadFile
           ).then((_: any) => {
             // tslint:disable-next-line: no-console
             console.log(_);
-            const filepath = _.data.filepaths;
+            const filepath = _.data.filepath;
             const message = _.data.errorMessage;
-            if (filepath !== undefined) {
+            const templatetype = _.data.templateType;
+            if (filepath !== null) {
              // tslint:disable-next-line: no-console
                 console.log(filepath);
                 this.setState(prevState => {
                   current.success = true;
                   current.filepath = filepath;
+                  current.templatetype = templatetype;
                   return {
                     files: [...prevState.files, current]
                   };
                 }, () => {
                   /* notification.success({ message: `${current.name}, 上传成功` }) */
-                  alert('上传成功');
+                  this.setState({
+                    loading: 'none',
+                    namedisplay: 'none'
+                  });
                   onLeave(_);
                   this.uploadQueue = this.uploadQueue.filter(f => f.guid !== current.guid);
                   this.processQueue();
                 });
-            } else if (message !== undefined) {
+            } else if (message !== null) {
                // tslint:disable-next-line: no-console
                console.log(message);
                this.setState(prevState => {
@@ -421,6 +452,10 @@ import { equal } from 'assert';
                  };
                }, () => {
                  /* notification.success({ message: `${current.name}, 上传成功` }) */
+                 this.setState({
+                  loading: 'none',
+                  namedisplay: 'none'
+                 });
                  alert('您上传的文件有误，请再确认一下');
                  onLeave(_);
                  this.uploadQueue = this.uploadQueue.filter(f => f.guid !== current.guid);
@@ -437,7 +472,10 @@ import { equal } from 'assert';
               };
             }, () => {
               /* notification.error({ message: `${current.name}, 上传失败` }) */
-            alert('上传失败');
+              this.setState({
+                loading: 'none',
+                namedisplay: 'none'
+              });
               onError(_);
               this.uploadQueue = this.uploadQueue.filter(f => f.guid !== current.guid);
             });
@@ -669,8 +707,12 @@ import { equal } from 'assert';
             <ul>
               <li className="firstli">文件名</li>
               <li className="secondli">状态</li>
+              <li className="secondli">类型</li>
               <li className="thirdli">操作</li>
             </ul>
+        <div style={{ display: this.state.namedisplay }}>
+          <span className="fileName">{this.state.name}</span>
+        </div>
         { /* 上传列表 */ }
         {
           // tslint:disable-next-line: ter-arrow-body-style
@@ -678,6 +720,7 @@ import { equal } from 'assert';
             return (<div className="allFile" key={file.guid}>
               <span className="fileName">{file.name}</span>
               {file.success ? <span className="state">成功</span> : <span className="state">失败</span>}
+              {file.success ? <span className="state">{file.templatetype}</span> : <span className="state">无文件类型</span>}
               {file.success ? <span className="displayshow" onClick={this.handleShowClick.bind(this, file.filepath)}>显示</span> :
                               <span className="displayshow" onClick={this.showError}>显示</span>}
               {file.success ? <span className="download" onClick={this.handleDownLoadClick.bind(this, file.filepath)}>下载</span> :
@@ -866,7 +909,7 @@ import { equal } from 'assert';
       </div>
     </div>
     <div className="popLayer" style = {{ display: this.state.displayTwo }}>
-      <span className="close">关闭</span>
+      <span className="close" onClick={this.clockClick}>关闭</span>
       <div className="popBox">
         <div className="title">{this.state.title}</div>
       <div><span className="sellorder">出货单</span><span className="page">页码: 1/1</span></div>
@@ -936,7 +979,16 @@ import { equal } from 'assert';
       </div>
       </div>
     </div>
-     </div>
+    <div>
+      <div className="ajax-loading" id="ajaxLoading" style={{ display: this.state.loading }}>
+         <div className="overlay">&nbsp;</div>
+         <div className="loading">
+         <img className="loadimg" src="../content/images/load.gif" alt=""/>
+         <span className="laodspan" >文件解析中，请稍后...</span>
+         </div>
+      </div>
+    </div>
+    </div>
       );
     }
   }
