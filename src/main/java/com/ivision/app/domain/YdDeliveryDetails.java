@@ -5,8 +5,8 @@ public class YdDeliveryDetails {
 	private String orderNumber;
 	private String partsNumber;
 	private String partsName;
-	private String VehicleType;
-	private String ProductionAarea;
+	private String vehicleType;
+	private String productionAarea;
 	private String unit;
 	private String unitPrice;
 	private String quantity;
@@ -22,8 +22,8 @@ public class YdDeliveryDetails {
 		this.orderNumber = orderNumber;
 		this.partsNumber = partsNumber;
 		this.partsName = partsName;
-		VehicleType = vehicleType;
-		ProductionAarea = productionAarea;
+		this.vehicleType = vehicleType;
+		this.productionAarea = productionAarea;
 		this.unit = unit;
 		this.unitPrice = unitPrice;
 		this.quantity = quantity;
@@ -49,16 +49,16 @@ public class YdDeliveryDetails {
 		this.partsName = partsName;
 	}
 	public String getVehicleType() {
-		return VehicleType;
+		return vehicleType;
 	}
 	public void setVehicleType(String vehicleType) {
-		VehicleType = vehicleType;
+		this.vehicleType = vehicleType;
 	}
 	public String getProductionAarea() {
-		return ProductionAarea;
+		return productionAarea;
 	}
 	public void setProductionAarea(String productionAarea) {
-		ProductionAarea = productionAarea;
+		this.productionAarea = productionAarea;
 	}
 	public String getUnit() {
 		return unit;
@@ -93,10 +93,11 @@ public class YdDeliveryDetails {
 	@Override
 	public String toString() {
 		return "YdDeliveryDetails [orderNumber=" + orderNumber + ", partsNumber=" + partsNumber + ", partsName="
-				+ partsName + ", VehicleType=" + VehicleType + ", ProductionAarea=" + ProductionAarea + ", unit=" + unit
+				+ partsName + ", vehicleType=" + vehicleType + ", productionAarea=" + productionAarea + ", unit=" + unit
 				+ ", unitPrice=" + unitPrice + ", quantity=" + quantity + ", account=" + account + ", comment="
 				+ comment + "]";
 	}
+	
 	
 	
 	

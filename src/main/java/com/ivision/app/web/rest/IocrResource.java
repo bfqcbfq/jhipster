@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -199,13 +198,12 @@ public class IocrResource {
 			throws IOException {
 
 		String errorCode = null;
+		
 		Invoice invoice = new Invoice();
+		
 		MxInvoice mxInvoice = new MxInvoice();
+		
 		YdInvoice ydInvoice = new YdInvoice();
-		// String type = null;
-
-		// 返回后台数据
-		// Map<String, Object> invoiceMap = new HashMap<>();
 
 		// 调用百度API
 		List<JSONObject> jsonObjectList = getResultByIocr(filepath);
@@ -272,9 +270,6 @@ public class IocrResource {
 			response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
 
 			// 调用百度API接口
-			// TODO 测试上传接口后修改
-			// JSONObject resultByIocr = getResultByIocr(filepath);
-
 			List<JSONObject> resultByIocrList = getResultByIocr(filepath);
 
 			for (JSONObject jsonObject : resultByIocrList) {
@@ -1269,13 +1264,13 @@ public class IocrResource {
 			YdDeliverMessage ydDeliverMessage, List<YdDeliveryDetails> ydDeliveryDetails) throws Exception {
 		try {
 			HSSFWorkbook workbook = new HSSFWorkbook();
+			
 			// 第二步，在webbook中添加一个sheet,对应Excel文件中的sheet
-
 			HSSFSheet hssfSheet = workbook.createSheet("sheet1");
 
 			// 第三步，在sheet中添加表头第0行,老版本poi对Excel的行数列数有限制short
 			HSSFRow hssfRow = hssfSheet.createRow(0);
-			HSSFRow hssfRow1 = hssfSheet.createRow(1);
+			//HSSFRow hssfRow1 = hssfSheet.createRow(1);
 			HSSFRow hssfRow2 = hssfSheet.createRow(2);
 			// 第四步，创建单元格，并设置值表头 设置表头居中
 			HSSFCellStyle hssfCellStyle = workbook.createCellStyle();
@@ -1284,7 +1279,7 @@ public class IocrResource {
 
 			HSSFCell hssfCell = null;// 第一行
 
-			HSSFCell hssfCell1 = null;// 第二行
+			//HSSFCell hssfCell1 = null;// 第二行
 
 			HSSFCell hssfCell2 = null;// 第三行
 
