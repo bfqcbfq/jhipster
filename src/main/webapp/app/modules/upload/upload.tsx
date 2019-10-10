@@ -19,7 +19,7 @@ import axios from 'axios';
     files: any[];
     onLeave: any;
     url: String;
-    cq: 3;
+    cq: 10;
     onEnter: any;
     maxSize: number;
     suffixs: [];
@@ -207,11 +207,11 @@ import axios from 'axios';
       super(props, context);
       this.state = {
         // 上传的文件列表, 无论上传还是失败，success字段会表示文件是否上传成功
-        maxLength: 5,
+        maxLength: 10,
         files: [],
         onLeave: any,
         url: 'http://localhost:8080/api/upload',
-        cq: 3,
+        cq: 10,
         onEnter: any,
         maxSize: 10240000,
         suffixs: [],
@@ -419,9 +419,13 @@ import axios from 'axios';
             // tslint:disable-next-line: no-console
             console.log(_);
             const filepath = _.data.filepath;
+            // tslint:disable-next-line: no-console
+            console.log(filepath);
             const message = _.data.errorMessage;
+            // tslint:disable-next-line: no-console
+            console.log(message);
             const templatetype = _.data.templateType;
-            if (filepath !== null) {
+            if (filepath !== null && filepath !== undefined && filepath !== '') {
              // tslint:disable-next-line: no-console
                 console.log(filepath);
                 this.setState(prevState => {
@@ -441,7 +445,7 @@ import axios from 'axios';
                   this.uploadQueue = this.uploadQueue.filter(f => f.guid !== current.guid);
                   this.processQueue();
                 });
-            } else if (message !== null) {
+            } else if (message !== null && message !== undefined && message !== '') {
                // tslint:disable-next-line: no-console
                console.log(message);
                this.setState(prevState => {
@@ -1016,10 +1020,10 @@ import axios from 'axios';
     onError: () => {
       return true;
     },
-    cq: 3,
+    cq: 10,
     multiple: true,
     maxSize: 1024,
-    maxLength: 5,
+    maxLength: 10,
     suffixs: []
   };
   export default Upload;
