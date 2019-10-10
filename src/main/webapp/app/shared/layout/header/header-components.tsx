@@ -40,7 +40,7 @@ export const Upload = props => (
   <NavItem>
     <NavLink tag={Link} to="/upload" className="d-flex align-items-center">
       <FontAwesomeIcon icon={faStar} />
-      <span>上传文件</span>
+      <span>文字识别（OCR）</span>
     </NavLink>
   </NavItem>
 );

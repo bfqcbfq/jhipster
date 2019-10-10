@@ -113,7 +113,9 @@ public class IocrResource {
 			String originalFileName = uploadFile.getOriginalFilename();
 
 			// 获取文件类型
-			String fileType = originalFileName.substring(originalFileName.lastIndexOf("."));
+			String fileType = originalFileName.substring(originalFileName.lastIndexOf(".")+1);
+			
+			if("jpg".equalsIgnoreCase(fileType) || "png".equalsIgnoreCase(fileType) || "bmp".equalsIgnoreCase(fileType)) {
 
 			Date now = new Date();
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -182,6 +184,14 @@ public class IocrResource {
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
+			
+			}else {
+				
+				beanRsource.setErrorMessage("您上传的文件有误，请再确认一下");
+
+				return ResponseEntity.ok(beanRsource);
+			}
+			
 		}
 		return null;
 
@@ -265,8 +275,11 @@ public class IocrResource {
 
 		try {
 			ServletOutputStream out = response.getOutputStream();
-			String newFileName = "北京神丰科技有限公司";
-			// String name = new String(URLEncoder.encode(newFileName, "utf-8"));
+			Date now = new Date();
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+
+			// 定义Excel文件新名称
+			String newFileName = dateFormat.format(now) + System.currentTimeMillis();
 			String fileName = new String((newFileName).getBytes(), "UTF-8");
 			response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
 
