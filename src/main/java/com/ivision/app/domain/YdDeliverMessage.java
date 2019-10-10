@@ -1,5 +1,11 @@
 package com.ivision.app.domain;
 
+/**
+ * 
+ * 易达软件销售出库单主体信息
+ * @author wanglei
+ *
+ */
 public class YdDeliverMessage {
 	
 	private String mainBusiness;

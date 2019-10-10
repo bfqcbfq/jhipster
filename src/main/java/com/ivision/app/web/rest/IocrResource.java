@@ -1468,11 +1468,161 @@ public class IocrResource {
 				}
 
 			}
+			
+			//明歆制衣
+			else if (mxDeliveryDetails != null && !mxDeliveryDetails.isEmpty()) {
+
+				for (int i = 0; i < mxDeliveryDetails.size(); i++) {
+					hssfRow = hssfSheet.createRow(i + 3);
+					MxDeliveryDetails de = mxDeliveryDetails.get(i);
+
+					// 第六步，创建单元格，并设置值
+					String storehouseNo = de.getStyleNo();
+
+					if (StringUtils.isEmpty(storehouseNo)) {
+						storehouseNo = "-";
+					}
+					hssfRow.createCell(0).setCellValue(storehouseNo);
+
+					String materialNo = "";
+					if (de.getStyle() != null) {
+						materialNo = de.getStyle();
+					}
+					hssfRow.createCell(1).setCellValue(materialNo);
+
+					String brand = "";
+					if (de.getColor() != null) {
+						brand = de.getColor();
+					}
+					hssfRow.createCell(2).setCellValue(brand);
+
+					String unit = "";
+					if (de.getUnit() != null) {
+						unit = de.getUnit();
+					}
+					hssfRow.createCell(3).setCellValue(unit);
+
+					String quantity = "";
+					if (de.getModelS() != null) {
+						quantity = de.getModelS();
+					}
+					hssfRow.createCell(4).setCellValue(quantity);
+
+					String singleWeight = "";
+					if (de.getModelM() != null) {
+						singleWeight = de.getModelM();
+					}
+					hssfRow.createCell(5).setCellValue(singleWeight);
+
+					String totalWeight = "";
+					if (de.getModelL() != null) {
+						totalWeight = de.getModelL();
+					}
+					hssfRow.createCell(6).setCellValue(totalWeight);
+
+					String batchNo = "";
+					if (de.getSubtotal() != null) {
+						batchNo = de.getSubtotal();
+					}
+					hssfRow.createCell(7).setCellValue(batchNo);
+
+					String date = "";
+					if (de.getUnitPrice() != null) {
+						date = de.getUnitPrice();
+					}
+					hssfRow.createCell(8).setCellValue(date);
+
+					String account = "";
+					if (de.getAccount() != null) {
+						account = de.getAccount();
+					}
+					hssfRow.createCell(9).setCellValue(account);
+					
+					String comment = "";
+					if (de.getComment() != null) {
+						comment = de.getComment();
+					}
+					hssfRow.createCell(10).setCellValue(comment);
+
+				}
+
+			}
+			
+			else if (ydDeliveryDetails != null && !ydDeliveryDetails.isEmpty()) {
+
+				for (int i = 0; i < ydDeliveryDetails.size(); i++) {
+					hssfRow = hssfSheet.createRow(i + 3);
+					YdDeliveryDetails de = ydDeliveryDetails.get(i);
+
+					// 第六步，创建单元格，并设置值
+					String storehouseNo = de.getOrderNumber();
+
+					if (StringUtils.isEmpty(storehouseNo)) {
+						storehouseNo = "-";
+					}
+					hssfRow.createCell(0).setCellValue(storehouseNo);
+
+					String materialNo = "";
+					if (de.getPartsNumber() != null) {
+						materialNo = de.getPartsNumber();
+					}
+					hssfRow.createCell(1).setCellValue(materialNo);
+
+					String brand = "";
+					if (de.getPartsName() != null) {
+						brand = de.getPartsName();
+					}
+					hssfRow.createCell(2).setCellValue(brand);
+
+					String unit = "";
+					if (de.getVehicleType() != null) {
+						unit = de.getVehicleType();
+					}
+					hssfRow.createCell(3).setCellValue(unit);
+
+					String quantity = "";
+					if (de.getProductionAarea() != null) {
+						quantity = de.getProductionAarea();
+					}
+					hssfRow.createCell(4).setCellValue(quantity);
+
+					String singleWeight = "";
+					if (de.getUnit() != null) {
+						singleWeight = de.getUnit();
+					}
+					hssfRow.createCell(5).setCellValue(singleWeight);
+
+					String totalWeight = "";
+					if (de.getUnitPrice() != null) {
+						totalWeight = de.getUnitPrice();
+					}
+					hssfRow.createCell(6).setCellValue(totalWeight);
+
+					String batchNo = "";
+					if (de.getQuantity() != null) {
+						batchNo = de.getQuantity();
+					}
+					hssfRow.createCell(7).setCellValue(batchNo);
+
+					String date = "";
+					if (de.getAccount() != null) {
+						date = de.getAccount();
+					}
+					hssfRow.createCell(8).setCellValue(date);
+
+					String comment = "";
+					if (de.getComment() != null) {
+						comment = de.getComment();
+					}
+					hssfRow.createCell(9).setCellValue(comment);
+
+				}
+
+			}
 
 			// 第七步，将文件输出到客户端浏览器
 			try {
 				workbook.write(out);
-				workbook.close();
 				out.flush();
 				out.close();
 			} catch (Exception e) {

@@ -1,6 +1,13 @@
 package com.ivision.app.domain;
 
+/**
+ * 
+ * 易达软件出货明细实体类
+ * @author wanglei
+ *
+ */
 public class YdDeliveryDetails {
+	
 	
 	private String orderNumber;
 	private String partsNumber;
