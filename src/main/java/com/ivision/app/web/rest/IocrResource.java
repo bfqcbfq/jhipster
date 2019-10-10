@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -426,7 +427,7 @@ public class IocrResource {
 
 		for (int i = 0; i < list.size(); i++) {
 
-			HashMap<String, String> map = (HashMap) list.get(i);
+			HashMap<String, String> map = (HashMap<String, String>) list.get(i);
 
 			String word = map.get("word");
 
@@ -728,7 +729,7 @@ public class IocrResource {
 
 		for (int i = 0; i < list.size(); i++) {
 
-			HashMap<String, String> map = (HashMap) list.get(i);
+			HashMap<String, String> map = (HashMap<String, String>) list.get(i);
 
 			String word = map.get("word");
 
@@ -1011,7 +1012,7 @@ public class IocrResource {
 
 		for (int i = 0; i < list.size(); i++) {
 
-			HashMap<String, String> map = (HashMap) list.get(i);
+			HashMap<String, String> map = (HashMap<String, String>) list.get(i);
 
 			String word = map.get("word");
 
@@ -1458,6 +1459,7 @@ public class IocrResource {
 			// 第七步，将文件输出到客户端浏览器
 			try {
 				workbook.write(out);
+				workbook.close();
 				out.flush();
 				out.close();
 			} catch (Exception e) {
