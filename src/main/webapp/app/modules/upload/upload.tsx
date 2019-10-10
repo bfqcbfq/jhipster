@@ -25,6 +25,7 @@ import axios from 'axios';
     suffixs: [];
     onError: any;
     multiple: true;
+    images: 'image/*';
     isDragover: false;
     filepath: any;
     display: any;
@@ -72,12 +73,13 @@ import axios from 'axios';
       orderNumber: any;
       partsNumber: any;
       partsName: any;
-      VehicleType: any;
-      ProductionAarea: any;
+      vehicleType: any;
+      productionAarea: any;
       unitPrice: any;
       quantity: any;
       account: any;
       comment: any;
+      unit: any;
     }];
     businessCode: any;
     deliverySign: any;
@@ -109,6 +111,7 @@ import axios from 'axios';
       onError: () => true,
       cq: number,
       multiple: true,
+      images: 'image/*',
       maxSize: number,
       maxLength: number,
       suffixs: [],
@@ -158,12 +161,13 @@ import axios from 'axios';
         orderNumber: any,
         partsNumber: any,
         partsName: any,
-        VehicleType: any,
-        ProductionAarea: any,
+        vehicleType: any,
+        productionAarea: any,
         unitPrice: any,
         quantity: any,
         account: any,
-        comment: any
+        comment: any,
+        unit: any
       }],
       businessCode: any,
       deliverySign: any,
@@ -195,6 +199,7 @@ import axios from 'axios';
       url: PropTypes.string,
       cq: PropTypes.number,
       multiple: PropTypes.bool,
+      images: PropTypes.string,
       maxSize: PropTypes.number,
       maxLength: PropTypes.number,
       suffixs: PropTypes.array
@@ -217,6 +222,7 @@ import axios from 'axios';
         suffixs: [],
         onError: any,
         multiple: true,
+        images: 'image/*',
         isDragover: false,
         filepath: any,
         display: 'none',
@@ -264,12 +270,13 @@ import axios from 'axios';
           orderNumber: any,
           partsNumber: any,
           partsName: any,
-          VehicleType: any,
-          ProductionAarea: any,
+          vehicleType: any,
+          productionAarea: any,
           unitPrice: any,
           quantity: any,
           account: any,
-          comment: any
+          comment: any,
+          unit: any
         }],
         businessCode: any,
         deliverySign: any,
@@ -393,11 +400,7 @@ import axios from 'axios';
       for (let i = 0; i < this.uploadQueue.length; i++) {
         // 避免重复的上传
         const current = this.uploadQueue[i];
-        // tslint:disable-next-line: no-console
-        console.log(current);
         const fliename = current.name;
-         // tslint:disable-next-line: no-console
-         console.log(fliename);
         this.setState({
                name: fliename,
                namedisplay: 'block'
@@ -495,6 +498,8 @@ import axios from 'axios';
       const { cq, onEnter } = this.props;
       if (this.uploadQueue.length < cq && this.queue.length > 0) {
         const uploadFile = this.queue.shift();
+        // tslint:disable-next-line: no-console
+        console.log(uploadFile);
         if (onEnter(uploadFile)) {
           this.uploadQueue = [...this.uploadQueue, uploadFile];
           this.sumbit();
@@ -551,7 +556,6 @@ import axios from 'axios';
            const downloadElement = document.createElement('a');
            const href = window.URL.createObjectURL(blob);
            downloadElement.href = href;
-           downloadElement.download = '123.xls';
            document.body.appendChild(downloadElement);
            downloadElement.click();
            document.body.removeChild(downloadElement);
@@ -709,7 +713,7 @@ import axios from 'axios';
             <ul>
               <li className="firstli">文件名</li>
               <li className="secondli">状态</li>
-              <li className="secondli">类型</li>
+              <li className="fourli">类型</li>
               <li className="thirdli">操作</li>
             </ul>
         <div style={{ display: this.state.namedisplay }}>
@@ -756,7 +760,8 @@ import axios from 'axios';
           onDrop = {
             this.handleDrop
           } >
-              <input ref={input => this.inputRef = input} onChange={this.handleFileChange} style = {{ 'display': 'none' }} type = "file" id = "file" multiple = {multiple}/>
+              <input ref={input => this.inputRef = input} onChange={this.handleFileChange} style = {{ 'display': 'none' }}
+                                  type = "file" id = "file" multiple = {multiple} accept="image/*"/>
           <label className = "forlale" htmlFor = "file">
           <p className="changeContent">
           <span>请<span className="choosefile">选择文件</span><span>或</span><span className="choosefile" >拖拽</span>文件到这里</span>
@@ -821,7 +826,7 @@ import axios from 'axios';
                      }
                    </tbody>
                </table>
-           <div className="bottomcontent">{this.state.note}</div>
+           <div className="onebottomcontent">{this.state.note}</div>
            <div>
               <span>经手人(签字或盖章){this.state.handler}</span>
               <span className="spantwo">领料人(签字或盖章){this.state.picker}</span>
@@ -877,21 +882,21 @@ import axios from 'axios';
                             <td>{details.orderNumber}</td>
                             <td>{details.partsNumber}</td>
                             <td>{details.partsName}</td>
-                            <td>{details.VehicleType}</td>
-                            <td>{details.ProductionAarea}</td>
+                            <td>{details.vehicleType}</td>
+                            <td>{details.unit}</td>
+                            <td>{details.partsNumber}</td>
                             <td>{details.unitPrice}</td>
                             <td>{details.quantity}</td>
                             <td>{details.account}</td>
                             <td>{details.comment}</td>
-                            <td>{details.partsNumber}</td>
                           </tr>
                            );
                        })
                      }
           </tbody>
         </table>
-      <div className="bottomcontent">本页小计金额:{this.state.totalAccount}</div>
-      <div className="bottomcontent"><span>总合计金额(大写):{this.state.totalAmountBig}</span><span className="totalmoneysmall">总合计金额(小写):{this.state.totalAmountSmall}</span></div>
+      <div className="threebottomcontent">本页小计金额:{this.state.totalAccount}</div>
+      <div className="threebottomcontent"><span>总合计金额(大写):{this.state.totalAmountBig}</span><span className="totalmoneysmall">总合计金额(小写):{this.state.totalAmountSmall}</span></div>
       <div>
          <span>公司电话:{this.state.totalAmountSmall}</span>
          <span className="spantwo">地址:{this.state.address}</span>
@@ -1002,6 +1007,7 @@ import axios from 'axios';
     url: PropTypes.string,
     cq: PropTypes.number,
     multiple: PropTypes.bool,
+    images: PropTypes.string,
     maxSize: PropTypes.number,
     maxLength: PropTypes.number,
     suffixs: PropTypes.array
@@ -1022,6 +1028,7 @@ import axios from 'axios';
     },
     cq: 10,
     multiple: true,
+    images: 'image/*',
     maxSize: 1024,
     maxLength: 10,
     suffixs: []
