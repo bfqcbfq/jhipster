@@ -379,8 +379,8 @@ public class IocrResource {
 
 		AipOcr client = new AipOcr(appId, apiKey, secretKey);
 
-		client.setConnectionTimeoutInMillis(2000);
-		client.setSocketTimeoutInMillis(60000);
+		client.setConnectionTimeoutInMillis(6000);
+		client.setSocketTimeoutInMillis(18000);
 
 		List<String> templateSignList = new ArrayList<String>();
 		templateSignList.add(templateId1);

@@ -100,7 +100,7 @@ import axios from 'axios';
        comment: any;
     }];
     loading: any;
-    name: any;
+    name: any[];
     namedisplay: any;
     documenttype: any;
   }
@@ -188,7 +188,7 @@ import axios from 'axios';
         comment: any
      }],
      loading: any,
-     name: any,
+     name: [],
      namedisplay: 'none',
      documenttype: any
     };
@@ -297,7 +297,7 @@ import axios from 'axios';
           comment: any
        }],
        loading: 'none',
-       name: any,
+       name: [],
        namedisplay: 'none',
        documenttype: any
       };
@@ -387,6 +387,7 @@ import axios from 'axios';
       for (let i = 0; i < files.length; i++) {
         const errMsg = this.check(files[i]);
         if (errMsg) {
+          alert(errMsg);
         } else {
           files[i].guid = guid();
           this.addQueue(files[i]);
@@ -396,15 +397,21 @@ import axios from 'axios';
 
     sumbit = async () => {
       const { onLeave, onError, url } = this.props;
+      const arr: any [] = [];
       // tslint:disable-next-line: prefer-for-of
       for (let i = 0; i < this.uploadQueue.length; i++) {
         // 避免重复的上传
         const current = this.uploadQueue[i];
-        const fliename = current.name;
+        const filename = current.name;
+        arr.push(filename);
+         // tslint:disable-next-line: no-console
+         console.log(arr);
         this.setState({
-               name: fliename,
+               name: arr,
                namedisplay: 'block'
         });
+        // tslint:disable-next-line: no-console
+        console.log(this.state.name);
         const guids = this.uploadingQueue.map(f => f.guid);
         if (guids.indexOf(current.guid) < 0) {
           this.uploadingQueue = [...this.uploadingQueue, current];
@@ -716,16 +723,30 @@ import axios from 'axios';
               <li className="fourli">类型</li>
               <li className="thirdli">操作</li>
             </ul>
-        <div style={{ display: this.state.namedisplay }}>
-          <span className="fileName">{this.state.name}</span>
-        </div>
+            {
+                // tslint:disable-next-line: ter-arrow-body-style
+               this.state.name.map((item, index) => {
+                 // tslint:disable-next-line: no-console
+                 console.log(this.state.name);
+                  return(
+                   // tslint:disable-next-line: jsx-key
+                   <div style={{ display: this.state.namedisplay }} key={index}>
+                      <span className="fileName">{item}</span>
+                      <span className="state">上传中</span>
+                      <span className="gengone">-</span>
+                      <span className="gengtwo">-</span>
+                   </div>
+                  );
+              })
+            }
+
         { /* 上传列表 */ }
         {
           // tslint:disable-next-line: ter-arrow-body-style
           this.state.files.map(file => {
             return (<div className="allFile" key={file.guid}>
               <span className="fileName">{file.name}</span>
-              {file.success ? <span className="state">成功</span> : <span className="state">失败</span>}
+              {file.success ? <span className="state">成功</span> : <span className="state">失败/单据类型不匹配</span>}
               {file.success ? <span className="type">{file.templatetype}</span> : <span className="type">无</span>}
               {file.success ? <span className="displayshow" onClick={this.handleShowClick.bind(this, file.filepath)}>显示</span> :
                               <span className="displayshow" onClick={this.showError}>显示</span>}
