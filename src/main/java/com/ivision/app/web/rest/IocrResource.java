@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -20,6 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -122,6 +124,7 @@ public class IocrResource {
 
 			// 定义文件下载本地新名称
 			String newFileName = dateFormat.format(now) + System.currentTimeMillis() + fileType;
+
 			// 新文件的路径
 			String newFilePath = filePath + newFileName;
 
@@ -185,8 +188,10 @@ public class IocrResource {
 				e.printStackTrace();
 			} catch (IOException e1) {
 				e1.printStackTrace();
+			}catch (Exception e2) {
+				e2.printStackTrace();
 			}
-			
+				
 //			}else {
 //				
 //				beanRsource.setErrorMessage("您上传的文件有误，请再确认一下");
