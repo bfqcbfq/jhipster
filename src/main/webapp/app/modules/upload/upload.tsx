@@ -387,7 +387,6 @@ import axios from 'axios';
       for (let i = 0; i < files.length; i++) {
         const errMsg = this.check(files[i]);
         if (errMsg) {
-          alert(errMsg);
         } else {
           files[i].guid = guid();
           this.addQueue(files[i]);
@@ -470,7 +469,6 @@ import axios from 'axios';
                   loading: 'none',
                   namedisplay: 'none'
                  });
-                 alert('您上传的文件有误，请再确认一下');
                  onLeave(_);
                  this.uploadQueue = this.uploadQueue.filter(f => f.guid !== current.guid);
                  this.processQueue();
@@ -567,11 +565,9 @@ import axios from 'axios';
            downloadElement.click();
            document.body.removeChild(downloadElement);
            window.URL.revokeObjectURL(href);
-           alert('下载成功');
       })
       // tslint:disable-next-line: only-arrow-functions
       .catch(function(error) {
-          alert('下载失败');
       });
     }
 
@@ -615,7 +611,6 @@ import axios from 'axios';
              picker: detailpicker,
              deliveryDetails: deliveryDetailsArr
            });
-            alert('成功');
           } else if (type === '2') {
             const titles = response.data.title;
             const mxDeliverMessage = response.data.mxDeliverMessage;
@@ -645,7 +640,6 @@ import axios from 'axios';
               totalQuantity: detotalQuantity,
               MxDeliveryDetails: deliveryDetailsArr
             });
-            alert('成功');
           } else if (type === '3') {
             const titles = response.data.title;
             const ydDeliverMessages = response.data.ydDeliverMessage;
@@ -691,13 +685,11 @@ import axios from 'axios';
               deliveryNo: detaildeliveryNo,
               ydDeliveryDetails: ydDeliveryDetailsArr
             });
-            alert('成功');
           }
 
       })
       // tslint:disable-next-line: only-arrow-functions
       .catch(function(error) {
-          alert('失败');
       });
 
     }
@@ -746,12 +738,12 @@ import axios from 'axios';
           this.state.files.map(file => {
             return (<div className="allFile" key={file.guid}>
               <span className="fileName">{file.name}</span>
-              {file.success ? <span className="state">成功</span> : <span className="state">失败/单据类型不匹配</span>}
-              {file.success ? <span className="type">{file.templatetype}</span> : <span className="type">无</span>}
+              {file.success ? <span className="state">成功</span> : <span>失败/单据类型不匹配</span>}
+              {file.success ? <span className="type">{file.templatetype}</span> : <span className="newtype">无</span>}
               {file.success ? <span className="displayshow" onClick={this.handleShowClick.bind(this, file.filepath)}>显示</span> :
-                              <span className="displayshow" onClick={this.showError}>显示</span>}
+                              <span className="newdisplayshow">显示</span>}
               {file.success ? <span className="download" onClick={this.handleDownLoadClick.bind(this, file.filepath)}>下载</span> :
-                              <span className="download" onClick={this.downLoadError}>下载</span>}
+                              <span className="download">下载</span>}
               <span className="del" onClick={this.handleCloseClick.bind(this, file.guid)}>删除</span>
             </div>
             );

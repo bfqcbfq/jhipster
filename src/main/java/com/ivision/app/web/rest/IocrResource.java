@@ -87,7 +87,7 @@ public class IocrResource {
 	 */
 	@PostMapping("/upload")
 	public ResponseEntity<Object> getfileRecord(
-			@RequestParam(value = "file", required = false) MultipartFile uploadFile) throws IOException {
+			@RequestParam(value = "file", required = false) MultipartFile[] uploadFiles) throws IOException {
 
 		List<String> errorMessageList = new ArrayList<String>();
 
@@ -108,7 +108,7 @@ public class IocrResource {
 			file.mkdirs();
 		}
 
-		//for (MultipartFile uploadFile : uploadFiles) {
+		for (MultipartFile uploadFile : uploadFiles) {
 			// 获取原始图片的扩展名
 			String originalFileName = uploadFile.getOriginalFilename();
 
@@ -194,7 +194,7 @@ public class IocrResource {
 //				return ResponseEntity.ok(beanRsource);
 //			}
 			
-		//}
+		}
 		return null;
 
 	}
@@ -381,8 +381,8 @@ public class IocrResource {
 
 		AipOcr client = new AipOcr(appId, apiKey, secretKey);
 
-		client.setConnectionTimeoutInMillis(6000);
-		client.setSocketTimeoutInMillis(18000);
+		client.setConnectionTimeoutInMillis(10000);
+		client.setSocketTimeoutInMillis(180000);
 
 		List<String> templateSignList = new ArrayList<String>();
 		templateSignList.add(templateId1);
