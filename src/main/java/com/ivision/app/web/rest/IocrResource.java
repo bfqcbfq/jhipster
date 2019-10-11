@@ -87,7 +87,7 @@ public class IocrResource {
 	 */
 	@PostMapping("/upload")
 	public ResponseEntity<Object> getfileRecord(
-			@RequestParam(value = "file", required = false) MultipartFile[] uploadFiles) throws IOException {
+			@RequestParam(value = "file", required = false) MultipartFile uploadFile) throws IOException {
 
 		List<String> errorMessageList = new ArrayList<String>();
 
@@ -108,14 +108,14 @@ public class IocrResource {
 			file.mkdirs();
 		}
 
-		for (MultipartFile uploadFile : uploadFiles) {
+		//for (MultipartFile uploadFile : uploadFiles) {
 			// 获取原始图片的扩展名
 			String originalFileName = uploadFile.getOriginalFilename();
 
 			// 获取文件类型
-			String fileType = originalFileName.substring(originalFileName.lastIndexOf(".")+1);
+			String fileType = originalFileName.substring(originalFileName.lastIndexOf("."));
 			
-			if("jpg".equalsIgnoreCase(fileType) || "png".equalsIgnoreCase(fileType) || "bmp".equalsIgnoreCase(fileType)) {
+			//if("jpg".equalsIgnoreCase(fileType) || "png".equalsIgnoreCase(fileType) || "bmp".equalsIgnoreCase(fileType)) {
 
 			Date now = new Date();
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -135,8 +135,9 @@ public class IocrResource {
 
 				for (JSONObject jsonObject : jsonObjectList) {
 					errorCode = jsonObject.get("error_code").toString();
-					templateSign = jsonObject.getJSONObject("data").get("templateSign").toString();
-
+					
+					
+					
 					if (!errorCode.equals("0")) {
 						errorMessageList.add(errorCode);
 
@@ -152,23 +153,24 @@ public class IocrResource {
 					}
 
 					else {
+						templateSign = jsonObject.getJSONObject("data").get("templateSign").toString();
 
 						if (templateSign.equals(templateId1)) {
-							invoice.setTemplateType("发货单");
+							invoice.setTemplateType("神丰科技发货单");
 
 							invoice.setFilepath(newFilePath);
 
 							return ResponseEntity.ok(invoice);
 						} else if (templateSign.equals(templateId2)) {
 
-							mxInvoice.setTemplateType("出货单");
+							mxInvoice.setTemplateType("明歆制衣出货单");
 
 							mxInvoice.setFilepath(newFilePath);
 
 							return ResponseEntity.ok(mxInvoice);
 						} else if (templateSign.equals(templateId3)) {
 
-							ydInvoice.setTemplateType("销售出库单");
+							ydInvoice.setTemplateType("易达软件出库单");
 
 							ydInvoice.setFilepath(newFilePath);
 
@@ -185,14 +187,14 @@ public class IocrResource {
 				e1.printStackTrace();
 			}
 			
-			}else {
-				
-				beanRsource.setErrorMessage("您上传的文件有误，请再确认一下");
-
-				return ResponseEntity.ok(beanRsource);
-			}
+//			}else {
+//				
+//				beanRsource.setErrorMessage("您上传的文件有误，请再确认一下");
+//
+//				return ResponseEntity.ok(beanRsource);
+//			}
 			
-		}
+		//}
 		return null;
 
 	}
@@ -373,7 +375,7 @@ public class IocrResource {
 	 * @return JSONObject
 	 * @throws IOException
 	 */
-	public List<JSONObject> getResultByIocr(String filepath) throws IOException {
+	public List<JSONObject> getResultByIocr(String iocrFilepath) throws IOException {
 
 		List<JSONObject> jbList = new ArrayList<JSONObject>();
 
@@ -395,7 +397,7 @@ public class IocrResource {
 			options.put("templateSign", templateId);
 
 			// 参数为本地路径
-			JSONObject custom = client.custom(filepath, options);
+			JSONObject custom = client.custom(iocrFilepath, options);
 			jbList.add(custom);
 
 		}
@@ -440,7 +442,7 @@ public class IocrResource {
 
 		for (int i = 0; i < list.size(); i++) {
 
-			HashMap<String, String> map = (HashMap<String, String>) list.get(i);
+			HashMap<String, String> map = (HashMap) list.get(i);
 
 			String word = map.get("word");
 
@@ -742,7 +744,7 @@ public class IocrResource {
 
 		for (int i = 0; i < list.size(); i++) {
 
-			HashMap<String, String> map = (HashMap<String, String>) list.get(i);
+			HashMap<String, String> map = (HashMap) list.get(i);
 
 			String word = map.get("word");
 
@@ -1025,7 +1027,7 @@ public class IocrResource {
 
 		for (int i = 0; i < list.size(); i++) {
 
-			HashMap<String, String> map = (HashMap<String, String>) list.get(i);
+			HashMap<String, String> map = (HashMap) list.get(i);
 
 			String word = map.get("word");
 
@@ -1623,6 +1625,7 @@ public class IocrResource {
 			// 第七步，将文件输出到客户端浏览器
 			try {
 				workbook.write(out);
+				workbook.close();
 				out.flush();
 				out.close();
 			} catch (Exception e) {
