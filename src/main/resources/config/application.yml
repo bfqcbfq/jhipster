@@ -152,17 +152,17 @@ jhipster:
 # application:
 iocr:
   app:
-    id: 17492607
+    id: 17209008
   api:
-    key: TRoXhA8o6UCFTVgVpu9WcOgR
+    key: 0FTdfUyOBD0H8QkYsXRmyp3o
   secret:
-    key: A5Av0B6gasHGFuBXnM38Ti1rhhiGQHBI
+    key: 1eeyziHIjbixQZW4kq4XM8WhPC2PmlCi
   template:
-    id1: bf58e5f6402af848cbcb6d0be68dd918
-    id2: 741ce86a83b46a6a3fe8d09d973cbe37
-    id3: 30c93abb85d66628ec30a156f9508edd
+    id1: 43005dffcf2a50006c2a35cc9238f5a5
+    id2: 471ffb31cdb04a6e4572a115a5285a65
+    id3: 51d64f9e16fb3c50027a22886038fb24
   
     
 file:
   downLoad:
-    path: D:\\FilesAndDatas\\download\\
+    path: D:\\FilesAndDatas\\upload\\

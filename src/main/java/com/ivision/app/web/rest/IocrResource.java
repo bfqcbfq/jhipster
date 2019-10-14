@@ -2,6 +2,7 @@ package com.ivision.app.web.rest;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -123,7 +124,7 @@ public class IocrResource {
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 
 			// 定义文件下载本地新名称
-			String newFileName = dateFormat.format(now) + System.currentTimeMillis() + fileType;
+			String newFileName = dateFormat.format(now) + System.nanoTime() + fileType;
 
 			// 新文件的路径
 			String newFilePath = filePath + newFileName;
@@ -184,7 +185,7 @@ public class IocrResource {
 
 				}
 
-			} catch (IllegalStateException e) {
+			} catch (FileAlreadyExistsException  e) {
 				e.printStackTrace();
 			} catch (IOException e1) {
 				e1.printStackTrace();
