@@ -150,3 +150,7 @@
 .dragover{
     margin-left: 46%;
 }
+.overone{
+    width: 100%;
+    overflow-y: auto;
+}

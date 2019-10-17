@@ -209,6 +209,7 @@ import ReactDOM from 'react-dom';
     uploadQueue: any[];
     uploadingQueue: any[];
     inputRef: any;
+    dargRef: any;
     constructor(props: any, context: any) {
       super(props, context);
       this.state = {
@@ -309,12 +310,15 @@ import ReactDOM from 'react-dom';
       // 正在上传的队列, 无论上传成功还是上传失败都不会从该队列移除, 避免死循环
       this.uploadingQueue = [];
       this.inputRef = React.createRef();
+      this.dargRef = React.createRef();
 
       this.clockClick = this.clockClick.bind(this);
       // tslint:disable-next-line: unnecessary-bind
       this.handleFileChange = this.handleFileChange.bind(this);
       this.showError = this.showError.bind(this);
       this.downLoadError = this.downLoadError.bind(this);
+      // tslint:disable-next-line: unnecessary-bind
+      this.handleFilesChange = this.handleFilesChange.bind(this);
     }
 
     handleDrag = (event: { preventDefault: () => void; stopPropagation: () => void; }) => {
@@ -381,6 +385,24 @@ import ReactDOM from 'react-dom';
       event.preventDefault();
       event.stopPropagation();
       const files = this.inputRef.files;
+      if (this.state.files + files.length > maxLength) {
+        return;
+      }
+      // tslint:disable-next-line: prefer-for-of
+      for (let i = 0; i < files.length; i++) {
+        const errMsg = this.check(files[i]);
+        if (errMsg) {
+        } else {
+          files[i].guid = guid();
+          this.addQueue(files[i]);
+        }
+      }
+    }
+    handleFilesChange = (event: { preventDefault: () => void; stopPropagation: () => void; }) => {
+      const { maxLength } = this.props;
+      event.preventDefault();
+      event.stopPropagation();
+      const files = this.dargRef.files;
       if (this.state.files + files.length > maxLength) {
         return;
       }
@@ -719,7 +741,7 @@ import ReactDOM from 'react-dom';
               <li className="fourli">类型</li>
               <li className="thirdli">操作</li>
             </ul>
-            <div className="over" style={{ display: this.state.namedisplay }}>
+            <div className="overone" style={{ display: this.state.namedisplay }}>
             {
                 // tslint:disable-next-line: ter-arrow-body-style
                this.state.name.map((item, index) => {
@@ -784,7 +806,7 @@ import ReactDOM from 'react-dom';
           } >
                <input ref={input => this.inputRef = input} onChange={this.handleFileChange} style = {{ 'display': 'none' }}
                                   type = "file" id = "file" multiple = {multiple} accept="image/*"/>
-                <input ref={input => this.inputRef = input} onChange={this.handleFileChange} style = {{ 'display': 'none' }}
+                <input ref={input => this.dargRef = input} onChange={this.handleFilesChange} style = {{ 'display': 'none' }}
                                            type = "file" id = "dragfile" multiple = {multiple} accept="image/*"/>
           <label className = "forlale" htmlFor = "file">
               <p className="changeContent">

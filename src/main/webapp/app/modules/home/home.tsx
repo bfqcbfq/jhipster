@@ -97,9 +97,9 @@ export const Home = (props: IHomeProp) => {
         </p>
       </Col>
       <Col md="3" className="pad">
-      <a href="http://localhost:8080/upload" target="-blank" title="文字识别">
-    <img src="../../../content/images/jhipster_ivision_ocr_2.JPG" className="ocrImg" />
-      </a>
+        <Link to="/upload" className="alert-link">
+           文字识别(OCR)
+        </Link>
       </Col>
     </Row>
   );
