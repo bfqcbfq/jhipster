@@ -54,9 +54,17 @@
     margin-left: 2.5%;
 }
 .del{
-    color: red;
     margin-left: 3px;
+    background-color: #f44336;
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 3px 2px;
     cursor: pointer;
+    width: 50px;
 }
 .allFile{
     width: 100%;
@@ -68,14 +76,37 @@
 }
 .download{
     padding-left: 3px;
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 3px 2px;
     cursor: pointer;
+    width: 50px;
 }
 .displayshow{
-    margin-left: 15%;
+    background-color: #008CBA;
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 3px 2px;
     cursor: pointer;
+    width: 50px;
+    margin-left: 271px;
 }
 .upform{
     height: 164px;
+    border: 2px dashed #A9A9A9;
+    width: 90%;
+    margin-left: 5%;
+    border-radius: 5px;
+    background-color:rgba(255, 251, 240, 0);
 }
 .type{
     margin-left: 16%;
@@ -96,5 +127,26 @@
     margin-left: 276px;
 }
 .newdisplayshow{
-    margin-left: 333px
+    background-color: #008CBA;
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 3px 2px;
+    cursor: pointer;
+    margin-left: 325px;
+    width: 50px;
+}
+.drag{
+    padding-left: 30px;
+}
+.over{
+    width: 100%;
+    overflow-y: auto;
+    height: 300px;
+}
+.dragover{
+    margin-left: 46%;
 }
