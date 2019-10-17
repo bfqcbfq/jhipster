@@ -7,6 +7,7 @@ import './typethreedetail.css';
 import './loading.css';
 
 import axios from 'axios';
+import ReactDOM from 'react-dom';
   function guid() {
     function s4() {
       return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
@@ -393,7 +394,6 @@ import axios from 'axios';
         }
       }
     }
-
     sumbit = async () => {
       const { onLeave, onError, url } = this.props;
       const arr: any [] = [];
@@ -702,7 +702,11 @@ import axios from 'axios';
     downLoadError(event: any) {
       alert('上传模板有误无法下载，请确认模板');
     }
-
+     componentDidMount() {
+       document.getElementById('dragfile').setAttribute('webkitdirectory', ' ');
+       document.getElementById('dragfile').setAttribute('directory', ' ');
+       document.getElementById('dragfile').setAttribute('multiple', ' ');
+     }
     render() {
       const { multiple } = this.props;
       return (
@@ -715,6 +719,7 @@ import axios from 'axios';
               <li className="fourli">类型</li>
               <li className="thirdli">操作</li>
             </ul>
+            <div className="over" style={{ display: this.state.namedisplay }}>
             {
                 // tslint:disable-next-line: ter-arrow-body-style
                this.state.name.map((item, index) => {
@@ -731,24 +736,28 @@ import axios from 'axios';
                   );
               })
             }
-
-        { /* 上传列表 */ }
-        {
-          // tslint:disable-next-line: ter-arrow-body-style
-          this.state.files.map(file => {
-            return (<div className="allFile" key={file.guid}>
-              <span className="fileName">{file.name}</span>
-              {file.success ? <span className="state">成功</span> : <span>失败/单据类型不匹配</span>}
-              {file.success ? <span className="type">{file.templatetype}</span> : <span className="newtype">无</span>}
-              {file.success ? <span className="displayshow" onClick={this.handleShowClick.bind(this, file.filepath)}>显示</span> :
-                              <span className="newdisplayshow">显示</span>}
-              {file.success ? <span className="download" onClick={this.handleDownLoadClick.bind(this, file.filepath)}>下载</span> :
-                              <span className="download">下载</span>}
-              <span className="del" onClick={this.handleCloseClick.bind(this, file.guid)}>删除</span>
-            </div>
-            );
-          })
-        }
+          </div>
+        { /* 上传列表 */}
+        <div className="over">
+              {
+                // tslint:disable-next-line: ter-arrow-body-style
+                this.state.files.map(file => {
+                  return (
+                  // tslint:disable-next-line: jsx-key
+                      <div className="allFile" key={file.guid}>
+                            <span className="fileName">{file.name}</span>
+                            {file.success ? <span className="state">成功</span> : <span>失败/单据类型不匹配</span>}
+                            {file.success ? <span className="type">{file.templatetype}</span> : <span className="newtype">无</span>}
+                            {file.success ? <span className="displayshow" onClick={this.handleShowClick.bind(this, file.filepath)}>显示</span> :
+                                            <span className="newdisplayshow">显示</span>}
+                            {file.success ? <span className="download" onClick={this.handleDownLoadClick.bind(this, file.filepath)}>下载</span> :
+                                            <span className="download">下载</span>}
+                            <span className="del" onClick={this.handleCloseClick.bind(this, file.guid)}>删除</span>
+                      </div>
+                  );
+                })
+              }
+        </div>
         </div>
         <div className="formDiv">
         <form className = "upform" method = "post" action = "" encType = "multipart/form-data"
@@ -773,12 +782,19 @@ import axios from 'axios';
           onDrop = {
             this.handleDrop
           } >
-              <input ref={input => this.inputRef = input} onChange={this.handleFileChange} style = {{ 'display': 'none' }}
+               <input ref={input => this.inputRef = input} onChange={this.handleFileChange} style = {{ 'display': 'none' }}
                                   type = "file" id = "file" multiple = {multiple} accept="image/*"/>
+                <input ref={input => this.inputRef = input} onChange={this.handleFileChange} style = {{ 'display': 'none' }}
+                                           type = "file" id = "dragfile" multiple = {multiple} accept="image/*"/>
           <label className = "forlale" htmlFor = "file">
-          <p className="changeContent">
-          <span>请<span className="choosefile">选择文件</span><span>或</span><span className="choosefile" >拖拽</span>文件到这里</span>
-          </p>
+              <p className="changeContent">
+                  <span>请<span className="choosefile">选择文件</span><span>或</span><span className="choosefile" >拖拽</span>文件到这里</span>
+              </p>
+          </label>
+          <label className = "dragover" htmlFor = "dragfile">
+              <p className="changeContent">
+                  <span>请<span className="choosefile">选择文件夹</span></span>
+              </p>
           </label>
       </form>
       </div>
