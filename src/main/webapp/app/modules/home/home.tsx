@@ -97,7 +97,7 @@ export const Home = (props: IHomeProp) => {
         </p>
       </Col>
       <Col md="3" className="pad">
-      <a href="https://www.ivision-china.cn" target="-blank" title="文字识别">
+      <a href="http://localhost:8080/upload" target="-blank" title="文字识别">
     <img src="../../../content/images/jhipster_ivision_ocr_2.JPG" className="ocrImg" />
       </a>
       </Col>
