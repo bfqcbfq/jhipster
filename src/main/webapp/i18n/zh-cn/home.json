@@ -1,6 +1,6 @@
 {
   "home": {
-    "title": "欢迎, OCR 用户!",
+    "title": "Hi, OCR user!",
     "subtitle": "这里是首页",
     "logged": {
       "message": "您目前是以 \"{{username}}\" 账号登录."
@@ -14,6 +14,6 @@
       "follow": "OCR 交流社区"
     },
     "like": "如果您有任何意见或建议，欢迎提出",
-    "github": "GitHub"
+    "github": "GitLab"
   }
 }

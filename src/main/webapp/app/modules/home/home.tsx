@@ -91,13 +91,13 @@ export const Home = (props: IHomeProp) => {
         <p>
           <Translate contentKey="home.like">If you have any comments or Suggestions, please let me know</Translate>{' '}
           <a href="http://192.168.20.90/wanglei/jhipster_ivision" target="_blank" rel="noopener noreferrer">
-            Github
+            GitLab
           </a>
           !
         </p>
       </Col>
       <Col md="3" className="pad">
-      <a href="http://www.linxincn.com" target="-blank" title="文字识别">
+      <a href="https://www.ivision-china.cn" target="-blank" title="文字识别">
     <img src="../../../content/images/jhipster_ivision_ocr_2.JPG" className="ocrImg" />
       </a>
       </Col>
