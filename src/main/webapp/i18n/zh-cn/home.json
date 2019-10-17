@@ -1,19 +1,19 @@
 {
   "home": {
-    "title": "欢迎, Java Hipster!",
+    "title": "欢迎, OCR 用户!",
     "subtitle": "这里是首页",
     "logged": {
       "message": "您目前是以 \"{{username}}\" 账号登录."
     },
-    "question": "如果您有任何有关 JHipster 的问题, 可以查阅下列资源:",
+    "question": "如果您有任何有关 OCR 的问题, 可以查阅下列资源:",
     "link": {
-      "homepage": "JHipster 首頁",
-      "stackoverflow": "Stack Overflow 上关于 JHipster 的讨论",
-      "bugtracker": "JHipster 的缺陷追踪",
-      "chat": "JHipster public chat room",
-      "follow": "在 Twitter 上联络 @java_hipster"
+      "homepage": "Baidu AI开发者平台首頁",
+      "stackoverflow": "了解  Baidu 文字识别 OCR",
+      "bugtracker": "创建自定义模板文字识别 IOCR",
+      "chat": "关于 IOCR 相关的文档",
+      "follow": "OCR 交流社区"
     },
-    "like": "如果您喜欢 JHipster, 请记得给我们加星在",
+    "like": "如果您有任何意见或建议，欢迎提出",
     "github": "GitHub"
   }
 }
