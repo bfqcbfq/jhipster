@@ -51,7 +51,7 @@ import com.ivision.app.domain.YdInvoice;
  * </p>
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/ocr")
 public class IocrResource {
 
 	@Value("${jhipster.clientApp.name}")
