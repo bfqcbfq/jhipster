@@ -217,7 +217,7 @@ import ReactDOM from 'react-dom';
         maxLength: 10,
         files: [],
         onLeave: any,
-        url: 'http://localhost:8080/api/ocr/iocr/upload',
+        url: 'http://localhost:8080/api/upload',
         cq: 10,
         onEnter: any,
         maxSize: 10240000,
@@ -473,7 +473,7 @@ import ReactDOM from 'react-dom';
                   current.filepath = filepath;
                   current.templatetype = templatetype;
                   return {
-                    files: [...prevState.files, current] 
+                    files: [...prevState.files, current]
                   };
                 }, () => {
                   /* notification.success({ message: `${current.name}, 上传成功` }) */
@@ -778,7 +778,7 @@ import ReactDOM from 'react-dom';
             }
             </div>
         { /* 上传列表 */}
-        <div className="over">
+        <div className="overone">
               {
                 // tslint:disable-next-line: ter-arrow-body-style
                 this.state.files.map(file => {
@@ -898,8 +898,8 @@ import ReactDOM from 'react-dom';
                </table>
            <div className="onebottomcontent">{this.state.note}</div>
            <div>
-              <span>经手人(签字或盖章):{this.state.handler}</span>
-              <span className="spantwo">领料人(签字或盖章):{this.state.picker}</span>
+              <span>经手人(签字或盖章){this.state.handler}</span>
+              <span className="spantwo">领料人(签字或盖章){this.state.picker}</span>
            </div>
            </div>
            </div>
@@ -1058,6 +1058,18 @@ import ReactDOM from 'react-dom';
       </div>
       </div>
     </div>
+    <div style={{ 'display': 'none' }}>
+      <ul>
+          <li>皆様</li>
+          <li>お疲れ様です。</li>
+          <li>10月分個人精算の時間になります。</li>
+          <li>10月17日(木)まで小王に渡してください。</li>
+          <li>①添付新フオ一ムをご利用ください。</li>
+          <li>②PJ関連の出費があれば、表紙にPJコ一ドとPJ名、立替か自社負担か、をご記入ください。</li>
+          <li>*2018年7月16日より、わが社の銀号名称が変更となりましたので、その以後の発票ご発行に関しては、新銀号名称にて実施ください。</li>
+          <li>以上宜し〈お願いいたします。</li>
+      </ul>
+     </div>
     <div>
       <div className="ajax-loading" id="ajaxLoading" style={{ display: this.state.loading }}>
          <div className="overlay">&nbsp;</div>
@@ -1102,7 +1114,7 @@ import ReactDOM from 'react-dom';
     multiple: true, // 是否开启多个上传 true 是 false 否
     images: 'image/*',
     maxSize: 1024,
-    maxLength: 10,
+    maxLength: 100,
     suffixs: []
   };
   export default Upload;
