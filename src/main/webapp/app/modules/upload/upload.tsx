@@ -188,8 +188,6 @@ import ReactDOM from 'react-dom';
         account: any,
         comment: any
      }],
-
-     //TODO
      loading: any,
      name: [],
      namedisplay: 'none',
