@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -16,6 +17,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -68,9 +70,7 @@ public class GeneralOcrResource {
 		
 		
 		GeneralOcrBean generalOcrBean = new GeneralOcrBean();
-		WordsResult wordResult = new WordsResult();
-		Object object = new Object();
-		List<WordsResult> wordResultList = new ArrayList<>();
+		List<WordsResult> wordsResultList = new ArrayList<>();
 		
 
 		// 判断文件夹是否存在,不存在则创建
@@ -109,26 +109,26 @@ public class GeneralOcrResource {
 
 					wordsResultNum = jsonObject.get("words_result_num").toString();
 					
+					
+					
 
 					if ((Integer.valueOf(wordsResultNum))>=1) {
 						
+						JSONArray jsonArray = jsonObject.getJSONArray("words_result");
+						List<Object> list = jsonArray.toList();
 						
-						Map<String, Object> map = jsonObject.toMap();
-						
-						BeanUtils.copyProperties(object, generalOcrBean);
-						
-						List<WordsResult> wordsResultList = (List<WordsResult>) map.get("words_result");
-						for (int i = 0; i < wordsResultList.size(); i++) {
+						for (int i = 0; i < list.size(); i++) {
 							
-							String words = wordsResultList.get(i).getWords();
-							Location location = wordsResultList.get(i).getLocation();
+							WordsResult wordResult = new WordsResult();
+							HashMap<String, String> map =(HashMap) list.get(i);
+							wordResult.setWords(map.get("words"));
+							wordsResultList.add(wordResult);
 							
 						}
 						
-						
-						
 					}
-
+					
+					return  ResponseEntity.ok(wordsResultList);
 
 			} catch (FileAlreadyExistsException e) {
 				e.printStackTrace();

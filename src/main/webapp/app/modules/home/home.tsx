@@ -98,7 +98,12 @@ export const Home = (props: IHomeProp) => {
       </Col>
       <Col md="3" className="pad">
         <Link to="/upload" className="alert-link">
-           文字识别(OCR)
+           自定义模板文字识别(IOCR)
+        </Link>
+      </Col>
+      <Col md="3" className="pad">
+        <Link to="/upload" className="alert-link">
+           通用文字识别
         </Link>
       </Col>
     </Row>
