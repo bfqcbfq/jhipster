@@ -217,7 +217,7 @@ import ReactDOM from 'react-dom';
         maxLength: 10,
         files: [],
         onLeave: any,
-        url: 'http://localhost:8080/api/ocr/upload',
+        url: 'http://localhost:8080/api/upload',
         cq: 10,
         onEnter: any,
         maxSize: 10240000,
@@ -309,14 +309,20 @@ import ReactDOM from 'react-dom';
       this.uploadQueue = [];
       // 正在上传的队列, 无论上传成功还是上传失败都不会从该队列移除, 避免死循环
       this.uploadingQueue = [];
+      // 获取选择文件的值
       this.inputRef = React.createRef();
+      // 获取选择文件夹的值
       this.dargRef = React.createRef();
-
+      // 关闭显示详情弹窗
       this.clockClick = this.clockClick.bind(this);
+      // 选择文件上传
       // tslint:disable-next-line: unnecessary-bind
       this.handleFileChange = this.handleFileChange.bind(this);
+      // 显示错误提示
       this.showError = this.showError.bind(this);
+      // 下载错误提示
       this.downLoadError = this.downLoadError.bind(this);
+      // 选择文件夹上传
       // tslint:disable-next-line: unnecessary-bind
       this.handleFilesChange = this.handleFilesChange.bind(this);
     }
@@ -358,7 +364,7 @@ import ReactDOM from 'react-dom';
       this.setState({
       });
     }
-
+    // 拖拽上传
     handleDrop = (event: { preventDefault: () => void; stopPropagation: () => void; dataTransfer: { files: any; }; }) => {
       const { maxLength } = this.props;
       event.preventDefault();
@@ -379,7 +385,7 @@ import ReactDOM from 'react-dom';
         }
       }
     }
-
+    // 选择文件上传
     handleFileChange = (event: { preventDefault: () => void; stopPropagation: () => void; }) => {
       const { maxLength } = this.props;
       event.preventDefault();
@@ -398,6 +404,7 @@ import ReactDOM from 'react-dom';
         }
       }
     }
+    // 选择文件夹上传
     handleFilesChange = (event: { preventDefault: () => void; stopPropagation: () => void; }) => {
       const { maxLength } = this.props;
       event.preventDefault();
@@ -416,6 +423,8 @@ import ReactDOM from 'react-dom';
         }
       }
     }
+
+    // 提交上传
     sumbit = async () => {
       const { onLeave, onError, url } = this.props;
       const arr: any [] = [];
@@ -444,7 +453,7 @@ import ReactDOM from 'react-dom';
             loading: 'block'
           });
           axios.post(
-            'http://localhost:8080/api/ocr/upload',
+            'http://localhost:8080/api/upload',
             uploadFile
           ).then((_: any) => {
             // tslint:disable-next-line: no-console
@@ -515,12 +524,12 @@ import ReactDOM from 'react-dom';
         }
       }
     }
-
+    // 加入队列
     addQueue = (file: any) => {
       this.queue = [...this.queue, file];
       this.processQueue();
     }
-
+    //  处理队列
     processQueue = () => {
       const { cq, onEnter } = this.props;
       if (this.uploadQueue.length < cq && this.queue.length > 0) {
@@ -533,7 +542,7 @@ import ReactDOM from 'react-dom';
         }
       }
     }
-
+    // 限制上传文件大小
     check = (file: { size: number; name: any; }) => {
       const { maxSize , suffixs } = this.props;
       if (file.size > maxSize * 1024) return `${file.name}超过文件大小限制`;
@@ -544,7 +553,7 @@ import ReactDOM from 'react-dom';
       const names = name.split('.');
       return names[names.length - 1];
     }
-
+    // 删除列表信息;
     // tslint:disable-next-line: no-shadowed-variable
     handleCloseClick = (guid: any) => {
       // tslint:disable-next-line: ter-arrow-body-style
@@ -554,7 +563,7 @@ import ReactDOM from 'react-dom';
         };
       });
     }
-
+    // 下载文件
     handleDownLoadClick = (filepath: any) => {
       // tslint:disable-next-line: no-console
       console.log(filepath);
@@ -563,7 +572,7 @@ import ReactDOM from 'react-dom';
       // tslint:disable-next-line: no-console
       console.log(filepaths);
       axios.get(
-        'http://localhost:8080/api/ocr/download',
+        'http://localhost:8080/api/download',
         {
           params: {
             filepath: filepaths
@@ -592,11 +601,11 @@ import ReactDOM from 'react-dom';
       .catch(function(error) {
       });
     }
-
+    // 显示扫描详情
     handleShowClick = (filepath: any) => {
       const filepaths: string = filepath;
       axios.get(
-        'http://localhost:8080/api/ocr/showDetails',
+        'http://localhost:8080/api/showDetails',
         {
           params: {
             filepath: filepaths
@@ -607,6 +616,7 @@ import ReactDOM from 'react-dom';
          // tslint:disable-next-line: no-console
         console.log(response);
          // tslint:disable-next-line: no-inferrable-types
+         // 根据后台返回数据 用type判断用哪个模板
          const type = response.data.type;
           if (type === '1') {
             const titles = response.data.title;
@@ -715,20 +725,25 @@ import ReactDOM from 'react-dom';
       });
 
     }
+    //  详情关闭
     clockClick(event: any) {
       this.setState({ display: 'none', displayTwo: 'none', displayThree: 'none' });
     }
+    // 显示错误提示
     showError(event: any) {
        alert('上传模板有误无法显示，请确认模板');
     }
+    // 下载错误提示
     downLoadError(event: any) {
       alert('上传模板有误无法下载，请确认模板');
     }
-     componentDidMount() {
+    // 初始化页面给input框赋值
+    componentDidMount() {
        document.getElementById('dragfile').setAttribute('webkitdirectory', ' ');
        document.getElementById('dragfile').setAttribute('directory', ' ');
        document.getElementById('dragfile').setAttribute('multiple', ' ');
-     }
+    }
+    // 初始化页面
     render() {
       const { multiple } = this.props;
       return (
@@ -741,24 +756,27 @@ import ReactDOM from 'react-dom';
               <li className="fourli">类型</li>
               <li className="thirdli">操作</li>
             </ul>
-            <div className="overone" style={{ display: this.state.namedisplay }}>
+            <div className="over" style={{ display: this.state.namedisplay }}>
             {
                 // tslint:disable-next-line: ter-arrow-body-style
                this.state.name.map((item, index) => {
                  // tslint:disable-next-line: no-console
-                 console.log(this.state.name);
+                console.log(this.state.name);
+                // tslint:disable-next-line: no-console
+                console.log(item);
+                // tslint:disable-next-line: no-console
+                console.log(index);
                   return(
-                   // tslint:disable-next-line: jsx-key
-                   <div style={{ display: this.state.namedisplay }} key={index}>
-                      <span className="fileName">{item}</span>
-                      <span className="state">上传中</span>
-                      <span className="gengone">-</span>
-                      <span className="gengtwo">-</span>
-                   </div>
-                  );
+                    <div style={{ display: this.state.namedisplay }} key={index}>
+                       <span className="fileName">{item}</span>
+                       <span className="state">上传中</span>
+                       <span className="gengone">-</span>
+                       <span className="gengtwo">-</span>
+                    </div>
+                   );
               })
             }
-          </div>
+            </div>
         { /* 上传列表 */}
         <div className="over">
               {
@@ -810,17 +828,18 @@ import ReactDOM from 'react-dom';
                                            type = "file" id = "dragfile" multiple = {multiple} accept="image/*"/>
           <label className = "forlale" htmlFor = "file">
               <p className="changeContent">
-                  <span>请<span className="choosefile">选择文件</span><span>或</span><span className="choosefile" >拖拽文件</span>到虚线框内</span>
+                  <span>请<span className="choosefile">选择文件</span><span>或</span><span className="choosefile" >拖拽</span>文件到这里</span>
               </p>
           </label>
           <label className = "dragover" htmlFor = "dragfile">
               <p className="changeContent">
-                  <span className="choosefile">选择文件夹</span><span>上传</span>
+                  <span>请<span className="choosefile">选择文件夹</span></span>
               </p>
           </label>
       </form>
       </div>
       </div>
+    { /* 模板1 */}
     <div className="popLayer" style = {{ display: this.state.display }}>
     <span className="close" onClick={this.clockClick}>关闭</span>
       <div className="popBox">
@@ -885,6 +904,7 @@ import ReactDOM from 'react-dom';
            </div>
            </div>
       </div>
+      { /* 模板3 */}
       <div className="popLayer" style = {{ display: this.state.displayThree }}>
       <span className="close" onClick={this.clockClick}>关闭</span>
       <div className="popBox">
@@ -966,6 +986,7 @@ import ReactDOM from 'react-dom';
       </div>
       </div>
     </div>
+    { /* 模板2 */}
     <div className="popLayer" style = {{ display: this.state.displayTwo }}>
       <span className="close" onClick={this.clockClick}>关闭</span>
       <div className="popBox">
@@ -1050,7 +1071,7 @@ import ReactDOM from 'react-dom';
       );
     }
   }
-
+  // 设置默认值类型
   Upload.propTypes = {
     onEnter: PropTypes.func,
     onLeave: PropTypes.func,
@@ -1063,7 +1084,7 @@ import ReactDOM from 'react-dom';
     maxLength: PropTypes.number,
     suffixs: PropTypes.array
   };
-
+  // 设置默认值
   Upload.defaultProps = {
     // tslint:disable-next-line: ter-arrow-body-style
     onEnter: () => {
@@ -1077,8 +1098,8 @@ import ReactDOM from 'react-dom';
     onError: () => {
       return true;
     },
-    cq: 10,
-    multiple: true,
+    cq: 10, // 限制上传数量
+    multiple: true, // 是否开启多个上传 true 是 false 否
     images: 'image/*',
     maxSize: 1024,
     maxLength: 10,

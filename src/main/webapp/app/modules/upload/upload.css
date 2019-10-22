@@ -145,7 +145,7 @@
 .over{
     width: 100%;
     overflow-y: auto;
-    height: 300px;
+    max-height: 300px;
 }
 .dragover{
     margin-left: 46%;

@@ -98,7 +98,7 @@ export const Home = (props: IHomeProp) => {
       </Col>
       <Col md="3" className="pad">
         <Link to="/upload" className="alert-link">
-           文字识别(OCR)
+           请点击：文件识别(OCR)
         </Link>
       </Col>
     </Row>
