@@ -810,7 +810,7 @@ import ReactDOM from 'react-dom';
                                            type = "file" id = "dragfile" multiple = {multiple} accept="image/*"/>
           <label className = "forlale" htmlFor = "file">
               <p className="changeContent">
-                  <span>请<span className="choosefile">选择文件</span><span>或</span><span className="choosefile" >拖拽文件</span>到虚线框内</span>
+                  <span>请<span className="choosefile">选择</span><span>或</span><span className="choosefile" >拖拽</span>文件到虚线框内</span>
               </p>
           </label>
           <label className = "dragover" htmlFor = "dragfile">
