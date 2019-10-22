@@ -103,7 +103,7 @@ export const Home = (props: IHomeProp) => {
       </Col>
       <Col md="3" className="pad">
         <Link to="/upload" className="alert-link">
-           通用文字识别
+           通用文字识别(日本語認識可能)
         </Link>
       </Col>
     </Row>

@@ -188,8 +188,6 @@ import ReactDOM from 'react-dom';
         account: any,
         comment: any
      }],
-
-     //TODO
      loading: any,
      name: [],
      namedisplay: 'none',
@@ -475,7 +473,7 @@ import ReactDOM from 'react-dom';
                   current.filepath = filepath;
                   current.templatetype = templatetype;
                   return {
-                    files: [...prevState.files, current] 
+                    files: [...prevState.files, current]
                   };
                 }, () => {
                   /* notification.success({ message: `${current.name}, 上传成功` }) */
@@ -900,8 +898,8 @@ import ReactDOM from 'react-dom';
                </table>
            <div className="onebottomcontent">{this.state.note}</div>
            <div>
-              <span>经手人(签字或盖章):{this.state.handler}</span>
-              <span className="spantwo">领料人(签字或盖章):{this.state.picker}</span>
+              <span>经手人(签字或盖章){this.state.handler}</span>
+              <span className="spantwo">领料人(签字或盖章){this.state.picker}</span>
            </div>
            </div>
            </div>
