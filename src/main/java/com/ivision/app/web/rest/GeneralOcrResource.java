@@ -22,6 +22,7 @@ import org.json.JSONObject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.baidu.aip.ocr.AipOcr;
+import com.ivision.app.domain.BeanRsource;
 import com.ivision.app.domain.GeneralOcrBean;
 import com.ivision.app.domain.Location;
 import com.ivision.app.domain.WordsResult;
@@ -68,10 +70,8 @@ public class GeneralOcrResource {
 	public ResponseEntity<Object> getfileRecord(
 			@RequestParam(value = "file", required = false) MultipartFile[] uploadFiles) throws IOException {
 		
-		
-		GeneralOcrBean generalOcrBean = new GeneralOcrBean();
 		List<WordsResult> wordsResultList = new ArrayList<>();
-		
+		BeanRsource beanRsource = new BeanRsource();
 
 		// 判断文件夹是否存在,不存在则创建
 		File file = new File(filePath);
@@ -104,31 +104,35 @@ public class GeneralOcrResource {
 				// 将传来的文件写入新建的文件
 				uploadFile.transferTo(new File(newFilePath));
 
-				JSONObject jsonObject = getResultByIocr(newFilePath);
-				String wordsResultNum = null;
-
-					wordsResultNum = jsonObject.get("words_result_num").toString();
+//				JSONObject jsonObject = getResultByIocr(newFilePath);
+//				String wordsResultNum = null;
+//
+//					wordsResultNum = jsonObject.get("words_result_num").toString();
+//					
+//					
+//					
+//
+//					if ((Integer.valueOf(wordsResultNum))>=1) {
+//						
+//						JSONArray jsonArray = jsonObject.getJSONArray("words_result");
+//						List<Object> list = jsonArray.toList();
+//						
+//						for (int i = 0; i < list.size(); i++) {
+//							
+//							WordsResult wordResult = new WordsResult();
+//							HashMap<String, String> map =(HashMap) list.get(i);
+//							wordResult.setWords(map.get("words"));
+//							wordsResultList.add(wordResult);
+//							
+//							
+//							
+//							
+//						}
+//					}
+				
+				beanRsource.setFilepath(newFilePath);
 					
-					
-					
-
-					if ((Integer.valueOf(wordsResultNum))>=1) {
-						
-						JSONArray jsonArray = jsonObject.getJSONArray("words_result");
-						List<Object> list = jsonArray.toList();
-						
-						for (int i = 0; i < list.size(); i++) {
-							
-							WordsResult wordResult = new WordsResult();
-							HashMap<String, String> map =(HashMap) list.get(i);
-							wordResult.setWords(map.get("words"));
-							wordsResultList.add(wordResult);
-							
-						}
-						
-					}
-					
-					return  ResponseEntity.ok(wordsResultList);
+					return  ResponseEntity.ok(beanRsource);
 
 			} catch (FileAlreadyExistsException e) {
 				e.printStackTrace();
@@ -143,6 +147,21 @@ public class GeneralOcrResource {
 		return null;
 
 	}
+	
+	/**
+	 * 获取上传文件明细
+	 * 
+	 * @param filepath
+	 * @return
+	 * @throws IOException
+	 */
+	@GetMapping("/showDetails")
+	public ResponseEntity<List<WordsResult>> showUploadFileDetails(@RequestParam(value = "filepath") String filepath)
+			throws IOException {
+		List<WordsResult> resultByIocr = getResultByIocr(filepath);
+		
+				return ResponseEntity.ok(resultByIocr);
+	}
 
 	/**
 	 * 百度文字识别位置高精度版API调用（返回数据结构不佳）
@@ -153,9 +172,10 @@ public class GeneralOcrResource {
 	 * @return JSONObject
 	 * @throws IOException
 	 */
-	public JSONObject getResultByIocr(String iocrFilepath) throws IOException {
+	public List<WordsResult> getResultByIocr(String iocrFilepath) throws IOException {
 
 		AipOcr client = new AipOcr(appId, apiKey, secretKey);
+		List<WordsResult> wordsResultList = new ArrayList<>();
 
 		// client.setConnectionTimeoutInMillis(2000);
 		// client.setSocketTimeoutInMillis(6000);
@@ -168,9 +188,32 @@ public class GeneralOcrResource {
 
 		// 参数为本地路径
 		// JSONObject custom = client.custom(iocrFilepath, options);
-		JSONObject custom = client.general(iocrFilepath, options);
+		JSONObject jsonObject = client.general(iocrFilepath, options);
+		
+		
+		String wordsResultNum = null;
 
-		return custom;
+		wordsResultNum = jsonObject.get("words_result_num").toString();
+		
+		
+		
+
+		if ((Integer.valueOf(wordsResultNum))>=1) {
+			
+			JSONArray jsonArray = jsonObject.getJSONArray("words_result");
+			List<Object> list = jsonArray.toList();
+			
+			for (int i = 0; i < list.size(); i++) {
+				
+				WordsResult wordResult = new WordsResult();
+				HashMap<String, String> map =(HashMap) list.get(i);
+				wordResult.setWords(map.get("words"));
+				wordsResultList.add(wordResult);
+				
+			}
+		}
+
+		return wordsResultList;
 
 	}
 

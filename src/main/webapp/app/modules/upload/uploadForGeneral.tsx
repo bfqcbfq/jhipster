@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes, { any, number } from 'prop-types';
-import './upload.css';
+import './uploadForGeneral.css';
 import './detail.css';
 import './typetwodetail.css';
 import './typethreedetail.css';
@@ -30,82 +30,21 @@ import ReactDOM from 'react-dom';
     isDragover: false;
     filepath: any;
     display: any;
-    title: any;
-    deliverMessage: [];
-    deliveryNo: any;
-    address: any;
-    contactNUmber: any;
-    deliveryCompany: any;
-    deliveryDate: any;
-    handler: any;
-    note: any;
-    picker: any;
-    deliveryDetails: [{
-      batchNo: any;
-      brand: any;
-      comment: any;
-      date: any;
-      materialNo: any;
-      quantity: any;
-      singleWeight: any;
-      storehouseNo: any;
-      totalWeight: any;
-      unit: any;
-    }];
-    displayTwo: any;
-    displayThree: any;
-    adress: any;
-    companyPhone: any;
-    csahier: any;
-    customerName: any;
-    customerPhone: any;
-    customerSign: any;
-    deliveryer: any;
-    invoiceType: any;
-    mainBusiness: any;
-    orderMaker: any;
-    page: any;
-    receiver: any;
-    settleStyle: any;
-    totalAccount: any;
-    totalAmountBig: any;
-    totalAmountSmall: any;
-    ydDeliveryDetails: [{
-      orderNumber: any;
-      partsNumber: any;
-      partsName: any;
-      vehicleType: any;
-      productionAarea: any;
-      unitPrice: any;
-      quantity: any;
-      account: any;
-      comment: any;
-      unit: any;
-    }];
-    businessCode: any;
-    deliverySign: any;
-    handlerSign: any;
-    totalAmount: any;
-    totalQuantity: any;
-    MxDeliveryDetails: [{
-       styleNo: any;
-       style: any;
-       color: any;
-       unit: any;
-       modelS: any;
-       modelM: any;
-       modelL: any;
-       subtotal: any;
-       unitPrice: any;
-       account: any;
-       comment: any;
+    wordsResult: [{
+      words: any;
+      location: {
+        top: any;
+        left: any;
+        width: any;
+        height: any;
+      };
     }];
     loading: any;
     name: any[];
     namedisplay: any;
     documenttype: any;
   }
-  class Upload extends React.Component<any, ImgProps> {
+  class UploadForGeneral extends React.Component<any, ImgProps> {
     static defaultProps: any =
     { onEnter: () => true,
       onLeave: () => true,
@@ -118,76 +57,15 @@ import ReactDOM from 'react-dom';
       suffixs: [],
       filepath: any,
       display: any,
-      title: any,
-      deliverMessage: [],
-      deliveryNo: any,
-      address: any,
-      contactNUmber: any,
-      deliveryCompany: any,
-      deliveryDate: any,
-      handler: any,
-      note: any,
-      picker: any,
-      deliveryDetails: [{
-        batchNo: any,
-        brand: any,
-        comment: any,
-        date: any,
-        materialNo: any,
-        quantity: any,
-        singleWeight: any,
-        storehouseNo: any,
-        totalWeight: any,
-        unit: any
+      wordsResult: [{
+        words: any,
+        location: {
+          top: any,
+          left: any,
+          width: any,
+          height: any,
+        },
       }],
-      displayTwo: any,
-      displayThree: any,
-      adress: any,
-      companyPhone: any,
-      csahier: any,
-      customerName: any,
-      customerPhone: any,
-      customerSign: any,
-      deliveryer: any,
-      invoiceType: any,
-      mainBusiness: any,
-      orderMaker: any,
-      page: any,
-      receiver: any,
-      settleStyle: any,
-      totalAccount: any,
-      totalAmountBig: any,
-      totalAmountSmall: any,
-      ydDeliveryDetails: [{
-        orderNumber: any,
-        partsNumber: any,
-        partsName: any,
-        vehicleType: any,
-        productionAarea: any,
-        unitPrice: any,
-        quantity: any,
-        account: any,
-        comment: any,
-        unit: any
-      }],
-      businessCode: any,
-      deliverySign: any,
-      handlerSign: any,
-      totalAmount: any,
-      totalQuantity: any,
-      MxDeliveryDetails: [{
-        styleNo: any,
-        style: any,
-        color: any,
-        unit: any,
-        modelS: any,
-        modelM: any,
-        modelL: any,
-        subtotal: any,
-        unitPrice: any,
-        account: any,
-        comment: any
-     }],
      loading: any,
      name: [],
      namedisplay: 'none',
@@ -217,7 +95,7 @@ import ReactDOM from 'react-dom';
         maxLength: 10,
         files: [],
         onLeave: any,
-        url: 'http://localhost:8080/api/ocr/iocr/upload',
+        url: 'http://localhost:8080/api/ocr/general/upload',
         cq: 10,
         onEnter: any,
         maxSize: 10240000,
@@ -228,76 +106,15 @@ import ReactDOM from 'react-dom';
         isDragover: false,
         filepath: any,
         display: 'none',
-        title: any,
-        deliverMessage: [],
-        deliveryNo: any,
-        address: any,
-        contactNUmber: any,
-        deliveryCompany: any,
-        deliveryDate: any,
-        handler: any,
-        note: any,
-        picker: any,
-        deliveryDetails: [{
-          batchNo: any,
-          brand: any,
-          comment: any,
-          date: any,
-          materialNo: any,
-          quantity: any,
-          singleWeight: any,
-          storehouseNo: any,
-          totalWeight: any,
-          unit: any
+        wordsResult: [{
+          words: any,
+          location: {
+            top: any,
+            left: any,
+            width: any,
+            height: any,
+          },
         }],
-        displayTwo: 'none',
-        displayThree: 'none',
-        adress: any,
-        companyPhone: any,
-        csahier: any,
-        customerName: any,
-        customerPhone: any,
-        customerSign: any,
-        deliveryer: any,
-        invoiceType: any,
-        mainBusiness: any,
-        orderMaker: any,
-        page: any,
-        receiver: any,
-        settleStyle: any,
-        totalAccount: any,
-        totalAmountBig: any,
-        totalAmountSmall: any,
-        ydDeliveryDetails: [{
-          orderNumber: any,
-          partsNumber: any,
-          partsName: any,
-          vehicleType: any,
-          productionAarea: any,
-          unitPrice: any,
-          quantity: any,
-          account: any,
-          comment: any,
-          unit: any
-        }],
-        businessCode: any,
-        deliverySign: any,
-        handlerSign: any,
-        totalAmount: any,
-        totalQuantity: any,
-        MxDeliveryDetails: [{
-          styleNo: any,
-          style: any,
-          color: any,
-          unit: any,
-          modelS: any,
-          modelM: any,
-          modelL: any,
-          subtotal: any,
-          unitPrice: any,
-          account: any,
-          comment: any
-       }],
        loading: 'none',
        name: [],
        namedisplay: 'none',
@@ -453,7 +270,7 @@ import ReactDOM from 'react-dom';
             loading: 'block'
           });
           axios.post(
-            'http://localhost:8080/api/ocr/iocr/upload',
+            'http://localhost:8080/api/ocr/general/upload',
             uploadFile
           ).then((_: any) => {
             // tslint:disable-next-line: no-console
@@ -572,7 +389,7 @@ import ReactDOM from 'react-dom';
       // tslint:disable-next-line: no-console
       console.log(filepaths);
       axios.get(
-        'http://localhost:8080/api/ocr/iocr/download',
+        'http://localhost:8080/api/ocr/general/download',
         {
           params: {
             filepath: filepaths
@@ -605,7 +422,7 @@ import ReactDOM from 'react-dom';
     handleShowClick = (filepath: any) => {
       const filepaths: string = filepath;
       axios.get(
-        'http://localhost:8080/api/ocr/iocr/showDetails',
+        'http://localhost:8080/api/ocr/general/showDetails',
         {
           params: {
             filepath: filepaths
@@ -617,117 +434,26 @@ import ReactDOM from 'react-dom';
         console.log(response);
          // tslint:disable-next-line: no-inferrable-types
          // 根据后台返回数据 用type判断用哪个模板
-         const type = response.data.type;
-          if (type === '1') {
-            const titles = response.data.title;
-            const deliverMessages = response.data.deliverMessage;
-            const detaildeliveryNo = deliverMessages.deliveryNo;
-            const detailaddress = deliverMessages.address;
-            const detailcontactNUmber = deliverMessages.contactNUmber;
-            const detaildeliveryCompany = deliverMessages.deliveryCompany;
-            const detaildeliveryDate = deliverMessages.deliveryDate;
-            const detailhandler = deliverMessages.handler;
-            const detailnote = deliverMessages.note;
-            const detailpicker = deliverMessages.picker;
-            const deliveryDetailsArr = response.data.deliveryDetails;
+         //const type = response.data.type;
+            const wordsResultsArr = response.data.wordsResult;
+            const rowWords = wordsResultsArr.words;
+            const locations = response.data.wordsResult.location;
+            const top = locations.top;
+            const left = locations.left;
+            const width = locations.width;
+            const height = locations.height;
             this.setState({
              display: 'block',
-             title: titles,
-             deliveryNo: detaildeliveryNo,
-             address: detailaddress,
-             contactNUmber: detailcontactNUmber,
-             deliveryCompany: detaildeliveryCompany,
-             deliveryDate: detaildeliveryDate,
-             handler: detailhandler,
-             note: detailnote,
-             picker: detailpicker,
-             deliveryDetails: deliveryDetailsArr
+             wordsResult: wordsResultsArr
            });
-          } else if (type === '2') {
-            const titles = response.data.title;
-            const mxDeliverMessage = response.data.mxDeliverMessage;
-            const deaddress = mxDeliverMessage.address;
-            const debusinessCode = mxDeliverMessage.businessCode;
-            const dedeliveryDate = mxDeliverMessage.deliveryDate;
-            const dedeliveryNo = mxDeliverMessage.deliveryNo;
-            const dedeliverySign = mxDeliverMessage.deliverySign;
-            const dehandlerSign = mxDeliverMessage.handlerSign;
-            const denote = mxDeliverMessage.note;
-            const deorderMaker = mxDeliverMessage.orderMaker;
-            const detotalAmount = mxDeliverMessage.totalAmount;
-            const detotalQuantity = mxDeliverMessage.totalQuantity;
-            const deliveryDetailsArr = response.data.deliveryDetails;
-            this.setState({
-              displayTwo: 'block',
-              title: titles,
-              address: deaddress,
-              businessCode: debusinessCode,
-              deliveryDate: dedeliveryDate,
-              deliveryNo: dedeliveryNo,
-              deliverySign: dedeliverySign,
-              handlerSign: dehandlerSign,
-              note: denote,
-              orderMaker: deorderMaker,
-              totalAmount: detotalAmount,
-              totalQuantity: detotalQuantity,
-              MxDeliveryDetails: deliveryDetailsArr
-            });
-          } else if (type === '3') {
-            const titles = response.data.title;
-            const ydDeliverMessages = response.data.ydDeliverMessage;
-            const detailadress = ydDeliverMessages.adress;
-            const detailcompanyPhone = ydDeliverMessages.companyPhone;
-            const detailcsahier = ydDeliverMessages.csahier;
-            const detailcustomerName = ydDeliverMessages.customerName;
-            const detailcustomerPhone = ydDeliverMessages.customerPhone;
-            const detailcustomerSign = ydDeliverMessages.customerSign;
-            const detaildeliveryDate = ydDeliverMessages.deliveryDate;
-            const detaildeliveryNo = ydDeliverMessages.deliveryNo;
-            const detaildeliveryer = ydDeliverMessages.deliveryer;
-            const detailinvoiceType = ydDeliverMessages.invoiceType;
-            const detailmainBusiness = ydDeliverMessages.mainBusiness;
-            const detailorderMaker = ydDeliverMessages.orderMaker;
-            const detailpage = ydDeliverMessages.page;
-            const detailreceiver = ydDeliverMessages.receiver;
-            const detailsettleStyle = ydDeliverMessages.settleStyle;
-            const detailtotalAccount = ydDeliverMessages.totalAccount;
-            const detailtotalAmountBig = ydDeliverMessages.totalAmountBig;
-            const detailtotalAmountSmall = ydDeliverMessages.totalAmountSmall;
-            const ydDeliveryDetailsArr = response.data.ydDeliveryDetails;
-            this.setState({
-              displayThree: 'block',
-              title: titles,
-              adress: detailadress,
-              companyPhone: detailcompanyPhone,
-              csahier: detailcsahier,
-              customerName: detailcustomerName,
-              customerPhone: detailcustomerPhone,
-              customerSign: detailcustomerSign,
-              deliveryer: detaildeliveryer,
-              invoiceType: detailinvoiceType,
-              mainBusiness: detailmainBusiness,
-              orderMaker: detailorderMaker,
-              page: detailpage,
-              receiver: detailreceiver,
-              settleStyle: detailsettleStyle,
-              totalAccount: detailtotalAccount,
-              totalAmountBig: detailtotalAmountBig,
-              totalAmountSmall: detailtotalAmountSmall,
-              deliveryDate: detaildeliveryDate,
-              deliveryNo: detaildeliveryNo,
-              ydDeliveryDetails: ydDeliveryDetailsArr
-            });
-          }
-
       })
       // tslint:disable-next-line: only-arrow-functions
       .catch(function(error) {
       });
-
     }
     //  详情关闭
     clockClick(event: any) {
-      this.setState({ display: 'none', displayTwo: 'none', displayThree: 'none' });
+      this.setState({ display: 'none' });
     }
     // 显示错误提示
     showError(event: any) {
@@ -839,225 +565,23 @@ import ReactDOM from 'react-dom';
       </form>
       </div>
       </div>
-    { /* 模板1 */}
-    <div className="popLayer" style = {{ display: this.state.display }}>
+    <div style={{ display: this.state.display }}>
     <span className="close" onClick={this.clockClick}>关闭</span>
-      <div className="popBox">
-           <div className="title">{this.state.title}</div>
-           <div className="leftcontent">
-              <ul>
-                <li>发货单位:{this.state.deliveryCompany}</li>
-                <li>地址:{this.state.address}</li>
-              </ul>
-           </div>
-           <div className="rightcontent">
-             <ul>
-                 <li>发货单号:{this.state.deliveryNo}</li>
-                 <li>发货日期:{this.state.deliveryDate}</li>
-                 <li>联系电话:{this.state.contactNUmber}</li>
-             </ul>
-           </div>
-       <div className="firstdiv">
-           <table>
-                   <thead>
-                       <tr>
-                           <th>仓库</th>
-                           <th>料号</th>
-                           <th>品牌</th>
-                           <th>单位</th>
-                           <th>数量</th>
-                           <th>单重</th>
-                           <th>合计重量</th>
-                           <th>批次号</th>
-                           <th>出货日期</th>
-                           <th>备注</th>
-                       </tr>
-                   </thead>
-                   <tbody>
-                     {
-                       // tslint:disable-next-line: ter-arrow-body-style
-                       this.state.deliveryDetails.map((details, index) => {
-                           return(
-                            // tslint:disable-next-line: jsx-key
-                            <tr key={index}>
-                                <td>{details.storehouseNo}</td>
-                                <td>{details.materialNo}</td>
-                                <td>{details.brand}</td>
-                                <td>{details.unit}</td>
-                                <td>{details.quantity}</td>
-                                <td>{details.singleWeight}</td>
-                                <td>{details.totalWeight}</td>
-                                <td>{details.batchNo}</td>
-                                <td>{details.date}</td>
-                                <td>{details.comment}</td>
-                           </tr>
-                           );
-                       })
-                     }
-                   </tbody>
-               </table>
-           <div className="onebottomcontent">{this.state.note}</div>
-           <div>
-              <span>经手人(签字或盖章){this.state.handler}</span>
-              <span className="spantwo">领料人(签字或盖章){this.state.picker}</span>
-           </div>
-           </div>
-           </div>
-      </div>
-      { /* 模板3 */}
-      <div className="popLayer" style = {{ display: this.state.displayThree }}>
-      <span className="close" onClick={this.clockClick}>关闭</span>
-      <div className="popBox">
-        <div className="title">{this.state.title}</div>
-        <div className="leftcontent">
-         <ul>
-           <li>客户名称:{this.state.customerName}</li>
-         <li>客户电话:{this.state.customerPhone}</li>
-         </ul>
-      </div>
-      <div className="midcontent">
-        <ul>
-          <li>日期:{this.state.deliveryDate}</li>
-          <li>发票种类:{this.state.invoiceType}</li>
-        </ul>
-      </div>
-      <div className="rightcontent">
-        <ul>
-          <li>出库单号:{this.state.deliveryNo}</li>
-          <li>结算方式:{this.state.settleStyle}</li>
-        </ul>
-      </div>
-    <div className="firstdiv">
-      <table>
-          <thead>
-            <tr>
-              <th>序号</th>
-              <th>配件编号</th>
-              <th>配件名称</th>
-              <th>车型</th>
-              <th>产地</th>
-              <th>单位</th>
-              <th>单价</th>
-              <th>数量</th>
-              <th>金额</th>
-              <th>备注</th>
-            </tr>
-          </thead>
-          <tbody>
-              {
-                       // tslint:disable-next-line: ter-arrow-body-style
-                       this.state.ydDeliveryDetails.map((details, index) => {
-                           return(
-                            // tslint:disable-next-line: jsx-key
-                            <tr key={index}>
-                            <td>{details.orderNumber}</td>
-                            <td>{details.partsNumber}</td>
-                            <td>{details.partsName}</td>
-                            <td>{details.vehicleType}</td>
-                            <td>{details.unit}</td>
-                            <td>{details.partsNumber}</td>
-                            <td>{details.unitPrice}</td>
-                            <td>{details.quantity}</td>
-                            <td>{details.account}</td>
-                            <td>{details.comment}</td>
-                          </tr>
-                           );
-                       })
-                     }
-          </tbody>
-        </table>
-      <div className="threebottomcontent">本页小计金额:{this.state.totalAccount}</div>
-      <div className="threebottomcontent"><span>总合计金额(大写):{this.state.totalAmountBig}</span><span className="totalmoneysmall">总合计金额(小写):{this.state.totalAmountSmall}</span></div>
+    <div className="popBox">
       <div>
-         <span>公司电话:{this.state.totalAmountSmall}</span>
-         <span className="spantwo">地址:{this.state.address}</span>
-      </div>
-      <div>
-         <span>制单人:{this.state.orderMaker}</span>
-         <span className="delivery">发货:{this.state.deliveryer}</span>
-         <span className="delivery">收款:{this.state.csahier}</span>
-         <span className="delivery">收货:{this.state.receiver}</span>
-         <span className="delivery">客户签字:{this.state.customerSign}</span>
-         <span className="delivery">页码:1/1</span>
-      </div>
-      <div>
-         <span>主营:{this.state.mainBusiness}</span>
+      {
+        this.setState.wordsResult.map((result,index) =>{
+            return(
+          <ul key={index}>
+          <li>{result.words}</li>
+      </ul>
+      );
+        })
+     
+      }
       </div>
       </div>
-      </div>
-    </div>
-    { /* 模板2 */}
-    <div className="popLayer" style = {{ display: this.state.displayTwo }}>
-      <span className="close" onClick={this.clockClick}>关闭</span>
-      <div className="popBox">
-        <div className="title">{this.state.title}</div>
-      <div><span className="sellorder">出货单</span><span className="page">页码: 1/1</span></div>
-        <div className="leftcontent">
-         <ul>
-           <li>客户代码:{this.state.businessCode}</li>
-         <li>地址:{this.state.address}</li>
-         </ul>
-      </div>
-      <div className="rightcontent">
-        <ul>
-          <li>出货单号:{this.state.deliveryNo}</li>
-          <li>出货日期:{this.state.deliveryDate}</li>
-        </ul>
-      </div>
-    <div className="firstdiv">
-      <table>
-          <thead>
-            <tr>
-              <th>款号</th>
-              <th>款式</th>
-              <th>颜色</th>
-              <th>单位</th>
-              <th>S</th>
-              <th>M</th>
-              <th>L</th>
-              <th>小计</th>
-              <th>单价</th>
-              <th>金额</th>
-              <th>备注</th>
-            </tr>
-          </thead>
-          <tbody>
-              {
-                       // tslint:disable-next-line: ter-arrow-body-style
-                       this.state.MxDeliveryDetails.map((details, index) => {
-                           return(
-                            // tslint:disable-next-line: jsx-key
-                            <tr key={index}>
-                                  <td>{details.styleNo}</td>
-                                  <td>{details.style}</td>
-                                  <td>{details.color}</td>
-                                  <td>{details.unit}</td>
-                                  <td>{details.modelS}</td>
-                                  <td>{details.modelM}</td>
-                                  <td>{details.modelL}</td>
-                                  <td>{details.subtotal}</td>
-                                  <td>{details.unitPrice}</td>
-                                  <td>{details.account}</td>
-                                  <td>{details.comment}</td>
-                          </tr>
-                           );
-                       })
-                     }
-          </tbody>
-        </table>
-      <div className="bottomcontent">
-        <span className="totalnum">合计数量:{this.state.totalQuantity}</span>
-        <span className="totalmoney">合计金额:{this.state.totalAmount}</span>
-      </div>
-      <div>收到货后,请立即验货,货物如有问题,请于一星期内通知,逾期本公司恕不负责.</div>
-      <div>
-        <span>收货人签名:{this.state.deliverySign}</span>
-        <span className="sig">送货人签名:{this.state.handlerSign}</span>
-        <span className="sig">制单人:{this.state.orderMaker}</span>
-      </div>
-      </div>
-      </div>
-    </div>
+     </div>
     <div>
       <div className="ajax-loading" id="ajaxLoading" style={{ display: this.state.loading }}>
          <div className="overlay">&nbsp;</div>
@@ -1072,7 +596,7 @@ import ReactDOM from 'react-dom';
     }
   }
   // 设置默认值类型
-  Upload.propTypes = {
+  UploadForGeneral.propTypes = {
     onEnter: PropTypes.func,
     onLeave: PropTypes.func,
     onError: PropTypes.func,
@@ -1085,7 +609,7 @@ import ReactDOM from 'react-dom';
     suffixs: PropTypes.array
   };
   // 设置默认值
-  Upload.defaultProps = {
+  UploadForGeneral.defaultProps = {
     // tslint:disable-next-line: ter-arrow-body-style
     onEnter: () => {
       return true;
@@ -1105,4 +629,4 @@ import ReactDOM from 'react-dom';
     maxLength: 10,
     suffixs: []
   };
-  export default Upload;
+  export default UploadForGeneral;

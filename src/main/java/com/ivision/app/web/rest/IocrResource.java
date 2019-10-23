@@ -150,6 +150,8 @@ public class IocrResource {
 							beanRsource.setErrorMessage("您上传的文件有误，请再确认一下");
 
 							return ResponseEntity.ok(beanRsource);
+							
+							
 						} else {
 							
 							continue;
