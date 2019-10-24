@@ -5,17 +5,15 @@ public class BeanRsource {
 	private String errorMessage;
 	private String errorCode;
 	private String warning;
-	private String filepath;
 	public BeanRsource() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public BeanRsource(String errorMessage, String errorCode, String warning, String filepath) {
+	public BeanRsource(String errorMessage, String errorCode, String warning) {
 		super();
 		this.errorMessage = errorMessage;
 		this.errorCode = errorCode;
 		this.warning = warning;
-		this.filepath = filepath;
 	}
 	public String getErrorMessage() {
 		return errorMessage;
@@ -35,18 +33,10 @@ public class BeanRsource {
 	public void setWarning(String warning) {
 		this.warning = warning;
 	}
-	public String getFilepath() {
-		return filepath;
-	}
-	public void setFilepath(String filepath) {
-		this.filepath = filepath;
-	}
 	@Override
 	public String toString() {
-		return "BeanRsource [errorMessage=" + errorMessage + ", errorCode=" + errorCode + ", warning=" + warning
-				+ ", filepath=" + filepath + "]";
+		return "BeanRsource [errorMessage=" + errorMessage + ", errorCode=" + errorCode + ", warning=" + warning + "]";
 	}
-
 	
 	
 

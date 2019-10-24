@@ -44,7 +44,7 @@ import com.ivision.app.domain.YdInvoice;
 
 /**
  * 
- * 调用百度自定义文字识别API，实现上传图片识别
+ * 调用百度API实现文字识别
  * 
  * <p>
  * 实现文件的上传，下载及页面展示
@@ -150,8 +150,6 @@ public class IocrResource {
 							beanRsource.setErrorMessage("您上传的文件有误，请再确认一下");
 
 							return ResponseEntity.ok(beanRsource);
-							
-							
 						} else {
 							
 							continue;
