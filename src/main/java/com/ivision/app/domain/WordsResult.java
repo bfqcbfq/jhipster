@@ -7,7 +7,7 @@ package com.ivision.app.domain;
 public class WordsResult {
 
     private String words;
-    private Location location;
+    //private Location location;
     public void setWords(String words) {
          this.words = words;
      }
@@ -15,11 +15,11 @@ public class WordsResult {
          return words;
      }
 
-    public void setLocation(Location location) {
-         this.location = location;
-     }
-     public Location getLocation() {
-         return location;
-     }
+//    public void setLocation(Location location) {
+//         this.location = location;
+//     }
+//     public Location getLocation() {
+//         return location;
+//     }
 
 }
