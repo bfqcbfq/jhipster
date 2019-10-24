@@ -105,7 +105,7 @@ import ReactDOM from 'react-dom';
     namedisplay: any;
     documenttype: any;
   }
-  class Upload extends React.Component<any, ImgProps> {
+  class Upload extends React.Component<any, ImgProps, []> {
     static defaultProps: any =
     { onEnter: () => true,
       onLeave: () => true,
