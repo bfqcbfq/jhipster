@@ -57,7 +57,9 @@ import com.ivision.app.domain.YdInvoice;
 
 /**
  * 调用百度通用文字识别API，实现文字识别
- *
+ *<p>
+ *实现日语文字识别
+ *</p>
  *
  */
 
