@@ -41,8 +41,12 @@ public class BeanRsource {
 	public void setFilepath(String filepath) {
 		this.filepath = filepath;
 	}
-	
-	
+	@Override
+	public String toString() {
+		return "BeanRsource [errorMessage=" + errorMessage + ", errorCode=" + errorCode + ", warning=" + warning
+				+ ", filepath=" + filepath + "]";
+	}
+
 	
 	
 
