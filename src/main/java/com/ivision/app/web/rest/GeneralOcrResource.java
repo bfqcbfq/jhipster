@@ -166,8 +166,6 @@ public class GeneralOcrResource {
 	@GetMapping("/download")
 	public String exportExcel(@RequestParam(value = "filepath") String filepath, HttpServletResponse response) {
 
-		String errorCode = null;
-
 		response.setContentType("application/force-download;charset=UTF-8");
 
 		try {
@@ -183,9 +181,7 @@ public class GeneralOcrResource {
 			// 调用百度API接口
 			List<WordsResult> resultByIocrList = getResultByIocr(filepath);
 
-
 						String title = "個人精算通知メール";
-
 						// 获取表头1
 						String[] head = { title };
 						String[] headnum = { "0,0,0,15" };
