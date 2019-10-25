@@ -84,7 +84,7 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
       maxLength: 10,
       files: [],
       onLeave: any,
-      url: 'http://localhost:8080/api/ocr/general/upload',
+      url: 'http://192.168.20.231:8080/api/ocr/general/upload',
       cq: 10,
       onEnter: any,
       maxSize: 10240000,
@@ -253,7 +253,7 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
           loading: 'block'
         });
         axios.post(
-          'http://localhost:8080/api/ocr/general/upload',
+          'http://192.168.20.231:8080/api/ocr/general/upload',
           uploadFile
         ).then((_: any) => {
           // tslint:disable-next-line: no-console
@@ -372,7 +372,7 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
     // tslint:disable-next-line: no-console
     console.log(filepaths);
     axios.get(
-      'http://localhost:8080/api/ocr/general/download',
+      'http://192.168.20.231:8080/api/ocr/general/download',
       {
         params: {
           filepath: filepaths
@@ -405,7 +405,7 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
   handleShowClick = (filepath: any) => {
     const filepaths: string = filepath;
     axios.get(
-      'http://localhost:8080/api/ocr/general/showDetails',
+      'http://192.168.20.231:8080/api/ocr/general/showDetails',
       {
         params: {
           filepath: filepaths
@@ -489,10 +489,10 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
                     // tslint:disable-next-line: jsx-key
                     <div className="allFile" key={file.guid}>
                       <span className="fileName">{file.name}</span>
-                      {file.success ? <span className="state">成功</span> : <span>失败/单据类型不匹配</span>}
+                      {file.success ? <span className="state">成功</span> : <span>失败/模板类型未定义</span>}
                       {file.success ? <span className="type">{file.templatetype}</span> : <span className="newtype">无</span>}
-                      {file.success ? <span className="displayshow" onClick={this.handleShowClick.bind(this, file.filepath)}>显示</span> :
-                        <span className="newdisplayshow">显示</span>}
+                      {file.success ? <span className="displayshow" onClick={this.handleShowClick.bind(this, file.filepath)}>查看</span> :
+                        <span className="newdisplayshow">查看</span>}
                       {file.success ? <span className="download" onClick={this.handleDownLoadClick.bind(this, file.filepath)}>下载</span> :
                         <span className="download">下载</span>}
                       <span className="del" onClick={this.handleCloseClick.bind(this, file.guid)}>删除</span>
