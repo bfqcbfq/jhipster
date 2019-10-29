@@ -1,8 +1,12 @@
 package com.ivision.app.domain;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class YdInvoice {
+public class YdInvoice implements Serializable {
+	
+	
+	private static final long serialVersionUID = 1L;
 	
 	private String type;
 	private String templateType;
