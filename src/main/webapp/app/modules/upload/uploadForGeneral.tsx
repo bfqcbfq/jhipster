@@ -84,7 +84,7 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
       maxLength: 10,
       files: [],
       onLeave: any,
-      url: 'http://192.168.20.231:8080/api/ocr/general/upload',
+      url: 'http://localhost:8080/api/ocr/general/upload',
       cq: 10,
       onEnter: any,
       maxSize: 10240000,
@@ -253,7 +253,7 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
           loading: 'block'
         });
         axios.post(
-          'http://192.168.20.231:8080/api/ocr/general/upload',
+          'http://localhost:8080/api/ocr/general/upload',
           uploadFile
         ).then((_: any) => {
           // tslint:disable-next-line: no-console
@@ -372,7 +372,7 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
     // tslint:disable-next-line: no-console
     console.log(filepaths);
     axios.get(
-      'http://192.168.20.231:8080/api/ocr/general/download',
+      'http://localhost:8080/api/ocr/general/download',
       {
         params: {
           filepath: filepaths
@@ -405,7 +405,7 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
   handleShowClick = (filepath: any) => {
     const filepaths: string = filepath;
     axios.get(
-      'http://192.168.20.231:8080/api/ocr/general/showDetails',
+      'http://localhost:8080/api/ocr/general/showDetails',
       {
         params: {
           filepath: filepaths
@@ -547,9 +547,9 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
           <div className="popBox">
             <div>
               {
-                this.state.wordsResult.map((result, index) => {
+                this.state.wordsResult.map(result => {
                   return (
-                    <ul key={index}>
+                    <ul>
                       <li>{result.words}</li>
                     </ul>
                   );

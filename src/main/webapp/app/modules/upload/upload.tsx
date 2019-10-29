@@ -217,7 +217,7 @@ import ReactDOM from 'react-dom';
         maxLength: 10,
         files: [],
         onLeave: any,
-        url: 'http://192.168.20.231:8080/api/upload',
+        url: 'http://localhost:8080/api/ocr/iocr/upload',
         cq: 10,
         onEnter: any,
         maxSize: 10240000,
@@ -453,24 +453,24 @@ import ReactDOM from 'react-dom';
             loading: 'block'
           });
           axios.post(
-            'http://192.168.20.231:8080/api/ocr/iocr/upload',
+            'http://localhost:8080/api/ocr/iocr/upload',
             uploadFile
           ).then((_: any) => {
             // tslint:disable-next-line: no-console
             console.log(_);
-            const filepath = _.data.filepath;
+            const filepathType = _.data.type;
             // tslint:disable-next-line: no-console
-            console.log(filepath);
+            console.log(filepathType);
             const message = _.data.errorMessage;
             // tslint:disable-next-line: no-console
             console.log(message);
             const templatetype = _.data.templateType;
-            if (filepath !== null && filepath !== undefined && filepath !== '') {
+            if (filepathType !== null && filepathType !== undefined && filepathType !== '') {
              // tslint:disable-next-line: no-console
-                console.log(filepath);
+                console.log(filepathType);
                 this.setState(prevState => {
                   current.success = true;
-                  current.filepath = filepath;
+                  current.filepathType = filepathType;
                   current.templatetype = templatetype;
                   return {
                     files: [...prevState.files, current]
@@ -490,7 +490,7 @@ import ReactDOM from 'react-dom';
                console.log(message);
                this.setState(prevState => {
                  current.success = false;
-                 current.filepath = filepath;
+                 current.filepathType = filepathType;
                  return {
                    files: [...prevState.files, current]
                  };
@@ -572,7 +572,7 @@ import ReactDOM from 'react-dom';
       // tslint:disable-next-line: no-console
       console.log(filepaths);
       axios.get(
-        'http://192.168.20.231:8080/api/ocr/iocr/download',
+        'http://localhost:8080/api/ocr/iocr/download',
         {
           params: {
             filepath: filepaths
@@ -602,13 +602,13 @@ import ReactDOM from 'react-dom';
       });
     }
     // 显示扫描详情
-    handleShowClick = (filepath: any) => {
-      const filepaths: string = filepath;
+    handleShowClick = (filepathType: any) => {
+      const filepathTypes: string = filepathType;
       axios.get(
-        'http://192.168.20.231:8080/api/ocr/iocr/showDetails',
+        'http://localhost:8080/api/ocr/iocr/showDetails',
         {
           params: {
-            filepath: filepaths
+            filepathType: filepathTypes
           }
         })
       // tslint:disable-next-line: only-arrow-functions
@@ -788,7 +788,7 @@ import ReactDOM from 'react-dom';
                             <span className="fileName">{file.name}</span>
                             {file.success ? <span className="state">成功</span> : <span>失败/模板类型未定义</span>}
                             {file.success ? <span className="type">{file.templatetype}</span> : <span className="newtype">无</span>}
-                            {file.success ? <span className="displayshow" onClick={this.handleShowClick.bind(this, file.filepath)}>查看</span> :
+                            {file.success ? <span className="displayshow" onClick={this.handleShowClick.bind(this, file.filepathType)}>查看</span> :
                                             <span className="newdisplayshow">查看</span>}
                             {file.success ? <span className="download" onClick={this.handleDownLoadClick.bind(this, file.filepath)}>下载</span> :
                                             <span className="download">下载</span>}

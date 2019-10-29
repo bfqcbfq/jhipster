@@ -11,7 +11,10 @@ import java.util.List;
 import java.util.Random;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -21,6 +24,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.util.StringUtils;
@@ -90,7 +94,7 @@ public class IocrResource {
 	 */
 	@PostMapping("/upload")
 	public ResponseEntity<Object> getfileRecord(
-			@RequestParam(value = "file", required = false) MultipartFile[] uploadFiles) throws IOException {
+			@RequestParam(value = "file", required = false) MultipartFile[] uploadFiles, HttpServletRequest request) throws IOException {
 
 		List<String> errorMessageList = new ArrayList<String>();
 
@@ -103,12 +107,20 @@ public class IocrResource {
 		YdInvoice ydInvoice = new YdInvoice();
 
 		BeanRsource beanRsource = new BeanRsource();
+		
+		HttpSession session = request.getSession();
 
 		// 判断文件夹是否存在,不存在则创建
 		File file = new File(filePath);
 
 		if (!file.exists()) {
 			file.mkdirs();
+		}
+		
+		if(uploadFiles==null || uploadFiles.length<0) {
+			
+			//参数错误，返回400，没有响应体
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 
 		for (MultipartFile uploadFile : uploadFiles) {
@@ -149,6 +161,7 @@ public class IocrResource {
 
 							beanRsource.setErrorMessage("您上传的文件有误，请再确认一下");
 
+							//return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 							return ResponseEntity.ok(beanRsource);
 							
 							
@@ -162,23 +175,33 @@ public class IocrResource {
 						templateSign = jsonObject.getJSONObject("data").get("templateSign").toString();
 
 						if (templateSign.equals(templateId1)) {
+							
+							invoice = jsonToInvoiceF(jsonObject);
 							invoice.setTemplateType("神丰科技发货单");
-
 							invoice.setFilepath(newFilePath);
+							invoice.setType("1");
+							session.setAttribute("invoice",invoice);
+							session.setAttribute("invoiceType",invoice.getType());
 
 							return ResponseEntity.ok(invoice);
 						} else if (templateSign.equals(templateId2)) {
-
+							
+							mxInvoice = jsonToMxInvoice(jsonObject);
 							mxInvoice.setTemplateType("明歆制衣出货单");
-
 							mxInvoice.setFilepath(newFilePath);
-
+							mxInvoice.setType("2");
+							session.setAttribute("mxInvoice", mxInvoice);
+							session.setAttribute("mxInvoiceType",mxInvoice.getType());
 							return ResponseEntity.ok(mxInvoice);
+							
 						} else if (templateSign.equals(templateId3)) {
-
+							
+							ydInvoice = jsonToYdInvoice(jsonObject);
 							ydInvoice.setTemplateType("易达软件出库单");
-
 							ydInvoice.setFilepath(newFilePath);
+							ydInvoice.setType("3");
+							session.setAttribute("ydInvoice", ydInvoice);
+							session.setAttribute("ydInvoiceType",ydInvoice.getType());
 
 							return ResponseEntity.ok(ydInvoice);
 						}
@@ -195,15 +218,8 @@ public class IocrResource {
 				e2.printStackTrace();
 			}
 				
-//			}else {
-//				
-//				beanRsource.setErrorMessage("您上传的文件有误，请再确认一下");
-//
-//				return ResponseEntity.ok(beanRsource);
-//			}
-			
 		}
-		return null;
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 
 	}
 
@@ -215,55 +231,47 @@ public class IocrResource {
 	 * @throws IOException
 	 */
 	@GetMapping("/showDetails")
-	public ResponseEntity<Object> showUploadFileDetails(@RequestParam(value = "filepath") String filepath)
+	public ResponseEntity<Object> showUploadFileDetails(@RequestParam(value = "filepathType") String filepathType, HttpServletRequest request)
 			throws IOException {
-
-		String errorCode = null;
 		
-		Invoice invoice = new Invoice();
+		HttpSession session = request.getSession();
 		
-		MxInvoice mxInvoice = new MxInvoice();
+		switch(filepathType) {
 		
-		YdInvoice ydInvoice = new YdInvoice();
-
-		// 调用百度API
-		List<JSONObject> jsonObjectList = getResultByIocr(filepath);
-
-		for (JSONObject jsonObject : jsonObjectList) {
+		case "1":
 			
-			errorCode = jsonObject.get("error_code").toString();
-			
-			String templateSign = jsonObject.getJSONObject("data").get("templateSign").toString();
-
-			if (!errorCode.equals("0")) {
-
-				continue;
-			} else {
-				if (templateSign.equals(templateId1)) {
-					
-					invoice = jsonToInvoiceF(jsonObject);
-					invoice.setType("1");
-					return ResponseEntity.ok(invoice);
-					
-				} else if (templateSign.equals(templateId2)) {
-					
-					mxInvoice = jsonToMxInvoice(jsonObject);
-					mxInvoice.setType("2");
-					return ResponseEntity.ok(mxInvoice);
-					
-				} else if (templateSign.equals(templateId3)) {
-					
-					ydInvoice = jsonToYdInvoice(jsonObject);
-					ydInvoice.setType("3");
-					return ResponseEntity.ok(ydInvoice);
-					
-				}
-
+			Object invoice = session.getAttribute("invoice");
+			if(invoice == null) {
+				
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
-
+			
+			return ResponseEntity.ok(invoice);
+			
+		case "2":
+			
+			Object mxInvoice = session.getAttribute("mxInvoice");
+			if(mxInvoice == null) {
+				
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+			}
+			
+			return ResponseEntity.ok(mxInvoice);
+			
+		case "3":
+			
+			Object ydInvoice = session.getAttribute("ydInvoice");
+			if(ydInvoice == null) {
+				
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+			}
+			
+			return ResponseEntity.ok(ydInvoice);
+		
 		}
-		return null;
-
+		
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+		
 	}
 
 	/**
