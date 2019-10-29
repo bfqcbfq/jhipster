@@ -564,18 +564,18 @@ import ReactDOM from 'react-dom';
       });
     }
     // 下载文件
-    handleDownLoadClick = (filepath: any) => {
+    handleDownLoadClick = (filepathType: any) => {
       // tslint:disable-next-line: no-console
-      console.log(filepath);
+      console.log(filepathType);
       // tslint:disable-next-line: no-inferrable-types
-      const filepaths: string = filepath;
+      const filepathTypes: string = filepathType;
       // tslint:disable-next-line: no-console
-      console.log(filepaths);
+      console.log(filepathTypes);
       axios.get(
         'http://localhost:8080/api/ocr/iocr/download',
         {
           params: {
-            filepath: filepaths
+            filepathType: filepathTypes
           },
           headers: {
               'Content-Type': 'application/x-www-form-yrlencoded'
@@ -790,7 +790,7 @@ import ReactDOM from 'react-dom';
                             {file.success ? <span className="type">{file.templatetype}</span> : <span className="newtype">无</span>}
                             {file.success ? <span className="displayshow" onClick={this.handleShowClick.bind(this, file.filepathType)}>查看</span> :
                                             <span className="newdisplayshow">查看</span>}
-                            {file.success ? <span className="download" onClick={this.handleDownLoadClick.bind(this, file.filepath)}>下载</span> :
+                            {file.success ? <span className="download" onClick={this.handleDownLoadClick.bind(this, file.filepathType)}>下载</span> :
                                             <span className="download">下载</span>}
                             <span className="del" onClick={this.handleCloseClick.bind(this, file.guid)}>删除</span>
                       </div>
