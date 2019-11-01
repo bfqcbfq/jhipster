@@ -1,9 +1,14 @@
 package com.ivision.app.domain;
 
+import java.io.Serializable;
 
-public class DeliveryDetails {
+public class DeliveryDetails implements Serializable {
 
-	 private String storehouseNo;
+	 /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String storehouseNo;
 	 private String materialNo;
 	 private String brand;
 	 private String unit;

@@ -108,7 +108,7 @@ public class IocrResource {
 		BeanRsource beanRsource = new BeanRsource();
 
 		HttpSession session = request.getSession();
-
+		
 		// 判断文件夹是否存在,不存在则创建
 		File file = new File(filePath);
 
@@ -129,9 +129,6 @@ public class IocrResource {
 			// 获取文件类型
 			String fileType = originalFileName.substring(originalFileName.lastIndexOf("."));
 
-			// if("jpg".equalsIgnoreCase(fileType) || "png".equalsIgnoreCase(fileType) ||
-			// "bmp".equalsIgnoreCase(fileType)) {
-
 			Date now = new Date();
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 
@@ -151,15 +148,12 @@ public class IocrResource {
 
 				for (JSONObject jsonObject : jsonObjectList) {
 					errorCode = jsonObject.get("error_code").toString();
-
 					if (!errorCode.equals("0")) {
 						errorMessageList.add(errorCode);
-
+						// 上传错误，返回错误信息
 						if (errorMessageList.size() == jsonObjectList.size()) {
-
 							beanRsource.setErrorMessage("您上传的文件有误，请再确认一下");
 
-							// return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 							return ResponseEntity.ok(beanRsource);
 
 						} else {
@@ -175,30 +169,27 @@ public class IocrResource {
 
 							invoice = jsonToInvoiceF(jsonObject);
 							invoice.setTemplateType("神丰科技发货单");
-							invoice.setFilepath(newFilePath);
 							invoice.setType("1");
+							// 将数据放在session中
 							session.setAttribute("invoice", invoice);
-							session.setAttribute("invoiceType", invoice.getType());
 
 							return ResponseEntity.ok(invoice);
 						} else if (templateSign.equals(templateId2)) {
 
 							mxInvoice = jsonToMxInvoice(jsonObject);
 							mxInvoice.setTemplateType("明歆制衣出货单");
-							mxInvoice.setFilepath(newFilePath);
 							mxInvoice.setType("2");
+							// 将数据放在session中
 							session.setAttribute("mxInvoice", mxInvoice);
-							session.setAttribute("mxInvoiceType", mxInvoice.getType());
-							return ResponseEntity.ok(mxInvoice);
 
+							return ResponseEntity.ok(mxInvoice);
 						} else if (templateSign.equals(templateId3)) {
 
 							ydInvoice = jsonToYdInvoice(jsonObject);
 							ydInvoice.setTemplateType("易达软件出库单");
-							ydInvoice.setFilepath(newFilePath);
 							ydInvoice.setType("3");
+							// 将数据放在session中
 							session.setAttribute("ydInvoice", ydInvoice);
-							session.setAttribute("ydInvoiceType", ydInvoice.getType());
 
 							return ResponseEntity.ok(ydInvoice);
 						}
@@ -216,8 +207,8 @@ public class IocrResource {
 			}
 
 		}
+		//上传发生错误，返回500
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-
 	}
 
 	/**
@@ -233,9 +224,7 @@ public class IocrResource {
 
 		HttpSession session = request.getSession();
 
-		switch (filepathType) {
-
-		case "1":
+		if (filepathType.equals("1")) {
 
 			Object invoice = session.getAttribute("invoice");
 			if (invoice == null) {
@@ -244,8 +233,9 @@ public class IocrResource {
 			}
 
 			return ResponseEntity.ok(invoice);
+		}
 
-		case "2":
+		if (filepathType.equals("2")) {
 
 			Object mxInvoice = session.getAttribute("mxInvoice");
 			if (mxInvoice == null) {
@@ -255,7 +245,8 @@ public class IocrResource {
 
 			return ResponseEntity.ok(mxInvoice);
 
-		case "3":
+		}
+		if (filepathType.equals("3")) {
 
 			Object ydInvoice = session.getAttribute("ydInvoice");
 			if (ydInvoice == null) {
@@ -264,7 +255,6 @@ public class IocrResource {
 			}
 
 			return ResponseEntity.ok(ydInvoice);
-
 		}
 
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);

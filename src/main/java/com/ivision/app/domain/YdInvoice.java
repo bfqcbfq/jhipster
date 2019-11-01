@@ -13,16 +13,7 @@ public class YdInvoice implements Serializable {
 	private String filepath;
 	private String title;
 	private YdDeliverMessage ydDeliverMessage;
-//	private String deliveryNo;
-//	private String deliveryCompany;
-//	private String deliveryDate;
-//	private String address;
-//	private String contactNUmber;
-//	private String note;
-//	private String handler;
-//	private String picker;
 	private List<YdDeliveryDetails>  ydDeliveryDetails;
-//	private List<DeliveryDetails> deliveryDetails;
 	public YdInvoice() {
 		
 	}

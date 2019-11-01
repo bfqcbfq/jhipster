@@ -490,7 +490,7 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
                     <div className="allFile" key={file.guid}>
                       <span className="fileName">{file.name}</span>
                       {file.success ? <span className="state">成功</span> : <span>失败/模板类型未定义</span>}
-                      {file.success ? <span className="type">{file.templatetype}</span> : <span className="newtype">无</span>}
+                      {file.success ? <span className="type">Test Demo</span> : <span className="newtype">无</span>}
                       {file.success ? <span className="displayshow" onClick={this.handleShowClick.bind(this, file.filepath)}>查看</span> :
                         <span className="newdisplayshow">查看</span>}
                       {file.success ? <span className="download" onClick={this.handleDownLoadClick.bind(this, file.filepath)}>下载</span> :
@@ -542,17 +542,16 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
             </form>
           </div>
         </div>
+        {/* {日语识别测试使用模板} */}
         <div className="popLayer" style={{ display: this.state.display }}>
           <span className="close" onClick={this.clockClick}>关闭</span>
           <div className="popBox">
             <div>
               {
-                this.state.wordsResult.map(result => {
-                  return (
-                    <ul>
+                this.state.wordsResult.map((result, index) => {
+                    (<ul key={index}>
                       <li>{result.words}</li>
-                    </ul>
-                  );
+                    </ul>);
                 })
               }
             </div>

@@ -1,12 +1,17 @@
 package com.ivision.app.domain;
 
+import java.io.Serializable;
+
 /**
  * 
  * 易达软件销售出库单主体信息
  * @author wanglei
  *
  */
-public class YdDeliverMessage {
+public class YdDeliverMessage implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
+	
 	
 	private String mainBusiness;
 	private String orderMaker;

@@ -3,11 +3,14 @@
   */
 package com.ivision.app.domain;
 
+import java.io.Serializable;
 
-public class WordsResult {
+public class WordsResult implements Serializable {
 
-    private String words;
-    //private Location location;
+	private static final long serialVersionUID = 1L;
+	
+	private String words;
+    private Location location;
     public void setWords(String words) {
          this.words = words;
      }
@@ -15,11 +18,11 @@ public class WordsResult {
          return words;
      }
 
-//    public void setLocation(Location location) {
-//         this.location = location;
-//     }
-//     public Location getLocation() {
-//         return location;
-//     }
+    public void setLocation(Location location) {
+         this.location = location;
+     }
+     public Location getLocation() {
+         return location;
+     }
 
 }

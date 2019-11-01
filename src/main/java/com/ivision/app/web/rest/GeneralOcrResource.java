@@ -8,18 +8,14 @@ import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
-import java.util.Set;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -29,7 +25,6 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -43,17 +38,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.baidu.aip.ocr.AipOcr;
 import com.ivision.app.domain.BeanRsource;
 import com.ivision.app.domain.DeliverMessage;
-import com.ivision.app.domain.DeliveryDetails;
-import com.ivision.app.domain.GeneralOcrBean;
-import com.ivision.app.domain.Invoice;
-import com.ivision.app.domain.Location;
 import com.ivision.app.domain.MxDeliverMessage;
 import com.ivision.app.domain.MxDeliveryDetails;
-import com.ivision.app.domain.MxInvoice;
 import com.ivision.app.domain.WordsResult;
 import com.ivision.app.domain.YdDeliverMessage;
 import com.ivision.app.domain.YdDeliveryDetails;
-import com.ivision.app.domain.YdInvoice;
 
 /**
  * 调用百度通用文字识别API，实现文字识别
