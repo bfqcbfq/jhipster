@@ -548,11 +548,11 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
           <div className="popBox">
             <div>
               {
-                this.state.wordsResult.map((result, index) => {
-                    (<ul key={index}>
+                this.state.wordsResult.map((result, index) =>
+                    <ul key={index}>
                       <li>{result.words}</li>
-                    </ul>);
-                })
+                    </ul>
+                )
               }
             </div>
           </div>
