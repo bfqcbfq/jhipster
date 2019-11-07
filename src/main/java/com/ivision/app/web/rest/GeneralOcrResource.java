@@ -96,6 +96,14 @@ public class GeneralOcrResource {
 
 			// 获取文件类型
 			String fileType = originalFileName.substring(originalFileName.lastIndexOf("."));
+			
+			if(!(".jpg".equalsIgnoreCase(fileType) || ".jpeg".equalsIgnoreCase(fileType) || ".bpm".equalsIgnoreCase(fileType) || ".png".equalsIgnoreCase(fileType))) {
+				beanRsource.setErrorMessage("您上传的文件有误，请再确认一下");
+
+				return ResponseEntity.ok(beanRsource);
+
+				
+			}
 
 			Date now = new Date();
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -110,6 +118,8 @@ public class GeneralOcrResource {
 
 				// 将传来的文件写入新建的文件
 				uploadFile.transferTo(new File(newFilePath));
+				
+				
 				beanRsource.setFilepath(newFilePath);
 					
 					return  ResponseEntity.ok(beanRsource);
@@ -121,6 +131,7 @@ public class GeneralOcrResource {
 			} catch (Exception e2) {
 				e2.printStackTrace();
 			}
+			
 
 
 		}
