@@ -87,7 +87,7 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
       url: 'http://localhost:8080/api/ocr/general/upload',
       cq: 10,
       onEnter: any,
-      maxSize: 10240000,
+      maxSize: 102400000000,
       suffixs: [],
       onError: any,
       multiple: true,
@@ -489,7 +489,7 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
                     // tslint:disable-next-line: jsx-key
                     <div className="allFile" key={file.guid}>
                       <span className="fileName">{file.name}</span>
-                      {file.success ? <span className="state">成功</span> : <span>失败/模板类型未定义</span>}
+                      {file.success ? <span className="state">成功</span> : <span>失败/上传的文件有误</span>}
                       {file.success ? <span className="type">Test Demo</span> : <span className="newtype">无</span>}
                       {file.success ? <span className="displayshow" onClick={this.handleShowClick.bind(this, file.filepath)}>查看</span> :
                         <span className="newdisplayshow">查看</span>}
