@@ -32,6 +32,12 @@ interface ImgProps {
   display: any;
   wordsResult: [{
     words: any;
+    location: {
+      top: any;
+      left: any;
+      width: any;
+      height: any;
+    }
   }];
   loading: any;
   name: any[];
@@ -53,7 +59,13 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
       filepath: any,
       display: any,
       wordsResult: [{
-        words: any
+        words: any,
+        location: {
+          top: any,
+          left: any,
+          width: any,
+          length: any
+        }
       }],
       loading: any,
       name: [],
@@ -87,7 +99,7 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
       url: 'http://localhost:8080/api/ocr/general/upload',
       cq: 10,
       onEnter: any,
-      maxSize: 102400000000,
+      maxSize: 10240000 * 10240000,
       suffixs: [],
       onError: any,
       multiple: true,
@@ -96,7 +108,13 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
       filepath: any,
       display: 'none',
       wordsResult: [{
-        words: any
+        words: any,
+        location: {
+          top: any,
+          left: any,
+          width: any,
+          height: any
+        }
       }],
       loading: 'none',
       name: [],
@@ -345,7 +363,7 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
   // 限制上传文件大小
   check = (file: { size: number; name: any; }) => {
     const { maxSize, suffixs } = this.props;
-    if (file.size > maxSize * 1024) return `${file.name}超过文件大小限制`;
+    if (file.size > maxSize * 1024 * 1024) return `${file.name}超过文件大小限制`;
     return undefined;
   }
 
@@ -551,12 +569,18 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
                 this.state.wordsResult.map((result, index) =>
                     <ul key={index}>
                       <li>{result.words}</li>
+                      <li>{result.location.top}</li>
+                      <li>{result.location.left}</li>
+                      <li>{result.location.width}</li>
+                      <li>{result.location.height}</li>
                     </ul>
                 )
               }
             </div>
           </div>
         </div>
+
+        {/* {アンケート} */}
         <div>
           <div className="ajax-loading" id="ajaxLoading" style={{ display: this.state.loading }}>
             <div className="overlay">&nbsp;</div>
@@ -600,7 +624,7 @@ UploadForGeneral.defaultProps = {
   cq: 10, // 限制上传数量
   multiple: true, // 是否开启多个上传 true 是 false 否
   images: 'image/*',
-  maxSize: 1024,
+  maxSize: 1024 * 1024,
   maxLength: 10,
   suffixs: []
 };
