@@ -16,7 +16,6 @@ import java.util.Map;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
-
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -38,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.baidu.aip.ocr.AipOcr;
 import com.ivision.app.domain.BeanRsource;
 import com.ivision.app.domain.DeliverMessage;
+import com.ivision.app.domain.Location;
 import com.ivision.app.domain.MxDeliverMessage;
 import com.ivision.app.domain.MxDeliveryDetails;
 import com.ivision.app.domain.WordsResult;
@@ -46,9 +46,9 @@ import com.ivision.app.domain.YdDeliveryDetails;
 
 /**
  * 调用百度通用文字识别API，实现文字识别
- *<p>
- *实现日语文字识别
- *</p>
+ * <p>
+ * 实现日语文字识别
+ * </p>
  *
  */
 
@@ -80,7 +80,7 @@ public class GeneralOcrResource {
 	@PostMapping("/upload")
 	public ResponseEntity<Object> getfileRecord(
 			@RequestParam(value = "file", required = false) MultipartFile[] uploadFiles) throws IOException {
-		
+
 		BeanRsource beanRsource = new BeanRsource();
 
 		// 判断文件夹是否存在,不存在则创建
@@ -96,13 +96,13 @@ public class GeneralOcrResource {
 
 			// 获取文件类型
 			String fileType = originalFileName.substring(originalFileName.lastIndexOf("."));
-			
-			if(!(".jpg".equalsIgnoreCase(fileType) || ".jpeg".equalsIgnoreCase(fileType) || ".bpm".equalsIgnoreCase(fileType) || ".png".equalsIgnoreCase(fileType))) {
+
+			if (!(".jpg".equalsIgnoreCase(fileType) || ".jpeg".equalsIgnoreCase(fileType)
+					|| ".bpm".equalsIgnoreCase(fileType) || ".png".equalsIgnoreCase(fileType))) {
 				beanRsource.setErrorMessage("您上传的文件有误，请再确认一下");
 
 				return ResponseEntity.ok(beanRsource);
 
-				
 			}
 
 			Date now = new Date();
@@ -118,11 +118,10 @@ public class GeneralOcrResource {
 
 				// 将传来的文件写入新建的文件
 				uploadFile.transferTo(new File(newFilePath));
-				
-				
+
 				beanRsource.setFilepath(newFilePath);
-					
-					return  ResponseEntity.ok(beanRsource);
+
+				return ResponseEntity.ok(beanRsource);
 
 			} catch (FileAlreadyExistsException e) {
 				e.printStackTrace();
@@ -131,14 +130,12 @@ public class GeneralOcrResource {
 			} catch (Exception e2) {
 				e2.printStackTrace();
 			}
-			
-
 
 		}
 		return null;
 
 	}
-	
+
 	/**
 	 * 获取上传文件明细
 	 * 
@@ -147,17 +144,16 @@ public class GeneralOcrResource {
 	 * @throws IOException
 	 */
 	@GetMapping("/showDetails")
-	public ResponseEntity<Map<String,List<WordsResult>>> showUploadFileDetails(@RequestParam(value = "filepath") String filepath)
-			throws IOException {
-		Map<String,List<WordsResult>> wordsResults = new HashMap<>();
-		
+	public ResponseEntity<Map<String, List<WordsResult>>> showUploadFileDetails(
+			@RequestParam(value = "filepath") String filepath) throws IOException {
+		Map<String, List<WordsResult>> wordsResults = new HashMap<>();
+
 		List<WordsResult> resultByIocr = getResultByIocr(filepath);
 		wordsResults.put("wordsResult", resultByIocr);
-		
-				return ResponseEntity.ok(wordsResults);
+
+		return ResponseEntity.ok(wordsResults);
 	}
-	
-	
+
 	/**
 	 * 导出Excel，并下载
 	 * 
@@ -183,17 +179,18 @@ public class GeneralOcrResource {
 			// 调用百度API接口
 			List<WordsResult> resultByIocrList = getResultByIocr(filepath);
 
-						String title = "個人精算通知メール";
-						// 获取表头1
-						String[] head = { title };
-						String[] headnum = { "0,0,0,15" };
-						// 获取表头2
-						//String[] head1 = { "发货单号", "发货单位", "发货日期", "地址", "联系电话", "备注", "经手人（签字或盖章）", "领料人（签字或盖章）" };
-						// String[] headnum1 = { "1,1,0,15" };
-						//String[] titles = { "仓库", "料号", "品牌", "单位", "数量", "单重", "合计重量", "批次号", "出货日期", "备注" };
+			String title = "個人精算通知メール";
+			// 获取表头1
+			String[] head = { title };
+			String[] headnum = { "0,0,0,15" };
+			// 获取表头2
+			// String[] head1 = { "发货单号", "发货单位", "发货日期", "地址", "联系电话", "备注", "经手人（签字或盖章）",
+			// "领料人（签字或盖章）" };
+			// String[] headnum1 = { "1,1,0,15" };
+			// String[] titles = { "仓库", "料号", "品牌", "单位", "数量", "单重", "合计重量", "批次号",
+			// "出货日期", "备注" };
 
-						this.exportFencers(head, headnum, null, null, null, out, null, resultByIocrList,
-								null, null, null, null);
+			this.exportFencers(head, headnum, null, null, null, out, null, resultByIocrList, null, null, null, null);
 
 			return "success";
 		} catch (Exception e) {
@@ -211,51 +208,71 @@ public class GeneralOcrResource {
 	 * @return JSONObject
 	 * @throws IOException
 	 */
+	@SuppressWarnings("unchecked")
 	public List<WordsResult> getResultByIocr(String iocrFilepath) throws IOException {
 
+		// 实例化百度文字识别接口，并传入必要参数
 		AipOcr client = new AipOcr(appId, apiKey, secretKey);
 		List<WordsResult> wordsResultList = new ArrayList<>();
 
-		// client.setConnectionTimeoutInMillis(2000);
-		// client.setSocketTimeoutInMillis(6000);
+		client.setConnectionTimeoutInMillis(2000);
+		client.setSocketTimeoutInMillis(6000);
 
 		// 传入可选参数调用接口
 		HashMap<String, String> options = new HashMap<String, String>();
-
+		
+		// 指定设定识别语言为 日语;检测图片朝向;检测语言类别
 		options.put("language_type", "JAP");
+		options.put("detect_direction", "true");
+		options.put("detect_language","true");
+		
+		
+		//设定是否检测语言种类参数
 		// options.put("detect_language","true");
 
 		// 参数为本地路径
-		// JSONObject custom = client.custom(iocrFilepath, options);
 		JSONObject jsonObject = client.general(iocrFilepath, options);
-		
-		
-		String wordsResultNum = null;
 
-		wordsResultNum = jsonObject.get("words_result_num").toString();
-		
-		
-		
+		String wordsResultNum = jsonObject.get("words_result_num").toString();
 
-		if ((Integer.valueOf(wordsResultNum))>=1) {
-			
+		if ((Integer.valueOf(wordsResultNum)) >= 1) {
+
 			JSONArray jsonArray = jsonObject.getJSONArray("words_result");
 			List<Object> list = jsonArray.toList();
-			
+
 			for (int i = 0; i < list.size(); i++) {
-				
+
 				WordsResult wordResult = new WordsResult();
-				HashMap<String, String> map =(HashMap) list.get(i);
-				wordResult.setWords(map.get("words"));
-				wordsResultList.add(wordResult);
+				Location location = new Location();
+
+				// 取得被识别的数据
+				HashMap<String, Object> map = (HashMap<String, Object>) list.get(i);
+				String words = (String) map.get("words");
+				wordResult.setWords(words);
+
+				// 取得每个识别单位的位置信息
+				HashMap<String, Integer> locationMap = (HashMap<String, Integer>) map.get("location");
+				Integer top = locationMap.get("top");
+				Integer left = locationMap.get("left");
+				Integer width = locationMap.get("width");
+				Integer height = locationMap.get("height");
+
+				location.setTop(top);
+				location.setLeft(left);
+				location.setWidth(width);
+				location.setHeight(height);
+				wordResult.setLocation(location);
 				
+				// 将识别结果赋值给对象返回
+				wordsResultList.add(wordResult);
+
 			}
 		}
 
 		return wordsResultList;
 
 	}
-	
+
 	/**
 	 * 导出识别文字信息为Excel文件
 	 * 
@@ -275,13 +292,13 @@ public class GeneralOcrResource {
 			YdDeliverMessage ydDeliverMessage, List<YdDeliveryDetails> ydDeliveryDetails) throws Exception {
 		try {
 			HSSFWorkbook workbook = new HSSFWorkbook();
-			
+
 			// 第二步，在webbook中添加一个sheet,对应Excel文件中的sheet
 			HSSFSheet hssfSheet = workbook.createSheet("sheet1");
 
 			// 第三步，在sheet中添加表头第0行,老版本poi对Excel的行数列数有限制short
 			HSSFRow hssfRow = hssfSheet.createRow(0);
-			//HSSFRow hssfRow1 = hssfSheet.createRow(1);
+			// HSSFRow hssfRow1 = hssfSheet.createRow(1);
 			HSSFRow hssfRow2 = hssfSheet.createRow(2);
 			// 第四步，创建单元格，并设置值表头 设置表头居中
 			HSSFCellStyle hssfCellStyle = workbook.createCellStyle();
@@ -290,7 +307,7 @@ public class GeneralOcrResource {
 
 			HSSFCell hssfCell = null;// 第一行
 
-			//HSSFCell hssfCell1 = null;// 第二行
+			// HSSFCell hssfCell1 = null;// 第二行
 
 			HSSFCell hssfCell2 = null;// 第三行
 
@@ -386,13 +403,13 @@ public class GeneralOcrResource {
 //				hssfSheet.addMergedRegion(new CellRangeAddress(startrow, overrow, startcol, overcol));
 //			}
 			// 第三行表头 不需要合并单元格
-			
+
 			if (titles != null && !(titles.length < 0))
-			for (int i = 0; i < titles.length; i++) {
-				hssfCell2 = hssfRow2.createCell(i);// 列索引从0开始
-				hssfCell2.setCellValue(titles[i]);// 列名1
-				hssfCell2.setCellStyle(hssfCellStyle);// 列居中显示
-			}
+				for (int i = 0; i < titles.length; i++) {
+					hssfCell2 = hssfRow2.createCell(i);// 列索引从0开始
+					hssfCell2.setCellValue(titles[i]);// 列名1
+					hssfCell2.setCellStyle(hssfCellStyle);// 列居中显示
+				}
 
 			// 第五步，写入实体数据
 
@@ -413,8 +430,8 @@ public class GeneralOcrResource {
 				}
 
 			}
-			
-			//明歆制衣
+
+			// 明歆制衣
 			else if (mxDeliveryDetails != null && !mxDeliveryDetails.isEmpty()) {
 
 				for (int i = 0; i < mxDeliveryDetails.size(); i++) {
@@ -482,7 +499,7 @@ public class GeneralOcrResource {
 						account = de.getAccount();
 					}
 					hssfRow.createCell(9).setCellValue(account);
-					
+
 					String comment = "";
 					if (de.getComment() != null) {
 						comment = de.getComment();
@@ -492,7 +509,7 @@ public class GeneralOcrResource {
 				}
 
 			}
-			
+
 			// 第七步，将文件输出到客户端浏览器
 			try {
 				workbook.write(out);

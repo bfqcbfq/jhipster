@@ -220,7 +220,7 @@ import ReactDOM from 'react-dom';
         url: 'http://localhost:8080/api/ocr/iocr/upload',
         cq: 10,
         onEnter: any,
-        maxSize: 10240000,
+        maxSize: 10240000 * 10240000,
         suffixs: [],
         onError: any,
         multiple: true,
@@ -545,7 +545,7 @@ import ReactDOM from 'react-dom';
     // 限制上传文件大小
     check = (file: { size: number; name: any; }) => {
       const { maxSize , suffixs } = this.props;
-      if (file.size > maxSize * 1024) return `${file.name}超过文件大小限制`;
+      if (file.size > maxSize * 1024 * 1024) return `${file.name}超过文件大小限制`;
       return undefined;
     }
 
@@ -1113,7 +1113,7 @@ import ReactDOM from 'react-dom';
     cq: 10, // 限制上传数量
     multiple: true, // 是否开启多个上传 true 是 false 否
     images: 'image/*',
-    maxSize: 1024,
+    maxSize: 1024 * 1024 * 1024,
     maxLength: 100,
     suffixs: []
   };

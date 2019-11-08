@@ -428,7 +428,8 @@ public class IocrResource {
 
 		for (int i = 0; i < list.size(); i++) {
 
-			HashMap<String, String> map = (HashMap) list.get(i);
+			@SuppressWarnings("unchecked")
+			HashMap<String, String> map = (HashMap<String, String>) list.get(i);
 
 			String word = map.get("word");
 
@@ -730,7 +731,8 @@ public class IocrResource {
 
 		for (int i = 0; i < list.size(); i++) {
 
-			HashMap<String, String> map = (HashMap) list.get(i);
+			@SuppressWarnings("unchecked")
+			HashMap<String, String> map = (HashMap<String, String>) list.get(i);
 
 			String word = map.get("word");
 
@@ -1013,7 +1015,8 @@ public class IocrResource {
 
 		for (int i = 0; i < list.size(); i++) {
 
-			HashMap<String, String> map = (HashMap) list.get(i);
+			@SuppressWarnings("unchecked")
+			HashMap<String, String> map = (HashMap<String, String>) list.get(i);
 
 			String word = map.get("word");
 

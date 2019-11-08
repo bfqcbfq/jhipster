@@ -6,36 +6,57 @@ package com.ivision.app.domain;
  */
 public class Location {
 
-    private int top;
-    private int left;
-    private int width;
-    private int height;
-    public void setTop(int top) {
-         this.top = top;
-     }
-     public int getTop() {
-         return top;
-     }
+    private Integer top;
+    private Integer left;
+    private Integer width;
+    private Integer height;
+    
+    
+	public Location() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
+	
+	public Location(Integer top, Integer left, Integer width, Integer height) {
+		super();
+		this.top = top;
+		this.left = left;
+		this.width = width;
+		this.height = height;
+	}
 
-    public void setLeft(int left) {
-         this.left = left;
-     }
-     public int getLeft() {
-         return left;
-     }
 
-    public void setWidth(int width) {
-         this.width = width;
-     }
-     public int getWidth() {
-         return width;
-     }
+	public Integer getTop() {
+		return top;
+	}
+	public void setTop(Integer top) {
+		this.top = top;
+	}
+	public Integer getLeft() {
+		return left;
+	}
+	public void setLeft(Integer left) {
+		this.left = left;
+	}
+	public Integer getWidth() {
+		return width;
+	}
+	public void setWidth(Integer width) {
+		this.width = width;
+	}
+	public Integer getHeight() {
+		return height;
+	}
+	public void setHeight(Integer height) {
+		this.height = height;
+	}
 
-    public void setHeight(int height) {
-         this.height = height;
-     }
-     public int getHeight() {
-         return height;
-     }
+
+	@Override
+	public String toString() {
+		return "Location [top=" + top + ", left=" + left + ", width=" + width + ", height=" + height + "]";
+	}
+   
 
 }
