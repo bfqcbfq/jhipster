@@ -34,12 +34,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.alibaba.fastjson.JSON;
 import com.baidu.aip.ocr.AipOcr;
 import com.ivision.app.domain.BeanRsource;
 import com.ivision.app.domain.DeliverMessage;
 import com.ivision.app.domain.Location;
 import com.ivision.app.domain.MxDeliverMessage;
 import com.ivision.app.domain.MxDeliveryDetails;
+import com.ivision.app.domain.Survey;
+import com.ivision.app.domain.SurveyBPInformation;
+import com.ivision.app.domain.SurveyBPNote;
 import com.ivision.app.domain.WordsResult;
 import com.ivision.app.domain.YdDeliverMessage;
 import com.ivision.app.domain.YdDeliveryDetails;
@@ -223,15 +227,19 @@ public class GeneralOcrResource {
 		
 		// 指定设定识别语言为 日语;检测图片朝向;检测语言类别
 		options.put("language_type", "JAP");
-		options.put("detect_direction", "true");
-		options.put("detect_language","true");
+        options.put("detect_direction", "true");
+        options.put("detect_language", "true");
+        options.put("probability", "true");
 		
 		
 		//设定是否检测语言种类参数
 		// options.put("detect_language","true");
 
 		// 参数为本地路径
-		JSONObject jsonObject = client.general(iocrFilepath, options);
+		JSONObject jsonObject = client.handwriting(iocrFilepath, options);
+		
+//		String jsonObjectStr = jsonObject.toString();
+//		JSON.parseObject(jsonObjectStr, JsonObjectBean.class);
 
 		String wordsResultNum = jsonObject.get("words_result_num").toString();
 
@@ -248,6 +256,10 @@ public class GeneralOcrResource {
 				// 取得被识别的数据
 				HashMap<String, Object> map = (HashMap<String, Object>) list.get(i);
 				String words = (String) map.get("words");
+				
+				SurveyBPInformation surveyBPInformation = new SurveyBPInformation();
+				
+				//surveyBPInformation.setCompanyName();
 				wordResult.setWords(words);
 
 				// 取得每个识别单位的位置信息
@@ -525,6 +537,30 @@ public class GeneralOcrResource {
 			throw new Exception("导出信息失败！");
 		}
 
+	}
+	
+	
+	// 将数据转换为调查问卷对象
+	
+	public Survey getSurveyInformation(String filePath) throws IOException {
+		
+		Survey survey = new Survey();
+		
+		SurveyBPInformation surveyBPInformation = new SurveyBPInformation();
+		
+		SurveyBPNote surveyBPNote = new SurveyBPNote();
+		
+		List<WordsResult> resList = getResultByIocr(filePath);
+		
+			for(int i =0;i<resList.size();i++) {
+				
+				resList.get(i);
+			}
+			
+		
+		
+		return null;
+		
 	}
 
 }
