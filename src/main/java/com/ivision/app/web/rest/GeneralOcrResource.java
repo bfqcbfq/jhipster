@@ -236,7 +236,7 @@ public class GeneralOcrResource {
 		// options.put("detect_language","true");
 
 		// 参数为本地路径
-		JSONObject jsonObject = client.handwriting(iocrFilepath, options);
+		JSONObject jsonObject = client.general(iocrFilepath, options);
 		
 //		String jsonObjectStr = jsonObject.toString();
 //		JSON.parseObject(jsonObjectStr, JsonObjectBean.class);

@@ -69,6 +69,59 @@ public class YdInvoice implements Serializable {
 				+ ", filepath=" + filepath + ", title=" + title + ", ydDeliverMessage=" + ydDeliverMessage
 				+ ", ydDeliveryDetails=" + ydDeliveryDetails + "]";
 	}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((filepath == null) ? 0 : filepath.hashCode());
+		result = prime * result + ((templateType == null) ? 0 : templateType.hashCode());
+		result = prime * result + ((title == null) ? 0 : title.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		result = prime * result + ((ydDeliverMessage == null) ? 0 : ydDeliverMessage.hashCode());
+		result = prime * result + ((ydDeliveryDetails == null) ? 0 : ydDeliveryDetails.hashCode());
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		YdInvoice other = (YdInvoice) obj;
+		if (filepath == null) {
+			if (other.filepath != null)
+				return false;
+		} else if (!filepath.equals(other.filepath))
+			return false;
+		if (templateType == null) {
+			if (other.templateType != null)
+				return false;
+		} else if (!templateType.equals(other.templateType))
+			return false;
+		if (title == null) {
+			if (other.title != null)
+				return false;
+		} else if (!title.equals(other.title))
+			return false;
+		if (type == null) {
+			if (other.type != null)
+				return false;
+		} else if (!type.equals(other.type))
+			return false;
+		if (ydDeliverMessage == null) {
+			if (other.ydDeliverMessage != null)
+				return false;
+		} else if (!ydDeliverMessage.equals(other.ydDeliverMessage))
+			return false;
+		if (ydDeliveryDetails == null) {
+			if (other.ydDeliveryDetails != null)
+				return false;
+		} else if (!ydDeliveryDetails.equals(other.ydDeliveryDetails))
+			return false;
+		return true;
+	}
 	
 	
 	

@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import com.baidu.aip.ocr.AipOcr;
+import com.ivision.app.aop.constant.CommonConstant;
 import com.ivision.app.domain.BeanRsource;
 import com.ivision.app.domain.DeliverMessage;
 import com.ivision.app.domain.DeliveryDetails;
@@ -58,10 +59,18 @@ import com.ivision.app.domain.YdInvoice;
 @RequestMapping("/api/ocr/iocr")
 public class IocrResource {
 	
+	// 缓存数据Map
 	private static Map<String,Invoice> invoiceCacheMap=new ConcurrentHashMap<String,Invoice>();
 	private static Map<String,MxInvoice> mxInvoiceCacheMap=new ConcurrentHashMap<String,MxInvoice>();
 	private static Map<String,YdInvoice> ydInvoiceCacheMap=new ConcurrentHashMap<String,YdInvoice>();
 
+	// 缓存数据List
+	private static List<Invoice> invoiceCacheList = new ArrayList<>();
+	private static List<MxInvoice> mxInvoiceCacheList = new ArrayList<>();
+	private static List<YdInvoice> ydInvoiceCacheList = new ArrayList<>();
+	
+	
+	
 	@Value("${jhipster.clientApp.name}")
 	private String applicationName;
 
@@ -179,7 +188,7 @@ public class IocrResource {
 							// 将数据放在session中
 							//session.setAttribute("invoice", invoice);
 							invoiceCacheMap.put("invoice", invoice);
-
+							invoiceCacheList.add(invoice);
 							return ResponseEntity.ok(invoice);
 						} else if (templateSign.equals(templateId2)) {
 
@@ -189,6 +198,9 @@ public class IocrResource {
 							// 将数据放在session中
 							//session.setAttribute("mxInvoice", mxInvoice);
 							mxInvoiceCacheMap.put("mxInvoice", mxInvoice);
+							mxInvoiceCacheList.add(mxInvoice);
+							System.out.println(mxInvoiceCacheList.size());
+							System.out.println(mxInvoiceCacheList);
 							return ResponseEntity.ok(mxInvoice);
 						} else if (templateSign.equals(templateId3)) {
 
@@ -198,6 +210,7 @@ public class IocrResource {
 							// 将数据放在session中
 							//session.setAttribute("ydInvoice", ydInvoice);
 							ydInvoiceCacheMap.put("ydInvoice", ydInvoice);
+							ydInvoiceCacheList.add(ydInvoice);
 							return ResponseEntity.ok(ydInvoice);
 						}
 
@@ -298,60 +311,33 @@ public class IocrResource {
 			//HttpSession session = request.getSession();
 
 			if (filepathType.equals("1")) {
-				invoice = invoiceCacheMap.get("invoice");
-				//invoice = (Invoice) session.getAttribute("invoice");
-				String title = invoice.getTitle();
-				DeliverMessage deliverMessage = invoice.getDeliverMessage();
-				List<DeliveryDetails> deliveryDetails = invoice.getDeliveryDetails();
-
 				// 获取表头1
+				String title = CommonConstant.OCR_IOCR_YINGFENG_TITLE;
 				String[] head = { title };
 				String[] headnum = { "0,0,0,15" };
-				// 获取表头2
-				// String[] head1 = { "发货单号", "发货单位", "发货日期", "地址", "联系电话", "备注", "经手人（签字或盖章）",
-				// "领料人（签字或盖章）" };
-				// String[] headnum1 = { "1,1,0,15" };
 				String[] titles = { "仓库", "料号", "品牌", "单位", "数量", "单重", "合计重量", "批次号", "出货日期", "备注" };
-
-				this.exportFencers(head, headnum, null, null, titles, out, deliverMessage, deliveryDetails, null, null,
-						null, null);
+				this.exportFencers(head, headnum, null, null, titles, out, invoiceCacheList, null, null);
 
 			} else if (filepathType.equals("2")) {
-				mxInvoice = mxInvoiceCacheMap.get("mxInvoice");
-				//mxInvoice = (MxInvoice) session.getAttribute("mxInvoice");
-				String title = mxInvoice.getTitle();
-				MxDeliverMessage deliverMessage = mxInvoice.getMxDeliverMessage();
-				List<MxDeliveryDetails> deliveryDetails = mxInvoice.getDeliveryDetails();
-
+				String title = CommonConstant.OCR_IOCR_MINGXING_TITLE;				
+				
 				// 获取表头1
 				String[] head = { title };
 				String[] headnum = { "0,0,0,15" };
-//					// 获取表头2
-//					String[] head1 = { "客户代码", "出货单号", "地址", "出货日期", "合计数量", "合计金额", "备注", "经手人签名", "送货人签名",
-//							"制单人" };
 				String[] headnum1 = { "1,1,0,15" };
 				String[] titles = { "款号", "款式", "颜色", "单位", "S", "M", "L", "小计", "单价", "金额", "备注" };
 
-				this.exportFencers(head, headnum, null, headnum1, titles, out, null, null, deliverMessage,
-						deliveryDetails, null, null);
+				this.exportFencers(head, headnum, null, headnum1, titles, out, null, mxInvoiceCacheList,null);
 			} else if (filepathType.equals("3")) {
-				ydInvoice = ydInvoiceCacheMap.get("ydInvoice");
-				//ydInvoice = (YdInvoice) session.getAttribute("ydInvoice");
-				String title = ydInvoice.getTitle();
-				YdDeliverMessage deliverMessage = ydInvoice.getYdDeliverMessage();
-				List<YdDeliveryDetails> deliveryDetails = ydInvoice.getYdDeliveryDetails();
-
 				// 获取表头1
+				String title = CommonConstant.OCR_IOCR_YIDA_TITLE;	
 				String[] head = { title };
 				String[] headnum = { "0,0,0,15" };
-//					// 获取表头2
-//					String[] head1 = { "客户名称", "日期", "出库单号", "客户电话", "发票种类", "结算方式", "本页小计金额：￥", "总合计金额（大写）",
-//							"总合计金额（小写）：￥", "公司电话", "地址", "制单人", "发货", "收款", "收货", "客户签字", "主营" };
+				// 获取表头2
 				String[] headnum1 = { "1,1,0,15" };
 				String[] titles = { "序号", "配件编号", "配件名称", "车型", "产地", "单位", "单价", "数量", "金额", "备注" };
 
-				this.exportFencers(head, headnum, null, headnum1, titles, out, null, null, null, null, deliverMessage,
-						deliveryDetails);
+				this.exportFencers(head, headnum, null, headnum1, titles, out, null, null, ydInvoiceCacheList);
 			}
 
 			return "success";
@@ -437,6 +423,7 @@ public class IocrResource {
 
 		for (int i = 0; i < list.size(); i++) {
 
+			@SuppressWarnings({ "unchecked", "rawtypes" })
 			HashMap<String, String> map = (HashMap) list.get(i);
 
 			String word = map.get("word");
@@ -739,6 +726,7 @@ public class IocrResource {
 
 		for (int i = 0; i < list.size(); i++) {
 
+			@SuppressWarnings({ "unchecked", "rawtypes" })
 			HashMap<String, String> map = (HashMap) list.get(i);
 
 			String word = map.get("word");
@@ -1022,6 +1010,7 @@ public class IocrResource {
 
 		for (int i = 0; i < list.size(); i++) {
 
+			@SuppressWarnings({ "unchecked", "rawtypes" })
 			HashMap<String, String> map = (HashMap) list.get(i);
 
 			String word = map.get("word");
@@ -1270,9 +1259,7 @@ public class IocrResource {
 	 * @throws Exception
 	 */
 	private void exportFencers(String[] head, String[] headnum, String[] head1, String[] headnum1, String[] titles,
-			ServletOutputStream out, DeliverMessage deliverMessage, List<DeliveryDetails> deliveryDetails,
-			MxDeliverMessage mxDeliverMessage, List<MxDeliveryDetails> mxDeliveryDetails,
-			YdDeliverMessage ydDeliverMessage, List<YdDeliveryDetails> ydDeliveryDetails) throws Exception {
+			ServletOutputStream out, List<Invoice> invoiceCacheList, List<MxInvoice> mxInvoiceCacheList, List<YdInvoice> ydInvoiceCacheList) throws Exception {
 		try {
 			HSSFWorkbook workbook = new HSSFWorkbook();
 
@@ -1319,61 +1306,62 @@ public class IocrResource {
 //				hssfCell1.setCellValue(head1[i]);// 列名1
 //				hssfCell1.setCellStyle(hssfCellStyle);// 列居中显示
 //			}
-
-			if (deliverMessage != null) {
-
-				hssfRow = hssfSheet.createRow(2);
-
-				// 创建单元格，并设置值
-				String deliveryNo = deliverMessage.getDeliveryNo();
-				if (StringUtils.isEmpty(deliveryNo)) {
-					deliveryNo = "-";
-				}
-				hssfRow.createCell(0).setCellValue(deliveryNo);
-
-				String deliveryCompany = "";
-				if (deliverMessage.getDeliveryCompany() != null) {
-					deliveryCompany = deliverMessage.getDeliveryCompany();
-				}
-				hssfRow.createCell(1).setCellValue(deliveryCompany);
-
-				String deliveryDate = "";
-				if (deliverMessage.getDeliveryDate() != null) {
-					deliveryDate = deliverMessage.getDeliveryDate();
-				}
-				hssfRow.createCell(2).setCellValue(deliveryDate);
-
-				String address = "";
-				if (deliverMessage.getAddress() != null) {
-					address = deliverMessage.getAddress();
-				}
-				hssfRow.createCell(3).setCellValue(address);
-
-				String contactNUmber = "";
-				if (deliverMessage.getContactNUmber() != null) {
-					contactNUmber = deliverMessage.getContactNUmber();
-				}
-				hssfRow.createCell(4).setCellValue(contactNUmber);
-
-				String note = "";
-				if (deliverMessage.getNote() != null) {
-					note = deliverMessage.getNote();
-				}
-				hssfRow.createCell(5).setCellValue(note);
-
-				String handler = "";
-				if (deliverMessage.getHandler() != null) {
-					handler = deliverMessage.getHandler();
-				}
-				hssfRow.createCell(6).setCellValue(handler);
-
-				String picker = "";
-				if (deliverMessage.getPicker() != null) {
-					picker = deliverMessage.getPicker();
-				}
-				hssfRow.createCell(7).setCellValue(picker);
-
-			}
+			
+			// 发货方信息（表格外）
+//			if (deliverMessage != null) {
+//
+//				hssfRow = hssfSheet.createRow(2);
+//
+//				// 创建单元格，并设置值
+//				String deliveryNo = deliverMessage.getDeliveryNo();
+//				if (StringUtils.isEmpty(deliveryNo)) {
+//					deliveryNo = "-";
+//				}
+//				hssfRow.createCell(0).setCellValue(deliveryNo);
+//
+//				String deliveryCompany = "";
+//				if (deliverMessage.getDeliveryCompany() != null) {
+//					deliveryCompany = deliverMessage.getDeliveryCompany();
+//				}
+//				hssfRow.createCell(1).setCellValue(deliveryCompany);
+//
+//				String deliveryDate = "";
+//				if (deliverMessage.getDeliveryDate() != null) {
+//					deliveryDate = deliverMessage.getDeliveryDate();
+//				}
+//				hssfRow.createCell(2).setCellValue(deliveryDate);
+//
+//				String address = "";
+//				if (deliverMessage.getAddress() != null) {
+//					address = deliverMessage.getAddress();
+//				}
+//				hssfRow.createCell(3).setCellValue(address);
+//
+//				String contactNUmber = "";
+//				if (deliverMessage.getContactNUmber() != null) {
+//					contactNUmber = deliverMessage.getContactNUmber();
+//				}
+//				hssfRow.createCell(4).setCellValue(contactNUmber);
+//
+//				String note = "";
+//				if (deliverMessage.getNote() != null) {
+//					note = deliverMessage.getNote();
+//				}
+//				hssfRow.createCell(5).setCellValue(note);
+//
+//				String handler = "";
+//				if (deliverMessage.getHandler() != null) {
+//					handler = deliverMessage.getHandler();
+//				}
+//				hssfRow.createCell(6).setCellValue(handler);
+//
+//				String picker = "";
+//				if (deliverMessage.getPicker() != null) {
+//					picker = deliverMessage.getPicker();
+//				}
+//				hssfRow.createCell(7).setCellValue(picker);
+//
+//			}
 
 //			for (int i = 0; i < headnum1.length; i++) {
 //
@@ -1393,12 +1381,19 @@ public class IocrResource {
 			}
 
 			// 第五步，写入实体数据
+			if (invoiceCacheList != null && !invoiceCacheList.isEmpty()) {
+				
+				
+				int InvoiceBeginIndex = 0;
+				for(int i = 0 ;i< invoiceCacheList.size();i++) {
+					
+					List<DeliveryDetails> deliveryDetails = invoiceCacheList.get(i).getDeliveryDetails();
+					
+					InvoiceBeginIndex = i*deliveryDetails.size();
 
-			if (deliveryDetails != null && !deliveryDetails.isEmpty()) {
-
-				for (int i = 0; i < deliveryDetails.size(); i++) {
-					hssfRow = hssfSheet.createRow(i + 3);
-					DeliveryDetails de = deliveryDetails.get(i);
+				for (int j = 0; j < deliveryDetails.size(); j++) {
+					hssfRow = hssfSheet.createRow(j+InvoiceBeginIndex+ 3);
+					DeliveryDetails de = deliveryDetails.get(j);
 
 					// 第六步，创建单元格，并设置值
 					String storehouseNo = de.getStorehouseNo();
@@ -1463,15 +1458,24 @@ public class IocrResource {
 					hssfRow.createCell(9).setCellValue(comment);
 
 				}
+				
 
+			}
+			
 			}
 
 			// 明歆制衣
-			else if (mxDeliveryDetails != null && !mxDeliveryDetails.isEmpty()) {
-
-				for (int i = 0; i < mxDeliveryDetails.size(); i++) {
-					hssfRow = hssfSheet.createRow(i + 3);
-					MxDeliveryDetails de = mxDeliveryDetails.get(i);
+			else if (mxInvoiceCacheList != null && !mxInvoiceCacheList.isEmpty()) {
+				int mxInvoiceBeginIndex = 0;
+				for(int i = 0 ;i< mxInvoiceCacheList.size();i++) {
+					
+					 List<MxDeliveryDetails> mxDeliveryDetails = mxInvoiceCacheList.get(i).getDeliveryDetails();
+					
+					mxInvoiceBeginIndex = i*mxDeliveryDetails.size();
+				
+				for (int j = 0; j < mxDeliveryDetails.size(); j++) {
+					hssfRow = hssfSheet.createRow(j+mxInvoiceBeginIndex + 3);
+					MxDeliveryDetails de = mxDeliveryDetails.get(j);
 
 					// 第六步，创建单元格，并设置值
 					String storehouseNo = de.getStyleNo();
@@ -1544,12 +1548,21 @@ public class IocrResource {
 				}
 
 			}
+				
+			}
 
-			else if (ydDeliveryDetails != null && !ydDeliveryDetails.isEmpty()) {
+			else if (ydInvoiceCacheList != null && !ydInvoiceCacheList.isEmpty()) {
+			
+					int ydInvoiceBeginIndex = 0;
+					for(int i = 0 ;i< ydInvoiceCacheList.size();i++) {
+						
+						  List<YdDeliveryDetails> ydDeliveryDetails = ydInvoiceCacheList.get(i).getYdDeliveryDetails();
+						
+						ydInvoiceBeginIndex = i*ydDeliveryDetails.size();
 
-				for (int i = 0; i < ydDeliveryDetails.size(); i++) {
-					hssfRow = hssfSheet.createRow(i + 3);
-					YdDeliveryDetails de = ydDeliveryDetails.get(i);
+				for (int j = 0; j < ydDeliveryDetails.size(); j++) {
+					hssfRow = hssfSheet.createRow(j+ydInvoiceBeginIndex + 3);
+					YdDeliveryDetails de = ydDeliveryDetails.get(j);
 
 					// 第六步，创建单元格，并设置值
 					String storehouseNo = de.getOrderNumber();
@@ -1615,6 +1628,8 @@ public class IocrResource {
 
 				}
 
+			}
+				
 			}
 
 			// 第七步，将文件输出到客户端浏览器
