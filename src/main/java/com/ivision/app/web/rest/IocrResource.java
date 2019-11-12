@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -55,6 +57,10 @@ import com.ivision.app.domain.YdInvoice;
 @RestController
 @RequestMapping("/api/ocr/iocr")
 public class IocrResource {
+	
+	private static Map<String,Invoice> invoiceCacheMap=new ConcurrentHashMap<String,Invoice>();
+	private static Map<String,MxInvoice> mxInvoiceCacheMap=new ConcurrentHashMap<String,MxInvoice>();
+	private static Map<String,YdInvoice> ydInvoiceCacheMap=new ConcurrentHashMap<String,YdInvoice>();
 
 	@Value("${jhipster.clientApp.name}")
 	private String applicationName;
@@ -171,7 +177,8 @@ public class IocrResource {
 							invoice.setTemplateType("神丰科技发货单");
 							invoice.setType("1");
 							// 将数据放在session中
-							session.setAttribute("invoice", invoice);
+							//session.setAttribute("invoice", invoice);
+							invoiceCacheMap.put("invoice", invoice);
 
 							return ResponseEntity.ok(invoice);
 						} else if (templateSign.equals(templateId2)) {
@@ -180,8 +187,8 @@ public class IocrResource {
 							mxInvoice.setTemplateType("明歆制衣出货单");
 							mxInvoice.setType("2");
 							// 将数据放在session中
-							session.setAttribute("mxInvoice", mxInvoice);
-
+							//session.setAttribute("mxInvoice", mxInvoice);
+							mxInvoiceCacheMap.put("mxInvoice", mxInvoice);
 							return ResponseEntity.ok(mxInvoice);
 						} else if (templateSign.equals(templateId3)) {
 
@@ -189,8 +196,8 @@ public class IocrResource {
 							ydInvoice.setTemplateType("易达软件出库单");
 							ydInvoice.setType("3");
 							// 将数据放在session中
-							session.setAttribute("ydInvoice", ydInvoice);
-
+							//session.setAttribute("ydInvoice", ydInvoice);
+							ydInvoiceCacheMap.put("ydInvoice", ydInvoice);
 							return ResponseEntity.ok(ydInvoice);
 						}
 
@@ -225,8 +232,8 @@ public class IocrResource {
 		HttpSession session = request.getSession();
 
 		if (filepathType.equals("1")) {
-
-			Object invoice = session.getAttribute("invoice");
+			Invoice invoice = invoiceCacheMap.get("invoice");
+			//Object invoice = session.getAttribute("invoice");
 			if (invoice == null) {
 
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
@@ -236,8 +243,8 @@ public class IocrResource {
 		}
 
 		if (filepathType.equals("2")) {
-
-			Object mxInvoice = session.getAttribute("mxInvoice");
+			MxInvoice mxInvoice = mxInvoiceCacheMap.get("mxInvoice");
+			//Object mxInvoice = session.getAttribute("mxInvoice");
 			if (mxInvoice == null) {
 
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
@@ -247,8 +254,8 @@ public class IocrResource {
 
 		}
 		if (filepathType.equals("3")) {
-
-			Object ydInvoice = session.getAttribute("ydInvoice");
+			YdInvoice ydInvoice = ydInvoiceCacheMap.get("ydInvoice");
+			//Object ydInvoice = session.getAttribute("ydInvoice");
 			if (ydInvoice == null) {
 
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
@@ -288,11 +295,11 @@ public class IocrResource {
 			String fileName = new String((newFileName).getBytes(), "UTF-8");
 			response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
 
-			HttpSession session = request.getSession();
+			//HttpSession session = request.getSession();
 
 			if (filepathType.equals("1")) {
-
-				invoice = (Invoice) session.getAttribute("invoice");
+				invoice = invoiceCacheMap.get("invoice");
+				//invoice = (Invoice) session.getAttribute("invoice");
 				String title = invoice.getTitle();
 				DeliverMessage deliverMessage = invoice.getDeliverMessage();
 				List<DeliveryDetails> deliveryDetails = invoice.getDeliveryDetails();
@@ -310,7 +317,8 @@ public class IocrResource {
 						null, null);
 
 			} else if (filepathType.equals("2")) {
-				mxInvoice = (MxInvoice) session.getAttribute("mxInvoice");
+				mxInvoice = mxInvoiceCacheMap.get("mxInvoice");
+				//mxInvoice = (MxInvoice) session.getAttribute("mxInvoice");
 				String title = mxInvoice.getTitle();
 				MxDeliverMessage deliverMessage = mxInvoice.getMxDeliverMessage();
 				List<MxDeliveryDetails> deliveryDetails = mxInvoice.getDeliveryDetails();
@@ -326,8 +334,9 @@ public class IocrResource {
 
 				this.exportFencers(head, headnum, null, headnum1, titles, out, null, null, deliverMessage,
 						deliveryDetails, null, null);
-			} else if (filepathType.equals("2")) {
-				ydInvoice = (YdInvoice) session.getAttribute("ydInvoice");
+			} else if (filepathType.equals("3")) {
+				ydInvoice = ydInvoiceCacheMap.get("ydInvoice");
+				//ydInvoice = (YdInvoice) session.getAttribute("ydInvoice");
 				String title = ydInvoice.getTitle();
 				YdDeliverMessage deliverMessage = ydInvoice.getYdDeliverMessage();
 				List<YdDeliveryDetails> deliveryDetails = ydInvoice.getYdDeliveryDetails();
