@@ -112,18 +112,11 @@ public class IocrResource {
 
 		List<String> errorMessageList = new ArrayList<String>();
 
-		String templateSign = null;
+		Invoice invoice = null;
+		MxInvoice mxInvoice = null;
+		YdInvoice ydInvoice = null;
+		BeanRsource beanRsource = null;
 
-		Invoice invoice = new Invoice();
-
-		MxInvoice mxInvoice = new MxInvoice();
-
-		YdInvoice ydInvoice = new YdInvoice();
-
-		BeanRsource beanRsource = new BeanRsource();
-
-		HttpSession session = request.getSession();
-		
 		// 判断文件夹是否存在,不存在则创建
 		File file = new File(filePath);
 
@@ -159,14 +152,14 @@ public class IocrResource {
 				uploadFile.transferTo(new File(newFilePath));
 
 				List<JSONObject> jsonObjectList = getResultByIocr(newFilePath);
-				String errorCode = null;
 
 				for (JSONObject jsonObject : jsonObjectList) {
-					errorCode = jsonObject.get("error_code").toString();
-					if (!errorCode.equals("0")) {
+					String errorCode = jsonObject.get("error_code").toString();
+					if (!errorCode.equals(CommonConstant.OCR_IOCR_ERRORCODE)) {
 						errorMessageList.add(errorCode);
 						// 上传错误，返回错误信息
 						if (errorMessageList.size() == jsonObjectList.size()) {
+							beanRsource = new BeanRsource();
 							beanRsource.setErrorMessage("您上传的文件有误，请再确认一下");
 
 							return ResponseEntity.ok(beanRsource);
@@ -178,35 +171,33 @@ public class IocrResource {
 					}
 
 					else {
-						templateSign = jsonObject.getJSONObject("data").get("templateSign").toString();
+						String templateSign = jsonObject.getJSONObject("data").get("templateSign").toString();
 
 						if (templateSign.equals(templateId1)) {
-
+							invoice = new Invoice();
 							invoice = jsonToInvoiceF(jsonObject);
 							invoice.setTemplateType("神丰科技发货单");
-							invoice.setType("1");
+							invoice.setType(CommonConstant.OCR_IOCR_YINGFENG_TYPE);
 							// 将数据放在session中
 							//session.setAttribute("invoice", invoice);
 							invoiceCacheMap.put("invoice", invoice);
 							invoiceCacheList.add(invoice);
 							return ResponseEntity.ok(invoice);
 						} else if (templateSign.equals(templateId2)) {
-
+							mxInvoice = new MxInvoice();
 							mxInvoice = jsonToMxInvoice(jsonObject);
 							mxInvoice.setTemplateType("明歆制衣出货单");
-							mxInvoice.setType("2");
+							mxInvoice.setType(CommonConstant.OCR_IOCR_MINGXING_TYPE);
 							// 将数据放在session中
 							//session.setAttribute("mxInvoice", mxInvoice);
 							mxInvoiceCacheMap.put("mxInvoice", mxInvoice);
 							mxInvoiceCacheList.add(mxInvoice);
-							System.out.println(mxInvoiceCacheList.size());
-							System.out.println(mxInvoiceCacheList);
 							return ResponseEntity.ok(mxInvoice);
 						} else if (templateSign.equals(templateId3)) {
-
+							mxInvoice = new MxInvoice();
 							ydInvoice = jsonToYdInvoice(jsonObject);
 							ydInvoice.setTemplateType("易达软件出库单");
-							ydInvoice.setType("3");
+							ydInvoice.setType(CommonConstant.OCR_IOCR_YIDA_TYPE);
 							// 将数据放在session中
 							//session.setAttribute("ydInvoice", ydInvoice);
 							ydInvoiceCacheMap.put("ydInvoice", ydInvoice);
@@ -242,11 +233,9 @@ public class IocrResource {
 	public ResponseEntity<Object> showUploadFileDetails(@RequestParam(value = "filepathType") String filepathType,
 			HttpServletRequest request) throws IOException {
 
-		HttpSession session = request.getSession();
 
-		if (filepathType.equals("1")) {
+		if (filepathType.equals(CommonConstant.OCR_IOCR_YINGFENG_TYPE)) {
 			Invoice invoice = invoiceCacheMap.get("invoice");
-			//Object invoice = session.getAttribute("invoice");
 			if (invoice == null) {
 
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
@@ -257,7 +246,6 @@ public class IocrResource {
 
 		if (filepathType.equals("2")) {
 			MxInvoice mxInvoice = mxInvoiceCacheMap.get("mxInvoice");
-			//Object mxInvoice = session.getAttribute("mxInvoice");
 			if (mxInvoice == null) {
 
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
@@ -268,7 +256,6 @@ public class IocrResource {
 		}
 		if (filepathType.equals("3")) {
 			YdInvoice ydInvoice = ydInvoiceCacheMap.get("ydInvoice");
-			//Object ydInvoice = session.getAttribute("ydInvoice");
 			if (ydInvoice == null) {
 
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
@@ -292,10 +279,6 @@ public class IocrResource {
 	public String exportExcel(@RequestParam(value = "filepathType") String filepathType, HttpServletRequest request,
 			HttpServletResponse response) {
 
-		Invoice invoice = new Invoice();
-		MxInvoice mxInvoice = new MxInvoice();
-		YdInvoice ydInvoice = new YdInvoice();
-
 		response.setContentType("application/force-download;charset=UTF-8");
 
 		try {
@@ -310,7 +293,7 @@ public class IocrResource {
 
 			//HttpSession session = request.getSession();
 
-			if (filepathType.equals("1")) {
+			if (filepathType.equals(CommonConstant.OCR_IOCR_YINGFENG_TYPE)) {
 				// 获取表头1
 				String title = CommonConstant.OCR_IOCR_YINGFENG_TITLE;
 				String[] head = { title };
@@ -318,7 +301,7 @@ public class IocrResource {
 				String[] titles = { "仓库", "料号", "品牌", "单位", "数量", "单重", "合计重量", "批次号", "出货日期", "备注" };
 				this.exportFencers(head, headnum, null, null, titles, out, invoiceCacheList, null, null);
 
-			} else if (filepathType.equals("2")) {
+			} else if (filepathType.equals(CommonConstant.OCR_IOCR_MINGXING_TYPE)) {
 				String title = CommonConstant.OCR_IOCR_MINGXING_TITLE;				
 				
 				// 获取表头1
@@ -328,7 +311,7 @@ public class IocrResource {
 				String[] titles = { "款号", "款式", "颜色", "单位", "S", "M", "L", "小计", "单价", "金额", "备注" };
 
 				this.exportFencers(head, headnum, null, headnum1, titles, out, null, mxInvoiceCacheList,null);
-			} else if (filepathType.equals("3")) {
+			} else if (filepathType.equals(CommonConstant.OCR_IOCR_YIDA_TYPE)) {
 				// 获取表头1
 				String title = CommonConstant.OCR_IOCR_YIDA_TITLE;	
 				String[] head = { title };
@@ -340,7 +323,7 @@ public class IocrResource {
 				this.exportFencers(head, headnum, null, headnum1, titles, out, null, null, ydInvoiceCacheList);
 			}
 
-			return "success";
+			return "导出success";
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "导出信息失败";
@@ -1245,6 +1228,7 @@ public class IocrResource {
 
 	}
 
+	
 	/**
 	 * 导出识别文字信息为Excel文件
 	 * 
@@ -1254,8 +1238,9 @@ public class IocrResource {
 	 * @param headnum1
 	 * @param titles
 	 * @param out
-	 * @param deliverMessage
-	 * @param deliveryDetails
+	 * @param invoiceCacheList
+	 * @param mxInvoiceCacheList
+	 * @param ydInvoiceCacheList
 	 * @throws Exception
 	 */
 	private void exportFencers(String[] head, String[] headnum, String[] head1, String[] headnum1, String[] titles,

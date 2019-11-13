@@ -23,7 +23,7 @@ public class PdfToImageResource {
     private static final Logger logger = LoggerFactory.getLogger(PdfToImageResource.class);
  
     //经过测试,dpi为96,100,105,120,150,200中,105显示效果较为清晰,体积稳定,dpi越高图片体积越大,一般电脑显示分辨率为96
-    public static final float DEFAULT_DPI = 500;
+    public static final float DEFAULT_DPI = 350;
     //默认转换的图片格式为jpg
     public static final String DEFAULT_FORMAT = "jpg";
  
@@ -80,7 +80,7 @@ public class PdfToImageResource {
  
  
     public static void main(String[] args) throws InvalidPasswordException, IOException {
-  pdfToImage("C:\\Users\\wanglei\\Desktop\\demo\\pdf\\菱信 CN NO.23.pdf","C:\\Users\\wanglei\\Desktop\\demo\\pdf\\SKM_C454e19103013291.jpg");
+  pdfToImage("C:\\Users\\wanglei\\Desktop\\demo\\pdf\\demo20.pdf","C:\\Users\\wanglei\\Desktop\\demo\\pdf\\demo20.jpg");
   System.out.println("导出图片成功");
     }
  

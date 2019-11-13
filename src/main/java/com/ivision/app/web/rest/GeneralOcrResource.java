@@ -36,6 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSON;
 import com.baidu.aip.ocr.AipOcr;
+import com.ivision.app.aop.constant.CommonConstant;
 import com.ivision.app.domain.BeanRsource;
 import com.ivision.app.domain.DeliverMessage;
 import com.ivision.app.domain.Location;
@@ -183,7 +184,7 @@ public class GeneralOcrResource {
 			// 调用百度API接口
 			List<WordsResult> resultByIocrList = getResultByIocr(filepath);
 
-			String title = "個人精算通知メール";
+			String title = CommonConstant.OCR_GENERAL_SURVEY_TITLE;
 			// 获取表头1
 			String[] head = { title };
 			String[] headnum = { "0,0,0,15" };
@@ -226,7 +227,7 @@ public class GeneralOcrResource {
 		HashMap<String, String> options = new HashMap<String, String>();
 		
 		// 指定设定识别语言为 日语;检测图片朝向;检测语言类别
-		options.put("language_type", "JAP");
+		//options.put("language_type", "JAP");
         options.put("detect_direction", "true");
         options.put("detect_language", "true");
         options.put("probability", "true");
@@ -236,7 +237,7 @@ public class GeneralOcrResource {
 		// options.put("detect_language","true");
 
 		// 参数为本地路径
-		JSONObject jsonObject = client.general(iocrFilepath, options);
+		JSONObject jsonObject = client.accurateGeneral(iocrFilepath, options);
 		
 //		String jsonObjectStr = jsonObject.toString();
 //		JSON.parseObject(jsonObjectStr, JsonObjectBean.class);
