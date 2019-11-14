@@ -569,10 +569,10 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
                 this.state.wordsResult.map((result, index) =>
                     <ul key={index}>
                       <li>{result.words}</li>
-                      <li>{result.location.top}</li>
-                      <li>{result.location.left}</li>
-                      <li>{result.location.width}</li>
-                      <li>{result.location.height}</li>
+                      <li>top:{result.location.top}</li>
+                      <li>left:{result.location.left}</li>
+                      <li>width:{result.location.width}</li>
+                      <li>height:{result.location.height}</li>
                     </ul>
                 )
               }
