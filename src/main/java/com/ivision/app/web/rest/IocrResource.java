@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import com.baidu.aip.ocr.AipOcr;
 import com.ivision.app.aop.constant.CommonConstant;
-import com.ivision.app.domain.BeanRsource;
+import com.ivision.app.domain.BaseResource;
 import com.ivision.app.domain.DeliverMessage;
 import com.ivision.app.domain.DeliveryDetails;
 import com.ivision.app.domain.Invoice;
@@ -115,7 +115,7 @@ public class IocrResource {
 		Invoice invoice = null;
 		MxInvoice mxInvoice = null;
 		YdInvoice ydInvoice = null;
-		BeanRsource beanRsource = null;
+		BaseResource baseResource = null;
 
 		// 判断文件夹是否存在,不存在则创建
 		File file = new File(filePath);
@@ -159,10 +159,10 @@ public class IocrResource {
 						errorMessageList.add(errorCode);
 						// 上传错误，返回错误信息
 						if (errorMessageList.size() == jsonObjectList.size()) {
-							beanRsource = new BeanRsource();
-							beanRsource.setErrorMessage("您上传的文件有误，请再确认一下");
+							baseResource = new BaseResource();
+							baseResource.setErrorMessage("您上传的文件有误，请再确认一下");
 
-							return ResponseEntity.ok(beanRsource);
+							return ResponseEntity.ok(baseResource);
 
 						} else {
 

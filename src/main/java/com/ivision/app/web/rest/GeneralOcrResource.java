@@ -1,5 +1,5 @@
 /**
- * 
+ * Copyright 2019 ivision.com 
  */
 package com.ivision.app.web.rest;
 
@@ -7,11 +7,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -22,7 +22,6 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -37,17 +36,10 @@ import org.springframework.web.multipart.MultipartFile;
 import com.alibaba.fastjson.JSON;
 import com.baidu.aip.ocr.AipOcr;
 import com.ivision.app.aop.constant.CommonConstant;
-import com.ivision.app.domain.BeanRsource;
+import com.ivision.app.domain.BaseResource;
 import com.ivision.app.domain.DeliverMessage;
-import com.ivision.app.domain.Location;
-import com.ivision.app.domain.MxDeliverMessage;
-import com.ivision.app.domain.MxDeliveryDetails;
-import com.ivision.app.domain.Survey;
-import com.ivision.app.domain.SurveyBPInformation;
-import com.ivision.app.domain.SurveyBPNote;
+import com.ivision.app.domain.IvisionSurveyBean;
 import com.ivision.app.domain.WordsResult;
-import com.ivision.app.domain.YdDeliverMessage;
-import com.ivision.app.domain.YdDeliveryDetails;
 
 /**
  * 调用百度通用文字识别API，实现文字识别
@@ -60,6 +52,9 @@ import com.ivision.app.domain.YdDeliveryDetails;
 @RestController
 @RequestMapping("/api/ocr/general")
 public class GeneralOcrResource {
+	
+	// 缓存数据Map
+		private static Map<String,IvisionSurveyBean> invoiceCacheMap=new ConcurrentHashMap<String,IvisionSurveyBean>();
 
 	// 设置APPID/AK/SK
 	@Value("${iocr.app.id}")
@@ -86,7 +81,7 @@ public class GeneralOcrResource {
 	public ResponseEntity<Object> getfileRecord(
 			@RequestParam(value = "file", required = false) MultipartFile[] uploadFiles) throws IOException {
 
-		BeanRsource beanRsource = new BeanRsource();
+		BaseResource baseResource = new BaseResource();
 
 		// 判断文件夹是否存在,不存在则创建
 		File file = new File(filePath);
@@ -102,11 +97,11 @@ public class GeneralOcrResource {
 			// 获取文件类型
 			String fileType = originalFileName.substring(originalFileName.lastIndexOf("."));
 
-			if (!(".jpg".equalsIgnoreCase(fileType) || ".jpeg".equalsIgnoreCase(fileType)
-					|| ".bpm".equalsIgnoreCase(fileType) || ".png".equalsIgnoreCase(fileType))) {
-				beanRsource.setErrorMessage("您上传的文件有误，请再确认一下");
+			if (!(".jpg".equalsIgnoreCase(fileType) || ".jpeg".equalsIgnoreCase(fileType) || ".bpm".equalsIgnoreCase(fileType) 
+					|| ".png".equalsIgnoreCase(fileType) || ".tif".equalsIgnoreCase(fileType))) {
+				baseResource.setErrorMessage("您上传的文件有误，请再确认一下");
 
-				return ResponseEntity.ok(beanRsource);
+				return ResponseEntity.ok(baseResource);
 
 			}
 
@@ -123,10 +118,16 @@ public class GeneralOcrResource {
 
 				// 将传来的文件写入新建的文件
 				uploadFile.transferTo(new File(newFilePath));
+				
+			 IvisionSurveyBean ivisionSurvey = getResultByIocr(newFilePath);
 
-				beanRsource.setFilepath(newFilePath);
+			 ivisionSurvey.setFilepath(newFilePath);
+			 
+			 
+			 invoiceCacheMap.put("ivisionSurvey", ivisionSurvey);
+			 
 
-				return ResponseEntity.ok(beanRsource);
+				return ResponseEntity.ok(ivisionSurvey);
 
 			} catch (FileAlreadyExistsException e) {
 				e.printStackTrace();
@@ -149,14 +150,13 @@ public class GeneralOcrResource {
 	 * @throws IOException
 	 */
 	@GetMapping("/showDetails")
-	public ResponseEntity<Map<String, List<WordsResult>>> showUploadFileDetails(
+	public ResponseEntity<IvisionSurveyBean> showUploadFileDetails(
 			@RequestParam(value = "filepath") String filepath) throws IOException {
-		Map<String, List<WordsResult>> wordsResults = new HashMap<>();
+		
+		IvisionSurveyBean ivisionSurvey = invoiceCacheMap.get("ivisionSurvey");
 
-		List<WordsResult> resultByIocr = getResultByIocr(filepath);
-		wordsResults.put("wordsResult", resultByIocr);
 
-		return ResponseEntity.ok(wordsResults);
+		return ResponseEntity.ok(ivisionSurvey);
 	}
 
 	/**
@@ -182,20 +182,19 @@ public class GeneralOcrResource {
 			response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
 
 			// 调用百度API接口
-			List<WordsResult> resultByIocrList = getResultByIocr(filepath);
+			IvisionSurveyBean ivisionSurvey = invoiceCacheMap.get("ivisionSurvey");
+		 List<WordsResult> resultByIocrList = ivisionSurvey.getWordsResult();
 
 			String title = CommonConstant.OCR_GENERAL_SURVEY_TITLE;
 			// 获取表头1
 			String[] head = { title };
 			String[] headnum = { "0,0,0,15" };
 			// 获取表头2
-			// String[] head1 = { "发货单号", "发货单位", "发货日期", "地址", "联系电话", "备注", "经手人（签字或盖章）",
-			// "领料人（签字或盖章）" };
-			// String[] headnum1 = { "1,1,0,15" };
-			// String[] titles = { "仓库", "料号", "品牌", "单位", "数量", "单重", "合计重量", "批次号",
-			// "出货日期", "备注" };
+			 String[] head1 = { "发货单号", "发货单位", "发货日期", "地址", "联系电话", "备注", "经手人（签字或盖章）", "领料人（签字或盖章）" };
+			 String[] headnum1 = { "1,1,0,15" };
+			 String[] titles = { "会社名", "所属-役職", "氏名", "電話番号", "E-mail" };
 
-			this.exportFencers(head, headnum, null, null, null, out, null, resultByIocrList, null, null, null, null);
+			this.exportFencers(head, headnum, head1, headnum1, titles, out, null, resultByIocrList);
 
 			return "success";
 		} catch (Exception e) {
@@ -213,12 +212,10 @@ public class GeneralOcrResource {
 	 * @return JSONObject
 	 * @throws IOException
 	 */
-	@SuppressWarnings("unchecked")
-	public List<WordsResult> getResultByIocr(String iocrFilepath) throws IOException {
+	public IvisionSurveyBean getResultByIocr(String iocrFilepath) throws IOException {
 
 		// 实例化百度文字识别接口，并传入必要参数
 		AipOcr client = new AipOcr(appId, apiKey, secretKey);
-		List<WordsResult> wordsResultList = new ArrayList<>();
 
 		client.setConnectionTimeoutInMillis(2000);
 		client.setSocketTimeoutInMillis(6000);
@@ -227,7 +224,7 @@ public class GeneralOcrResource {
 		HashMap<String, String> options = new HashMap<String, String>();
 		
 		// 指定设定识别语言为 日语;检测图片朝向;检测语言类别
-		//options.put("language_type", "JAP");
+		options.put("language_type", "JAP");
         options.put("detect_direction", "true");
         options.put("detect_language", "true");
         options.put("probability", "true");
@@ -237,53 +234,50 @@ public class GeneralOcrResource {
 		// options.put("detect_language","true");
 
 		// 参数为本地路径
-		JSONObject jsonObject = client.accurateGeneral(iocrFilepath, options);
+		JSONObject jsonObject = client.general(iocrFilepath, options);
 		
-//		String jsonObjectStr = jsonObject.toString();
-//		JSON.parseObject(jsonObjectStr, JsonObjectBean.class);
-
-		String wordsResultNum = jsonObject.get("words_result_num").toString();
-
-		if ((Integer.valueOf(wordsResultNum)) >= 1) {
-
-			JSONArray jsonArray = jsonObject.getJSONArray("words_result");
-			List<Object> list = jsonArray.toList();
-
-			for (int i = 0; i < list.size(); i++) {
-
-				WordsResult wordResult = new WordsResult();
-				Location location = new Location();
-
-				// 取得被识别的数据
-				HashMap<String, Object> map = (HashMap<String, Object>) list.get(i);
-				String words = (String) map.get("words");
-				
-				SurveyBPInformation surveyBPInformation = new SurveyBPInformation();
-				
-				//surveyBPInformation.setCompanyName();
-				wordResult.setWords(words);
-
-				// 取得每个识别单位的位置信息
-				HashMap<String, Integer> locationMap = (HashMap<String, Integer>) map.get("location");
-				Integer top = locationMap.get("top");
-				Integer left = locationMap.get("left");
-				Integer width = locationMap.get("width");
-				Integer height = locationMap.get("height");
-
-				location.setTop(top);
-				location.setLeft(left);
-				location.setWidth(width);
-				location.setHeight(height);
-				wordResult.setLocation(location);
-				
-				// 将识别结果赋值给对象返回
-				wordsResultList.add(wordResult);
-
-			}
-		}
-
-		return wordsResultList;
-
+		String jsonObjectStr = jsonObject.toString();
+		IvisionSurveyBean IvisionSurvey = JSON.parseObject(jsonObjectStr, IvisionSurveyBean.class);
+		
+//		String wordsResultNum = jsonObject.get("words_result_num").toString();
+//
+//		if ((Integer.valueOf(wordsResultNum)) >= 1) {
+//
+//			JSONArray jsonArray = jsonObject.getJSONArray("words_result");
+//			List<Object> list = jsonArray.toList();
+//
+//			for (int i = 0; i < list.size(); i++) {
+//
+//				WordsResult wordResult = new WordsResult();
+//				Location location = new Location();
+//
+//				// 取得被识别的数据
+//				HashMap<String, Object> map = (HashMap<String, Object>) list.get(i);
+//				String words = (String) map.get("words");
+//				
+//				//surveyBPInformation.setCompanyName();
+//				wordResult.setWords(words);
+//
+//				// 取得每个识别单位的位置信息
+//				HashMap<String, Integer> locationMap = (HashMap<String, Integer>) map.get("location");
+//				Integer top = locationMap.get("top");
+//				Integer left = locationMap.get("left");
+//				Integer width = locationMap.get("width");
+//				Integer height = locationMap.get("height");
+//
+//				location.setTop(top);
+//				location.setLeft(left);
+//				location.setWidth(width);
+//				location.setHeight(height);
+//				wordResult.setLocation(location);
+//				
+//				// 将识别结果赋值给对象返回
+//				wordsResultList.add(wordResult);
+//
+//			}
+//		}
+		
+			return IvisionSurvey;
 	}
 
 	/**
@@ -300,9 +294,7 @@ public class GeneralOcrResource {
 	 * @throws Exception
 	 */
 	private void exportFencers(String[] head, String[] headnum, String[] head1, String[] headnum1, String[] titles,
-			ServletOutputStream out, DeliverMessage deliverMessage, List<WordsResult> deliveryDetails,
-			MxDeliverMessage mxDeliverMessage, List<MxDeliveryDetails> mxDeliveryDetails,
-			YdDeliverMessage ydDeliverMessage, List<YdDeliveryDetails> ydDeliveryDetails) throws Exception {
+			ServletOutputStream out, DeliverMessage deliverMessage, List<WordsResult> deliveryDetails) throws Exception {
 		try {
 			HSSFWorkbook workbook = new HSSFWorkbook();
 
@@ -311,7 +303,7 @@ public class GeneralOcrResource {
 
 			// 第三步，在sheet中添加表头第0行,老版本poi对Excel的行数列数有限制short
 			HSSFRow hssfRow = hssfSheet.createRow(0);
-			// HSSFRow hssfRow1 = hssfSheet.createRow(1);
+			HSSFRow hssfRow1 = hssfSheet.createRow(1);
 			HSSFRow hssfRow2 = hssfSheet.createRow(2);
 			// 第四步，创建单元格，并设置值表头 设置表头居中
 			HSSFCellStyle hssfCellStyle = workbook.createCellStyle();
@@ -320,7 +312,7 @@ public class GeneralOcrResource {
 
 			HSSFCell hssfCell = null;// 第一行
 
-			// HSSFCell hssfCell1 = null;// 第二行
+			 HSSFCell hssfCell1 = null;// 第二行
 
 			HSSFCell hssfCell2 = null;// 第三行
 
@@ -343,12 +335,12 @@ public class GeneralOcrResource {
 				hssfSheet.addMergedRegion(new CellRangeAddress(startrow, overrow, startcol, overcol));
 			}
 
-//			// 第二行表头
-//			for (int i = 0; i < head1.length; i++) {
-//				hssfCell1 = hssfRow1.createCell(i);// 列索引从0开始
-//				hssfCell1.setCellValue(head1[i]);// 列名1
-//				hssfCell1.setCellStyle(hssfCellStyle);// 列居中显示
-//			}
+			// 第二行表头
+			for (int i = 0; i < head1.length; i++) {
+				hssfCell1 = hssfRow1.createCell(i);// 列索引从0开始
+				hssfCell1.setCellValue(head1[i]);// 列名1
+				hssfCell1.setCellStyle(hssfCellStyle);// 列居中显示
+			}
 
 			if (deliverMessage != null) {
 
@@ -405,16 +397,16 @@ public class GeneralOcrResource {
 
 			}
 
-//			for (int i = 0; i < headnum1.length; i++) {
-//
-//				hssfSheet.autoSizeColumn(i, true);
-//				String[] temp = headnum1[i].split(",");
-//				Integer startrow = Integer.parseInt(temp[0]);
-//				Integer overrow = Integer.parseInt(temp[1]);
-//				Integer startcol = Integer.parseInt(temp[2]);
-//				Integer overcol = Integer.parseInt(temp[3]);
-//				hssfSheet.addMergedRegion(new CellRangeAddress(startrow, overrow, startcol, overcol));
-//			}
+			for (int i = 0; i < headnum1.length; i++) {
+
+				hssfSheet.autoSizeColumn(i, true);
+				String[] temp = headnum1[i].split(",");
+				Integer startrow = Integer.parseInt(temp[0]);
+				Integer overrow = Integer.parseInt(temp[1]);
+				Integer startcol = Integer.parseInt(temp[2]);
+				Integer overcol = Integer.parseInt(temp[3]);
+				hssfSheet.addMergedRegion(new CellRangeAddress(startrow, overrow, startcol, overcol));
+			}
 			// 第三行表头 不需要合并单元格
 
 			if (titles != null && !(titles.length < 0))
@@ -444,85 +436,6 @@ public class GeneralOcrResource {
 
 			}
 
-			// 明歆制衣
-			else if (mxDeliveryDetails != null && !mxDeliveryDetails.isEmpty()) {
-
-				for (int i = 0; i < mxDeliveryDetails.size(); i++) {
-					hssfRow = hssfSheet.createRow(i + 3);
-					MxDeliveryDetails de = mxDeliveryDetails.get(i);
-
-					// 第六步，创建单元格，并设置值
-					String storehouseNo = de.getStyleNo();
-
-					if (StringUtils.isEmpty(storehouseNo)) {
-						storehouseNo = "-";
-					}
-					hssfRow.createCell(0).setCellValue(storehouseNo);
-
-					String materialNo = "";
-					if (de.getStyle() != null) {
-						materialNo = de.getStyle();
-					}
-					hssfRow.createCell(1).setCellValue(materialNo);
-
-					String brand = "";
-					if (de.getColor() != null) {
-						brand = de.getColor();
-					}
-					hssfRow.createCell(2).setCellValue(brand);
-
-					String unit = "";
-					if (de.getUnit() != null) {
-						unit = de.getUnit();
-					}
-					hssfRow.createCell(3).setCellValue(unit);
-
-					String quantity = "";
-					if (de.getModelS() != null) {
-						quantity = de.getModelS();
-					}
-					hssfRow.createCell(4).setCellValue(quantity);
-
-					String singleWeight = "";
-					if (de.getModelM() != null) {
-						singleWeight = de.getModelM();
-					}
-					hssfRow.createCell(5).setCellValue(singleWeight);
-
-					String totalWeight = "";
-					if (de.getModelL() != null) {
-						totalWeight = de.getModelL();
-					}
-					hssfRow.createCell(6).setCellValue(totalWeight);
-
-					String batchNo = "";
-					if (de.getSubtotal() != null) {
-						batchNo = de.getSubtotal();
-					}
-					hssfRow.createCell(7).setCellValue(batchNo);
-
-					String date = "";
-					if (de.getUnitPrice() != null) {
-						date = de.getUnitPrice();
-					}
-					hssfRow.createCell(8).setCellValue(date);
-
-					String account = "";
-					if (de.getAccount() != null) {
-						account = de.getAccount();
-					}
-					hssfRow.createCell(9).setCellValue(account);
-
-					String comment = "";
-					if (de.getComment() != null) {
-						comment = de.getComment();
-					}
-					hssfRow.createCell(10).setCellValue(comment);
-
-				}
-
-			}
-
 			// 第七步，将文件输出到客户端浏览器
 			try {
 				workbook.write(out);
@@ -540,28 +453,5 @@ public class GeneralOcrResource {
 
 	}
 	
-	
-	// 将数据转换为调查问卷对象
-	
-	public Survey getSurveyInformation(String filePath) throws IOException {
-		
-		Survey survey = new Survey();
-		
-		SurveyBPInformation surveyBPInformation = new SurveyBPInformation();
-		
-		SurveyBPNote surveyBPNote = new SurveyBPNote();
-		
-		List<WordsResult> resList = getResultByIocr(filePath);
-		
-			for(int i =0;i<resList.size();i++) {
-				
-				resList.get(i);
-			}
-			
-		
-		
-		return null;
-		
-	}
 
 }

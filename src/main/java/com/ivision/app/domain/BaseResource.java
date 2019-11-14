@@ -1,22 +1,33 @@
 package com.ivision.app.domain;
 
-public class BeanRsource {
+public class BaseResource {
 	
 	private String errorMessage;
 	private String errorCode;
 	private String warning;
 	private String filepath;
-	public BeanRsource() {
+	private String filpathType;
+
+	public BaseResource() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
-	public BeanRsource(String errorMessage, String errorCode, String warning, String filepath) {
+	
+	
+	public BaseResource(String errorMessage, String errorCode, String warning, String filepath) {
 		super();
 		this.errorMessage = errorMessage;
 		this.errorCode = errorCode;
 		this.warning = warning;
 		this.filepath = filepath;
 	}
+
+
+	public BaseResource(String filpathType) {
+		super();
+		this.filpathType = filpathType;
+	}
+
+
 	public String getErrorMessage() {
 		return errorMessage;
 	}
@@ -41,13 +52,18 @@ public class BeanRsource {
 	public void setFilepath(String filepath) {
 		this.filepath = filepath;
 	}
-	@Override
-	public String toString() {
-		return "BeanRsource [errorMessage=" + errorMessage + ", errorCode=" + errorCode + ", warning=" + warning
-				+ ", filepath=" + filepath + "]";
+	public String getFilpathType() {
+		return filpathType;
+	}
+	public void setFilpathType(String filpathType) {
+		this.filpathType = filpathType;
 	}
 
-	
-	
+
+	@Override
+	public String toString() {
+		return "BaseResource [errorMessage=" + errorMessage + ", errorCode=" + errorCode + ", warning=" + warning
+				+ ", filepath=" + filepath + ", filpathType=" + filpathType + "]";
+	}
 
 }

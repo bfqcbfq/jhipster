@@ -1,72 +1,38 @@
+/**
+  * Copyright 2019 bejson.com 
+  */
 package com.ivision.app.domain;
 
+/**
+ * Auto-generated: 2019-11-14 10:14:51
+ *
+ * @author bejson.com (i@bejson.com)
+ * @website http://www.bejson.com/java2pojo/
+ */
 public class Probability {
-	
-	private Double average;
-	
-	private Double min;
-	
-	private Double variance;
-	
-	
 
-	public Probability() {
-	}
+    private double average;
+    private double min;
+    private double variance;
+    public void setAverage(double average) {
+         this.average = average;
+     }
+     public double getAverage() {
+         return average;
+     }
 
+    public void setMin(double min) {
+         this.min = min;
+     }
+     public double getMin() {
+         return min;
+     }
 
-
-	public Probability(Double average, Double min, Double variance) {
-		super();
-		this.average = average;
-		this.min = min;
-		this.variance = variance;
-	}
-
-
-
-	public Double getAverage() {
-		return average;
-	}
-
-
-
-	public void setAverage(Double average) {
-		this.average = average;
-	}
-
-
-
-	public Double getMin() {
-		return min;
-	}
-
-
-
-	public void setMin(Double min) {
-		this.min = min;
-	}
-
-
-
-	public Double getVariance() {
-		return variance;
-	}
-
-
-
-	public void setVariance(Double variance) {
-		this.variance = variance;
-	}
-
-
-
-	@Override
-	public String toString() {
-		return "Probability [average=" + average + ", min=" + min + ", variance=" + variance + "]";
-	}
-	
-	
-	
-	
+    public void setVariance(double variance) {
+         this.variance = variance;
+     }
+     public double getVariance() {
+         return variance;
+     }
 
 }

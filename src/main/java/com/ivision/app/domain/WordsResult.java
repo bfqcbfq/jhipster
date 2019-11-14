@@ -3,14 +3,24 @@
   */
 package com.ivision.app.domain;
 
-import java.io.Serializable;
+/**
+ * Auto-generated: 2019-11-14 10:14:51
+ *
+ * @author bejson.com (i@bejson.com)
+ * @website http://www.bejson.com/java2pojo/
+ */
+public class WordsResult {
 
-public class WordsResult implements Serializable {
-
-	private static final long serialVersionUID = 1L;
-	
-	private String words;
+    private Probability probability;
+    private String words;
     private Location location;
+    public void setProbability(Probability probability) {
+         this.probability = probability;
+     }
+     public Probability getProbability() {
+         return probability;
+     }
+
     public void setWords(String words) {
          this.words = words;
      }
