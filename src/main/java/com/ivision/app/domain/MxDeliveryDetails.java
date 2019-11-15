@@ -1,8 +1,14 @@
 package com.ivision.app.domain;
 
-public class MxDeliveryDetails {
+import java.io.Serializable;
+
+public class MxDeliveryDetails implements Serializable {
 	
-	 private String styleNo;
+	 /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String styleNo;
 	 private String style;
 	 private String color;
 	 private String unit;

@@ -165,4 +165,4 @@ iocr:
     
 file:
   downLoad:
-    path: D:\\FilesAndDatas\\upload\\
+    path: /home/ivuser/filesAndDatas/upload/

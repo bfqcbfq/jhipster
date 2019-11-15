@@ -8,10 +8,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -21,8 +25,8 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,7 +35,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import com.baidu.aip.ocr.AipOcr;
-import com.ivision.app.domain.BeanRsource;
+import com.ivision.app.aop.constant.CommonConstant;
+import com.ivision.app.domain.BaseResource;
 import com.ivision.app.domain.DeliverMessage;
 import com.ivision.app.domain.DeliveryDetails;
 import com.ivision.app.domain.Invoice;
@@ -44,16 +49,28 @@ import com.ivision.app.domain.YdInvoice;
 
 /**
  * 
- * 调用百度API实现文字识别
+ * 调用百度自定义文字识别API，实现上传图片识别
  * 
  * <p>
  * 实现文件的上传，下载及页面展示
  * </p>
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/ocr/iocr")
 public class IocrResource {
+	
+	// 缓存数据Map
+	private static Map<String,Invoice> invoiceCacheMap=new ConcurrentHashMap<String,Invoice>();
+	private static Map<String,MxInvoice> mxInvoiceCacheMap=new ConcurrentHashMap<String,MxInvoice>();
+	private static Map<String,YdInvoice> ydInvoiceCacheMap=new ConcurrentHashMap<String,YdInvoice>();
 
+	// 缓存数据List
+	private static List<Invoice> invoiceCacheList = new ArrayList<>();
+	private static List<MxInvoice> mxInvoiceCacheList = new ArrayList<>();
+	private static List<YdInvoice> ydInvoiceCacheList = new ArrayList<>();
+	
+	
+	
 	@Value("${jhipster.clientApp.name}")
 	private String applicationName;
 
@@ -90,19 +107,15 @@ public class IocrResource {
 	 */
 	@PostMapping("/upload")
 	public ResponseEntity<Object> getfileRecord(
-			@RequestParam(value = "file", required = false) MultipartFile[] uploadFiles) throws IOException {
+			@RequestParam(value = "file", required = false) MultipartFile[] uploadFiles, HttpServletRequest request)
+			throws IOException {
 
 		List<String> errorMessageList = new ArrayList<String>();
 
-		String templateSign = null;
-
-		Invoice invoice = new Invoice();
-
-		MxInvoice mxInvoice = new MxInvoice();
-
-		YdInvoice ydInvoice = new YdInvoice();
-
-		BeanRsource beanRsource = new BeanRsource();
+		Invoice invoice = null;
+		MxInvoice mxInvoice = null;
+		YdInvoice ydInvoice = null;
+		BaseResource baseResource = null;
 
 		// 判断文件夹是否存在,不存在则创建
 		File file = new File(filePath);
@@ -111,14 +124,18 @@ public class IocrResource {
 			file.mkdirs();
 		}
 
+		if (uploadFiles == null || uploadFiles.length < 0) {
+
+			// 参数错误，返回400，没有响应体
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}
+
 		for (MultipartFile uploadFile : uploadFiles) {
 			// 获取原始图片的扩展名
 			String originalFileName = uploadFile.getOriginalFilename();
 
 			// 获取文件类型
 			String fileType = originalFileName.substring(originalFileName.lastIndexOf("."));
-			
-			//if("jpg".equalsIgnoreCase(fileType) || "png".equalsIgnoreCase(fileType) || "bmp".equalsIgnoreCase(fileType)) {
 
 			Date now = new Date();
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -135,49 +152,56 @@ public class IocrResource {
 				uploadFile.transferTo(new File(newFilePath));
 
 				List<JSONObject> jsonObjectList = getResultByIocr(newFilePath);
-				String errorCode = null;
 
 				for (JSONObject jsonObject : jsonObjectList) {
-					errorCode = jsonObject.get("error_code").toString();
-					
-					
-					
-					if (!errorCode.equals("0")) {
+					String errorCode = jsonObject.get("error_code").toString();
+					if (!errorCode.equals(CommonConstant.OCR_IOCR_ERRORCODE)) {
 						errorMessageList.add(errorCode);
-
+						// 上传错误，返回错误信息
 						if (errorMessageList.size() == jsonObjectList.size()) {
+							baseResource = new BaseResource();
+							baseResource.setErrorMessage("您上传的文件有误，请再确认一下");
 
-							beanRsource.setErrorMessage("您上传的文件有误，请再确认一下");
+							return ResponseEntity.ok(baseResource);
 
-							return ResponseEntity.ok(beanRsource);
 						} else {
-							
+
 							continue;
 						}
 					}
 
 					else {
-						templateSign = jsonObject.getJSONObject("data").get("templateSign").toString();
+						String templateSign = jsonObject.getJSONObject("data").get("templateSign").toString();
 
 						if (templateSign.equals(templateId1)) {
+							invoice = new Invoice();
+							invoice = jsonToInvoiceF(jsonObject);
 							invoice.setTemplateType("神丰科技发货单");
-
-							invoice.setFilepath(newFilePath);
-
+							invoice.setType(CommonConstant.OCR_IOCR_YINGFENG_TYPE);
+							// 将数据放在session中
+							//session.setAttribute("invoice", invoice);
+							invoiceCacheMap.put("invoice", invoice);
+							invoiceCacheList.add(invoice);
 							return ResponseEntity.ok(invoice);
 						} else if (templateSign.equals(templateId2)) {
-
+							mxInvoice = new MxInvoice();
+							mxInvoice = jsonToMxInvoice(jsonObject);
 							mxInvoice.setTemplateType("明歆制衣出货单");
-
-							mxInvoice.setFilepath(newFilePath);
-
+							mxInvoice.setType(CommonConstant.OCR_IOCR_MINGXING_TYPE);
+							// 将数据放在session中
+							//session.setAttribute("mxInvoice", mxInvoice);
+							mxInvoiceCacheMap.put("mxInvoice", mxInvoice);
+							mxInvoiceCacheList.add(mxInvoice);
 							return ResponseEntity.ok(mxInvoice);
 						} else if (templateSign.equals(templateId3)) {
-
+							mxInvoice = new MxInvoice();
+							ydInvoice = jsonToYdInvoice(jsonObject);
 							ydInvoice.setTemplateType("易达软件出库单");
-
-							ydInvoice.setFilepath(newFilePath);
-
+							ydInvoice.setType(CommonConstant.OCR_IOCR_YIDA_TYPE);
+							// 将数据放在session中
+							//session.setAttribute("ydInvoice", ydInvoice);
+							ydInvoiceCacheMap.put("ydInvoice", ydInvoice);
+							ydInvoiceCacheList.add(ydInvoice);
 							return ResponseEntity.ok(ydInvoice);
 						}
 
@@ -185,24 +209,17 @@ public class IocrResource {
 
 				}
 
-			} catch (FileAlreadyExistsException  e) {
+			} catch (FileAlreadyExistsException e) {
 				e.printStackTrace();
 			} catch (IOException e1) {
 				e1.printStackTrace();
-			}catch (Exception e2) {
+			} catch (Exception e2) {
 				e2.printStackTrace();
 			}
-				
-//			}else {
-//				
-//				beanRsource.setErrorMessage("您上传的文件有误，请再确认一下");
-//
-//				return ResponseEntity.ok(beanRsource);
-//			}
-			
-		}
-		return null;
 
+		}
+		//上传发生错误，返回500
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 	}
 
 	/**
@@ -213,54 +230,41 @@ public class IocrResource {
 	 * @throws IOException
 	 */
 	@GetMapping("/showDetails")
-	public ResponseEntity<Object> showUploadFileDetails(@RequestParam(value = "filepath") String filepath)
-			throws IOException {
+	public ResponseEntity<Object> showUploadFileDetails(@RequestParam(value = "filepathType") String filepathType,
+			HttpServletRequest request) throws IOException {
 
-		String errorCode = null;
-		
-		Invoice invoice = new Invoice();
-		
-		MxInvoice mxInvoice = new MxInvoice();
-		
-		YdInvoice ydInvoice = new YdInvoice();
 
-		// 调用百度API
-		List<JSONObject> jsonObjectList = getResultByIocr(filepath);
+		if (filepathType.equals(CommonConstant.OCR_IOCR_YINGFENG_TYPE)) {
+			Invoice invoice = invoiceCacheMap.get("invoice");
+			if (invoice == null) {
 
-		for (JSONObject jsonObject : jsonObjectList) {
-			
-			errorCode = jsonObject.get("error_code").toString();
-			
-			String templateSign = jsonObject.getJSONObject("data").get("templateSign").toString();
-
-			if (!errorCode.equals("0")) {
-
-				continue;
-			} else {
-				if (templateSign.equals(templateId1)) {
-					
-					invoice = jsonToInvoiceF(jsonObject);
-					invoice.setType("1");
-					return ResponseEntity.ok(invoice);
-					
-				} else if (templateSign.equals(templateId2)) {
-					
-					mxInvoice = jsonToMxInvoice(jsonObject);
-					mxInvoice.setType("2");
-					return ResponseEntity.ok(mxInvoice);
-					
-				} else if (templateSign.equals(templateId3)) {
-					
-					ydInvoice = jsonToYdInvoice(jsonObject);
-					ydInvoice.setType("3");
-					return ResponseEntity.ok(ydInvoice);
-					
-				}
-
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
 
+			return ResponseEntity.ok(invoice);
 		}
-		return null;
+
+		if (filepathType.equals("2")) {
+			MxInvoice mxInvoice = mxInvoiceCacheMap.get("mxInvoice");
+			if (mxInvoice == null) {
+
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+			}
+
+			return ResponseEntity.ok(mxInvoice);
+
+		}
+		if (filepathType.equals("3")) {
+			YdInvoice ydInvoice = ydInvoiceCacheMap.get("ydInvoice");
+			if (ydInvoice == null) {
+
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+			}
+
+			return ResponseEntity.ok(ydInvoice);
+		}
+
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 
 	}
 
@@ -272,12 +276,8 @@ public class IocrResource {
 	 * @return
 	 */
 	@GetMapping("/download")
-	public String exportExcel(@RequestParam(value = "filepath") String filepath, HttpServletResponse response) {
-
-		String errorCode = null;
-		Invoice invoice = new Invoice();
-		MxInvoice mxInvoice = new MxInvoice();
-		YdInvoice ydInvoice = new YdInvoice();
+	public String exportExcel(@RequestParam(value = "filepathType") String filepathType, HttpServletRequest request,
+			HttpServletResponse response) {
 
 		response.setContentType("application/force-download;charset=UTF-8");
 
@@ -291,81 +291,39 @@ public class IocrResource {
 			String fileName = new String((newFileName).getBytes(), "UTF-8");
 			response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
 
-			// 调用百度API接口
-			List<JSONObject> resultByIocrList = getResultByIocr(filepath);
+			//HttpSession session = request.getSession();
 
-			for (JSONObject jsonObject : resultByIocrList) {
+			if (filepathType.equals(CommonConstant.OCR_IOCR_YINGFENG_TYPE)) {
+				// 获取表头1
+				String title = CommonConstant.OCR_IOCR_YINGFENG_TITLE;
+				String[] head = { title };
+				String[] headnum = { "0,0,0,15" };
+				String[] titles = { "仓库", "料号", "品牌", "单位", "数量", "单重", "合计重量", "批次号", "出货日期", "备注" };
+				this.exportFencers(head, headnum, null, null, titles, out, invoiceCacheList, null, null);
 
-				errorCode = jsonObject.get("error_code").toString();
-				String templateSign = jsonObject.getJSONObject("data").get("templateSign").toString();
+			} else if (filepathType.equals(CommonConstant.OCR_IOCR_MINGXING_TYPE)) {
+				String title = CommonConstant.OCR_IOCR_MINGXING_TITLE;				
+				
+				// 获取表头1
+				String[] head = { title };
+				String[] headnum = { "0,0,0,15" };
+				String[] headnum1 = { "1,1,0,15" };
+				String[] titles = { "款号", "款式", "颜色", "单位", "S", "M", "L", "小计", "单价", "金额", "备注" };
 
-				if (!errorCode.equals("0")) {
+				this.exportFencers(head, headnum, null, headnum1, titles, out, null, mxInvoiceCacheList,null);
+			} else if (filepathType.equals(CommonConstant.OCR_IOCR_YIDA_TYPE)) {
+				// 获取表头1
+				String title = CommonConstant.OCR_IOCR_YIDA_TITLE;	
+				String[] head = { title };
+				String[] headnum = { "0,0,0,15" };
+				// 获取表头2
+				String[] headnum1 = { "1,1,0,15" };
+				String[] titles = { "序号", "配件编号", "配件名称", "车型", "产地", "单位", "单价", "数量", "金额", "备注" };
 
-					continue;
-				} else {
-					if (templateSign.equals(templateId1)) {
-						invoice = jsonToInvoiceF(jsonObject);
-
-						String title = invoice.getTitle();
-						DeliverMessage deliverMessage = invoice.getDeliverMessage();
-						List<DeliveryDetails> deliveryDetails = invoice.getDeliveryDetails();
-
-						// 获取表头1
-						String[] head = { title };
-						String[] headnum = { "0,0,0,15" };
-						// 获取表头2
-						//String[] head1 = { "发货单号", "发货单位", "发货日期", "地址", "联系电话", "备注", "经手人（签字或盖章）", "领料人（签字或盖章）" };
-						// String[] headnum1 = { "1,1,0,15" };
-						String[] titles = { "仓库", "料号", "品牌", "单位", "数量", "单重", "合计重量", "批次号", "出货日期", "备注" };
-
-						this.exportFencers(head, headnum, null, null, titles, out, deliverMessage, deliveryDetails,
-								null, null, null, null);
-
-					} else if (templateSign.equals(templateId2)) {
-						mxInvoice = jsonToMxInvoice(jsonObject);
-
-						String title = mxInvoice.getTitle();
-						MxDeliverMessage deliverMessage = mxInvoice.getMxDeliverMessage();
-						List<MxDeliveryDetails> deliveryDetails = mxInvoice.getDeliveryDetails();
-
-						// 获取表头1
-						String[] head = { title };
-						String[] headnum = { "0,0,0,15" };
-//						// 获取表头2
-//						String[] head1 = { "客户代码", "出货单号", "地址", "出货日期", "合计数量", "合计金额", "备注", "经手人签名", "送货人签名",
-//								"制单人" };
-						String[] headnum1 = { "1,1,0,15" };
-						String[] titles = { "款号", "款式", "颜色", "单位", "S", "M", "L", "小计", "单价", "金额", "备注" };
-
-						this.exportFencers(head, headnum, null, headnum1, titles, out, null, null, deliverMessage,
-								deliveryDetails, null, null);
-
-					} else if (templateSign.equals(templateId3)) {
-
-						ydInvoice = jsonToYdInvoice(jsonObject);
-
-						String title = ydInvoice.getTitle();
-						YdDeliverMessage deliverMessage = ydInvoice.getYdDeliverMessage();
-						List<YdDeliveryDetails> deliveryDetails = ydInvoice.getYdDeliveryDetails();
-
-						// 获取表头1
-						String[] head = { title };
-						String[] headnum = { "0,0,0,15" };
-//						// 获取表头2
-//						String[] head1 = { "客户名称", "日期", "出库单号", "客户电话", "发票种类", "结算方式", "本页小计金额：￥", "总合计金额（大写）",
-//								"总合计金额（小写）：￥", "公司电话", "地址", "制单人", "发货", "收款", "收货", "客户签字", "主营" };
-						String[] headnum1 = { "1,1,0,15" };
-						String[] titles = { "序号", "配件编号", "配件名称", "车型", "产地", "单位", "单价", "数量", "金额", "备注" };
-
-						this.exportFencers(head, headnum, null, headnum1, titles, out, null, null, null, null,
-								deliverMessage, deliveryDetails);
-					}
-
-				}
-
+				this.exportFencers(head, headnum, null, headnum1, titles, out, null, null, ydInvoiceCacheList);
 			}
 
-			return "success";
+			return "导出success";
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "导出信息失败";
@@ -448,6 +406,7 @@ public class IocrResource {
 
 		for (int i = 0; i < list.size(); i++) {
 
+			@SuppressWarnings({ "unchecked", "rawtypes" })
 			HashMap<String, String> map = (HashMap) list.get(i);
 
 			String word = map.get("word");
@@ -750,6 +709,7 @@ public class IocrResource {
 
 		for (int i = 0; i < list.size(); i++) {
 
+			@SuppressWarnings({ "unchecked", "rawtypes" })
 			HashMap<String, String> map = (HashMap) list.get(i);
 
 			String word = map.get("word");
@@ -1033,6 +993,7 @@ public class IocrResource {
 
 		for (int i = 0; i < list.size(); i++) {
 
+			@SuppressWarnings({ "unchecked", "rawtypes" })
 			HashMap<String, String> map = (HashMap) list.get(i);
 
 			String word = map.get("word");
@@ -1267,6 +1228,7 @@ public class IocrResource {
 
 	}
 
+	
 	/**
 	 * 导出识别文字信息为Excel文件
 	 * 
@@ -1276,23 +1238,22 @@ public class IocrResource {
 	 * @param headnum1
 	 * @param titles
 	 * @param out
-	 * @param deliverMessage
-	 * @param deliveryDetails
+	 * @param invoiceCacheList
+	 * @param mxInvoiceCacheList
+	 * @param ydInvoiceCacheList
 	 * @throws Exception
 	 */
 	private void exportFencers(String[] head, String[] headnum, String[] head1, String[] headnum1, String[] titles,
-			ServletOutputStream out, DeliverMessage deliverMessage, List<DeliveryDetails> deliveryDetails,
-			MxDeliverMessage mxDeliverMessage, List<MxDeliveryDetails> mxDeliveryDetails,
-			YdDeliverMessage ydDeliverMessage, List<YdDeliveryDetails> ydDeliveryDetails) throws Exception {
+			ServletOutputStream out, List<Invoice> invoiceCacheList, List<MxInvoice> mxInvoiceCacheList, List<YdInvoice> ydInvoiceCacheList) throws Exception {
 		try {
 			HSSFWorkbook workbook = new HSSFWorkbook();
-			
+
 			// 第二步，在webbook中添加一个sheet,对应Excel文件中的sheet
 			HSSFSheet hssfSheet = workbook.createSheet("sheet1");
 
 			// 第三步，在sheet中添加表头第0行,老版本poi对Excel的行数列数有限制short
 			HSSFRow hssfRow = hssfSheet.createRow(0);
-			//HSSFRow hssfRow1 = hssfSheet.createRow(1);
+			// HSSFRow hssfRow1 = hssfSheet.createRow(1);
 			HSSFRow hssfRow2 = hssfSheet.createRow(2);
 			// 第四步，创建单元格，并设置值表头 设置表头居中
 			HSSFCellStyle hssfCellStyle = workbook.createCellStyle();
@@ -1301,7 +1262,7 @@ public class IocrResource {
 
 			HSSFCell hssfCell = null;// 第一行
 
-			//HSSFCell hssfCell1 = null;// 第二行
+			// HSSFCell hssfCell1 = null;// 第二行
 
 			HSSFCell hssfCell2 = null;// 第三行
 
@@ -1330,61 +1291,62 @@ public class IocrResource {
 //				hssfCell1.setCellValue(head1[i]);// 列名1
 //				hssfCell1.setCellStyle(hssfCellStyle);// 列居中显示
 //			}
-
-			if (deliverMessage != null) {
-
-				hssfRow = hssfSheet.createRow(2);
-
-				// 创建单元格，并设置值
-				String deliveryNo = deliverMessage.getDeliveryNo();
-				if (StringUtils.isEmpty(deliveryNo)) {
-					deliveryNo = "-";
-				}
-				hssfRow.createCell(0).setCellValue(deliveryNo);
-
-				String deliveryCompany = "";
-				if (deliverMessage.getDeliveryCompany() != null) {
-					deliveryCompany = deliverMessage.getDeliveryCompany();
-				}
-				hssfRow.createCell(1).setCellValue(deliveryCompany);
-
-				String deliveryDate = "";
-				if (deliverMessage.getDeliveryDate() != null) {
-					deliveryDate = deliverMessage.getDeliveryDate();
-				}
-				hssfRow.createCell(2).setCellValue(deliveryDate);
-
-				String address = "";
-				if (deliverMessage.getAddress() != null) {
-					address = deliverMessage.getAddress();
-				}
-				hssfRow.createCell(3).setCellValue(address);
-
-				String contactNUmber = "";
-				if (deliverMessage.getContactNUmber() != null) {
-					contactNUmber = deliverMessage.getContactNUmber();
-				}
-				hssfRow.createCell(4).setCellValue(contactNUmber);
-
-				String note = "";
-				if (deliverMessage.getNote() != null) {
-					note = deliverMessage.getNote();
-				}
-				hssfRow.createCell(5).setCellValue(note);
-
-				String handler = "";
-				if (deliverMessage.getHandler() != null) {
-					handler = deliverMessage.getHandler();
-				}
-				hssfRow.createCell(6).setCellValue(handler);
-
-				String picker = "";
-				if (deliverMessage.getPicker() != null) {
-					picker = deliverMessage.getPicker();
-				}
-				hssfRow.createCell(7).setCellValue(picker);
-
-			}
+			
+			// 发货方信息（表格外）
+//			if (deliverMessage != null) {
+//
+//				hssfRow = hssfSheet.createRow(2);
+//
+//				// 创建单元格，并设置值
+//				String deliveryNo = deliverMessage.getDeliveryNo();
+//				if (StringUtils.isEmpty(deliveryNo)) {
+//					deliveryNo = "-";
+//				}
+//				hssfRow.createCell(0).setCellValue(deliveryNo);
+//
+//				String deliveryCompany = "";
+//				if (deliverMessage.getDeliveryCompany() != null) {
+//					deliveryCompany = deliverMessage.getDeliveryCompany();
+//				}
+//				hssfRow.createCell(1).setCellValue(deliveryCompany);
+//
+//				String deliveryDate = "";
+//				if (deliverMessage.getDeliveryDate() != null) {
+//					deliveryDate = deliverMessage.getDeliveryDate();
+//				}
+//				hssfRow.createCell(2).setCellValue(deliveryDate);
+//
+//				String address = "";
+//				if (deliverMessage.getAddress() != null) {
+//					address = deliverMessage.getAddress();
+//				}
+//				hssfRow.createCell(3).setCellValue(address);
+//
+//				String contactNUmber = "";
+//				if (deliverMessage.getContactNUmber() != null) {
+//					contactNUmber = deliverMessage.getContactNUmber();
+//				}
+//				hssfRow.createCell(4).setCellValue(contactNUmber);
+//
+//				String note = "";
+//				if (deliverMessage.getNote() != null) {
+//					note = deliverMessage.getNote();
+//				}
+//				hssfRow.createCell(5).setCellValue(note);
+//
+//				String handler = "";
+//				if (deliverMessage.getHandler() != null) {
+//					handler = deliverMessage.getHandler();
+//				}
+//				hssfRow.createCell(6).setCellValue(handler);
+//
+//				String picker = "";
+//				if (deliverMessage.getPicker() != null) {
+//					picker = deliverMessage.getPicker();
+//				}
+//				hssfRow.createCell(7).setCellValue(picker);
+//
+//			}
 
 //			for (int i = 0; i < headnum1.length; i++) {
 //
@@ -1404,12 +1366,19 @@ public class IocrResource {
 			}
 
 			// 第五步，写入实体数据
+			if (invoiceCacheList != null && !invoiceCacheList.isEmpty()) {
+				
+				
+				int InvoiceBeginIndex = 0;
+				for(int i = 0 ;i< invoiceCacheList.size();i++) {
+					
+					List<DeliveryDetails> deliveryDetails = invoiceCacheList.get(i).getDeliveryDetails();
+					
+					InvoiceBeginIndex = i*deliveryDetails.size();
 
-			if (deliveryDetails != null && !deliveryDetails.isEmpty()) {
-
-				for (int i = 0; i < deliveryDetails.size(); i++) {
-					hssfRow = hssfSheet.createRow(i + 3);
-					DeliveryDetails de = deliveryDetails.get(i);
+				for (int j = 0; j < deliveryDetails.size(); j++) {
+					hssfRow = hssfSheet.createRow(j+InvoiceBeginIndex+ 3);
+					DeliveryDetails de = deliveryDetails.get(j);
 
 					// 第六步，创建单元格，并设置值
 					String storehouseNo = de.getStorehouseNo();
@@ -1474,15 +1443,24 @@ public class IocrResource {
 					hssfRow.createCell(9).setCellValue(comment);
 
 				}
+				
 
 			}
 			
-			//明歆制衣
-			else if (mxDeliveryDetails != null && !mxDeliveryDetails.isEmpty()) {
+			}
 
-				for (int i = 0; i < mxDeliveryDetails.size(); i++) {
-					hssfRow = hssfSheet.createRow(i + 3);
-					MxDeliveryDetails de = mxDeliveryDetails.get(i);
+			// 明歆制衣
+			else if (mxInvoiceCacheList != null && !mxInvoiceCacheList.isEmpty()) {
+				int mxInvoiceBeginIndex = 0;
+				for(int i = 0 ;i< mxInvoiceCacheList.size();i++) {
+					
+					 List<MxDeliveryDetails> mxDeliveryDetails = mxInvoiceCacheList.get(i).getDeliveryDetails();
+					
+					mxInvoiceBeginIndex = i*mxDeliveryDetails.size();
+				
+				for (int j = 0; j < mxDeliveryDetails.size(); j++) {
+					hssfRow = hssfSheet.createRow(j+mxInvoiceBeginIndex + 3);
+					MxDeliveryDetails de = mxDeliveryDetails.get(j);
 
 					// 第六步，创建单元格，并设置值
 					String storehouseNo = de.getStyleNo();
@@ -1545,7 +1523,7 @@ public class IocrResource {
 						account = de.getAccount();
 					}
 					hssfRow.createCell(9).setCellValue(account);
-					
+
 					String comment = "";
 					if (de.getComment() != null) {
 						comment = de.getComment();
@@ -1555,12 +1533,21 @@ public class IocrResource {
 				}
 
 			}
-			
-			else if (ydDeliveryDetails != null && !ydDeliveryDetails.isEmpty()) {
+				
+			}
 
-				for (int i = 0; i < ydDeliveryDetails.size(); i++) {
-					hssfRow = hssfSheet.createRow(i + 3);
-					YdDeliveryDetails de = ydDeliveryDetails.get(i);
+			else if (ydInvoiceCacheList != null && !ydInvoiceCacheList.isEmpty()) {
+			
+					int ydInvoiceBeginIndex = 0;
+					for(int i = 0 ;i< ydInvoiceCacheList.size();i++) {
+						
+						  List<YdDeliveryDetails> ydDeliveryDetails = ydInvoiceCacheList.get(i).getYdDeliveryDetails();
+						
+						ydInvoiceBeginIndex = i*ydDeliveryDetails.size();
+
+				for (int j = 0; j < ydDeliveryDetails.size(); j++) {
+					hssfRow = hssfSheet.createRow(j+ydInvoiceBeginIndex + 3);
+					YdDeliveryDetails de = ydDeliveryDetails.get(j);
 
 					// 第六步，创建单元格，并设置值
 					String storehouseNo = de.getOrderNumber();
@@ -1626,6 +1613,8 @@ public class IocrResource {
 
 				}
 
+			}
+				
 			}
 
 			// 第七步，将文件输出到客户端浏览器

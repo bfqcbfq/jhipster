@@ -1,7 +1,13 @@
 package com.ivision.app.domain;
 
-public class MxDeliverMessage {
+import java.io.Serializable;
+
+public class MxDeliverMessage implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String deliveryNo;
 	private String businessCode;
 	private String totalQuantity;

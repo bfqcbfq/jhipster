@@ -3,13 +3,8 @@
   */
 package com.ivision.app.domain;
 
-/**
- * Auto-generated: 2019-11-14 10:14:51
- *
- * @author bejson.com (i@bejson.com)
- * @website http://www.bejson.com/java2pojo/
- */
-public class Location {
+
+public class GeneralOcrLocation {
 
     private int top;
     private int left;

@@ -1,9 +1,11 @@
 package com.ivision.app.domain;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class MxInvoice {
+public class MxInvoice implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
 	private String type;
 	private String templateType;
 	private String filepath;
@@ -74,6 +76,61 @@ public class MxInvoice {
 				+ ", filepath=" + filepath + ", title=" + title + ", mxDeliverMessage=" + mxDeliverMessage
 				+ ", deliveryDetails=" + deliveryDetails + "]";
 	}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((deliveryDetails == null) ? 0 : deliveryDetails.hashCode());
+		result = prime * result + ((filepath == null) ? 0 : filepath.hashCode());
+		result = prime * result + ((mxDeliverMessage == null) ? 0 : mxDeliverMessage.hashCode());
+		result = prime * result + ((templateType == null) ? 0 : templateType.hashCode());
+		result = prime * result + ((title == null) ? 0 : title.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		MxInvoice other = (MxInvoice) obj;
+		if (deliveryDetails == null) {
+			if (other.deliveryDetails != null)
+				return false;
+		} else if (!deliveryDetails.equals(other.deliveryDetails))
+			return false;
+		if (filepath == null) {
+			if (other.filepath != null)
+				return false;
+		} else if (!filepath.equals(other.filepath))
+			return false;
+		if (mxDeliverMessage == null) {
+			if (other.mxDeliverMessage != null)
+				return false;
+		} else if (!mxDeliverMessage.equals(other.mxDeliverMessage))
+			return false;
+		if (templateType == null) {
+			if (other.templateType != null)
+				return false;
+		} else if (!templateType.equals(other.templateType))
+			return false;
+		if (title == null) {
+			if (other.title != null)
+				return false;
+		} else if (!title.equals(other.title))
+			return false;
+		if (type == null) {
+			if (other.type != null)
+				return false;
+		} else if (!type.equals(other.type))
+			return false;
+		return true;
+	}
+	
+	
 	
 	
 }
