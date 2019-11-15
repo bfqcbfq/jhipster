@@ -217,7 +217,7 @@ import ReactDOM from 'react-dom';
         maxLength: 10,
         files: [],
         onLeave: any,
-        url: 'http://localhost:8080/api/ocr/iocr/upload',
+        url: 'http://192.168.20.231:8080/api/ocr/iocr/upload',
         cq: 10,
         onEnter: any,
         maxSize: 10240000 * 10240000,
@@ -453,7 +453,7 @@ import ReactDOM from 'react-dom';
             loading: 'block'
           });
           axios.post(
-            'http://localhost:8080/api/ocr/iocr/upload',
+            'http://192.168.20.231:8080/api/ocr/iocr/upload',
             uploadFile
           ).then((_: any) => {
             // tslint:disable-next-line: no-console
@@ -572,7 +572,7 @@ import ReactDOM from 'react-dom';
       // tslint:disable-next-line: no-console
       console.log(filepathTypes);
       axios.get(
-        'http://localhost:8080/api/ocr/iocr/download',
+        'http://192.168.20.231:8080/api/ocr/iocr/download',
         {
           params: {
             filepathType: filepathTypes
@@ -605,7 +605,7 @@ import ReactDOM from 'react-dom';
     handleShowClick = (filepathType: any) => {
       const filepathTypes: string = filepathType;
       axios.get(
-        'http://localhost:8080/api/ocr/iocr/showDetails',
+        'http://192.168.20.231:8080/api/ocr/iocr/showDetails',
         {
           params: {
             filepathType: filepathTypes
