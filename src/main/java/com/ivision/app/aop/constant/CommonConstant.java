@@ -50,6 +50,6 @@ public class CommonConstant {
 	/**
 	 * Ivision/NRI调查问卷标题
 	 */
-	public static final String OCR_GENERAL_SURVEY_TITLE = "「中国サプライチェーンを取り巻くデジタライゼーション」からのお客様情報";
+	public static final String OCR_GENERAL_SURVEY_TITLE = "「中国サプライチェーンを取り巻くデジタライゼーション」からのアンケート";
 
 }
