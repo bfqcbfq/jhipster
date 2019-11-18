@@ -10,8 +10,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -54,9 +52,6 @@ import com.ivision.app.domain.WordsResult;
 @RequestMapping("/api/ocr/general")
 public class GeneralOcrResource {
 	
-	// 缓存数据Map
-		private static Map<String,IvisionSurveyBean> invoiceCacheMap=new ConcurrentHashMap<String,IvisionSurveyBean>();
-
 	// 设置APPID/AK/SK
 	@Value("${iocr.app.id}")
 	private String appId;
@@ -124,9 +119,7 @@ public class GeneralOcrResource {
 
 			 ivisionSurvey.setFilepath(newFilePath);
 			 
-			 
-			 //invoiceCacheMap.put("ivisionSurvey", ivisionSurvey);
-			 Cache.put("ivisionSurvey", ivisionSurvey);
+			 Cache.put("ivisionSurvey", ivisionSurvey, Cache.CACHE_HOLD_TIME_24H);
 
 				return ResponseEntity.ok(ivisionSurvey);
 
@@ -168,7 +161,7 @@ public class GeneralOcrResource {
 	 * @return
 	 */
 	@GetMapping("/download")
-	public String exportExcel(@RequestParam(value = "filepath") String filepath, HttpServletResponse response) {
+	public void exportExcel(@RequestParam(value = "filepath") String filepath, HttpServletResponse response) {
 
 		response.setContentType("application/force-download;charset=UTF-8");
 
@@ -199,10 +192,8 @@ public class GeneralOcrResource {
 
 			this.exportFencers(head, headnum, head1, headnum1, titles1, titles2, out, null, resultByIocrList);
 
-			return "success";
 		} catch (Exception e) {
 			e.printStackTrace();
-			return "导出信息失败";
 		}
 	}
 

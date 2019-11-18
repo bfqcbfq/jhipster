@@ -172,10 +172,8 @@ public class IocrResource {
 							invoice = jsonToInvoiceF(jsonObject);
 							invoice.setTemplateType("神丰科技发货单");
 							invoice.setType(CommonConstant.OCR_IOCR_YINGFENG_TYPE);
-							// 将数据放在session中
-							//session.setAttribute("invoice", invoice);
-							Cache.put("invoice", invoice);
-							//invoiceCacheMap.put("invoice", invoice);
+							// 将数据放在缓存中
+							Cache.put("invoice", invoice, Cache.CACHE_HOLD_TIME_24H);
 							invoiceCacheList.add(invoice);
 							return ResponseEntity.ok(invoice);
 						} else if (templateSign.equals(templateId2)) {
@@ -183,10 +181,8 @@ public class IocrResource {
 							mxInvoice = jsonToMxInvoice(jsonObject);
 							mxInvoice.setTemplateType("明歆制衣出货单");
 							mxInvoice.setType(CommonConstant.OCR_IOCR_MINGXING_TYPE);
-							// 将数据放在session中
-							//session.setAttribute("mxInvoice", mxInvoice);
-							Cache.put("mxInvoice", mxInvoice);
-							//mxInvoiceCacheMap.put("mxInvoice", mxInvoice);
+							
+							Cache.put("mxInvoice", mxInvoice, Cache.CACHE_HOLD_TIME_24H);
 							mxInvoiceCacheList.add(mxInvoice);
 							return ResponseEntity.ok(mxInvoice);
 						} else if (templateSign.equals(templateId3)) {
@@ -194,10 +190,8 @@ public class IocrResource {
 							ydInvoice = jsonToYdInvoice(jsonObject);
 							ydInvoice.setTemplateType("易达软件出库单");
 							ydInvoice.setType(CommonConstant.OCR_IOCR_YIDA_TYPE);
-							// 将数据放在session中
-							//session.setAttribute("ydInvoice", ydInvoice);
-							Cache.put("ydInvoice", ydInvoice);
-							//ydInvoiceCacheMap.put("ydInvoice", ydInvoice);
+							
+							Cache.put("ydInvoice", ydInvoice, Cache.CACHE_HOLD_TIME_24H);
 							ydInvoiceCacheList.add(ydInvoice);
 							return ResponseEntity.ok(ydInvoice);
 						}
@@ -273,7 +267,7 @@ public class IocrResource {
 	 * @return
 	 */
 	@GetMapping("/download")
-	public String exportExcel(@RequestParam(value = "filepathType") String filepathType, HttpServletRequest request,
+	public void exportExcel(@RequestParam(value = "filepathType") String filepathType, HttpServletRequest request,
 			HttpServletResponse response) {
 
 		response.setContentType("application/force-download;charset=UTF-8");
@@ -320,10 +314,8 @@ public class IocrResource {
 				this.exportFencers(head, headnum, null, headnum1, titles, out, null, null, ydInvoiceCacheList);
 			}
 
-			return "导出success";
 		} catch (Exception e) {
 			e.printStackTrace();
-			return "导出信息失败";
 		}
 	}
 
