@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import com.baidu.aip.ocr.AipOcr;
 import com.ivision.app.aop.constant.CommonConstant;
+import com.ivision.app.cache.Cache;
 import com.ivision.app.domain.BaseResource;
 import com.ivision.app.domain.DeliverMessage;
 import com.ivision.app.domain.DeliveryDetails;
@@ -59,17 +60,10 @@ import com.ivision.app.domain.YdInvoice;
 @RequestMapping("/api/ocr/iocr")
 public class IocrResource {
 	
-	// 缓存数据Map
-	private static Map<String,Invoice> invoiceCacheMap=new ConcurrentHashMap<String,Invoice>();
-	private static Map<String,MxInvoice> mxInvoiceCacheMap=new ConcurrentHashMap<String,MxInvoice>();
-	private static Map<String,YdInvoice> ydInvoiceCacheMap=new ConcurrentHashMap<String,YdInvoice>();
-
-	// 缓存数据List
+	// 缓存同一模板List
 	private static List<Invoice> invoiceCacheList = new ArrayList<>();
 	private static List<MxInvoice> mxInvoiceCacheList = new ArrayList<>();
 	private static List<YdInvoice> ydInvoiceCacheList = new ArrayList<>();
-	
-	
 	
 	@Value("${jhipster.clientApp.name}")
 	private String applicationName;
@@ -180,7 +174,8 @@ public class IocrResource {
 							invoice.setType(CommonConstant.OCR_IOCR_YINGFENG_TYPE);
 							// 将数据放在session中
 							//session.setAttribute("invoice", invoice);
-							invoiceCacheMap.put("invoice", invoice);
+							Cache.put("invoice", invoice);
+							//invoiceCacheMap.put("invoice", invoice);
 							invoiceCacheList.add(invoice);
 							return ResponseEntity.ok(invoice);
 						} else if (templateSign.equals(templateId2)) {
@@ -190,7 +185,8 @@ public class IocrResource {
 							mxInvoice.setType(CommonConstant.OCR_IOCR_MINGXING_TYPE);
 							// 将数据放在session中
 							//session.setAttribute("mxInvoice", mxInvoice);
-							mxInvoiceCacheMap.put("mxInvoice", mxInvoice);
+							Cache.put("mxInvoice", mxInvoice);
+							//mxInvoiceCacheMap.put("mxInvoice", mxInvoice);
 							mxInvoiceCacheList.add(mxInvoice);
 							return ResponseEntity.ok(mxInvoice);
 						} else if (templateSign.equals(templateId3)) {
@@ -200,7 +196,8 @@ public class IocrResource {
 							ydInvoice.setType(CommonConstant.OCR_IOCR_YIDA_TYPE);
 							// 将数据放在session中
 							//session.setAttribute("ydInvoice", ydInvoice);
-							ydInvoiceCacheMap.put("ydInvoice", ydInvoice);
+							Cache.put("ydInvoice", ydInvoice);
+							//ydInvoiceCacheMap.put("ydInvoice", ydInvoice);
 							ydInvoiceCacheList.add(ydInvoice);
 							return ResponseEntity.ok(ydInvoice);
 						}
@@ -235,7 +232,7 @@ public class IocrResource {
 
 
 		if (filepathType.equals(CommonConstant.OCR_IOCR_YINGFENG_TYPE)) {
-			Invoice invoice = invoiceCacheMap.get("invoice");
+			Invoice invoice = (Invoice) Cache.get("invoice");
 			if (invoice == null) {
 
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
@@ -245,7 +242,7 @@ public class IocrResource {
 		}
 
 		if (filepathType.equals("2")) {
-			MxInvoice mxInvoice = mxInvoiceCacheMap.get("mxInvoice");
+			MxInvoice mxInvoice = (MxInvoice) Cache.get("mxInvoice");
 			if (mxInvoice == null) {
 
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
@@ -255,7 +252,7 @@ public class IocrResource {
 
 		}
 		if (filepathType.equals("3")) {
-			YdInvoice ydInvoice = ydInvoiceCacheMap.get("ydInvoice");
+			YdInvoice ydInvoice = (YdInvoice) Cache.get("ydInvoice");
 			if (ydInvoice == null) {
 
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);

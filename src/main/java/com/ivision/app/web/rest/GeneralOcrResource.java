@@ -36,6 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.alibaba.fastjson.JSON;
 import com.baidu.aip.ocr.AipOcr;
 import com.ivision.app.aop.constant.CommonConstant;
+import com.ivision.app.cache.Cache;
 import com.ivision.app.domain.BaseResource;
 import com.ivision.app.domain.DeliverMessage;
 import com.ivision.app.domain.IvisionSurveyBean;
@@ -124,8 +125,8 @@ public class GeneralOcrResource {
 			 ivisionSurvey.setFilepath(newFilePath);
 			 
 			 
-			 invoiceCacheMap.put("ivisionSurvey", ivisionSurvey);
-			 
+			 //invoiceCacheMap.put("ivisionSurvey", ivisionSurvey);
+			 Cache.put("ivisionSurvey", ivisionSurvey);
 
 				return ResponseEntity.ok(ivisionSurvey);
 
@@ -153,7 +154,7 @@ public class GeneralOcrResource {
 	public ResponseEntity<IvisionSurveyBean> showUploadFileDetails(
 			@RequestParam(value = "filepath") String filepath) throws IOException {
 		
-		IvisionSurveyBean ivisionSurvey = invoiceCacheMap.get("ivisionSurvey");
+		IvisionSurveyBean ivisionSurvey = (IvisionSurveyBean) Cache.get("ivisionSurvey");
 
 
 		return ResponseEntity.ok(ivisionSurvey);
@@ -182,7 +183,7 @@ public class GeneralOcrResource {
 			response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
 
 			// 调用百度API接口
-			IvisionSurveyBean ivisionSurvey = invoiceCacheMap.get("ivisionSurvey");
+			IvisionSurveyBean ivisionSurvey = (IvisionSurveyBean) Cache.get("ivisionSurvey");
 		 List<WordsResult> resultByIocrList = ivisionSurvey.getWordsResult();
 
 			String title = CommonConstant.OCR_GENERAL_SURVEY_TITLE;
@@ -190,11 +191,13 @@ public class GeneralOcrResource {
 			String[] head = { title };
 			String[] headnum = { "0,0,0,15" };
 			// 获取表头2
-			 String[] head1 = { "发货单号", "发货单位", "发货日期", "地址", "联系电话", "备注", "经手人（签字或盖章）", "领料人（签字或盖章）" };
+			 String[] head1 = { "会社名", "所属-役職", "氏名", "電話番号", "E-mail" };
 			 String[] headnum1 = { "1,1,0,15" };
-			 String[] titles = { "会社名", "所属-役職", "氏名", "電話番号", "E-mail" };
+			 
+			 String[] titles1 = { "会社名", "所属-役職", "氏名", "電話番号", "E-mail" };
+			 String[] titles2 = {"問題1","問題2","問題3","問題4","問題5","問題6","問題7","問題8","問題9","問題10"};
 
-			this.exportFencers(head, headnum, head1, headnum1, titles, out, null, resultByIocrList);
+			this.exportFencers(head, headnum, head1, headnum1, titles1, titles2, out, null, resultByIocrList);
 
 			return "success";
 		} catch (Exception e) {
@@ -239,44 +242,6 @@ public class GeneralOcrResource {
 		String jsonObjectStr = jsonObject.toString();
 		IvisionSurveyBean IvisionSurvey = JSON.parseObject(jsonObjectStr, IvisionSurveyBean.class);
 		
-//		String wordsResultNum = jsonObject.get("words_result_num").toString();
-//
-//		if ((Integer.valueOf(wordsResultNum)) >= 1) {
-//
-//			JSONArray jsonArray = jsonObject.getJSONArray("words_result");
-//			List<Object> list = jsonArray.toList();
-//
-//			for (int i = 0; i < list.size(); i++) {
-//
-//				WordsResult wordResult = new WordsResult();
-//				Location location = new Location();
-//
-//				// 取得被识别的数据
-//				HashMap<String, Object> map = (HashMap<String, Object>) list.get(i);
-//				String words = (String) map.get("words");
-//				
-//				//surveyBPInformation.setCompanyName();
-//				wordResult.setWords(words);
-//
-//				// 取得每个识别单位的位置信息
-//				HashMap<String, Integer> locationMap = (HashMap<String, Integer>) map.get("location");
-//				Integer top = locationMap.get("top");
-//				Integer left = locationMap.get("left");
-//				Integer width = locationMap.get("width");
-//				Integer height = locationMap.get("height");
-//
-//				location.setTop(top);
-//				location.setLeft(left);
-//				location.setWidth(width);
-//				location.setHeight(height);
-//				wordResult.setLocation(location);
-//				
-//				// 将识别结果赋值给对象返回
-//				wordsResultList.add(wordResult);
-//
-//			}
-//		}
-		
 			return IvisionSurvey;
 	}
 
@@ -293,13 +258,13 @@ public class GeneralOcrResource {
 	 * @param deliveryDetails
 	 * @throws Exception
 	 */
-	private void exportFencers(String[] head, String[] headnum, String[] head1, String[] headnum1, String[] titles,
+	private void exportFencers(String[] head, String[] headnum, String[] head1, String[] headnum1, String[] titles1,String[] titles2,
 			ServletOutputStream out, DeliverMessage deliverMessage, List<WordsResult> deliveryDetails) throws Exception {
 		try {
 			HSSFWorkbook workbook = new HSSFWorkbook();
 
 			// 第二步，在webbook中添加一个sheet,对应Excel文件中的sheet
-			HSSFSheet hssfSheet = workbook.createSheet("sheet1");
+			HSSFSheet hssfSheet = workbook.createSheet("アンケート");
 
 			// 第三步，在sheet中添加表头第0行,老版本poi对Excel的行数列数有限制short
 			HSSFRow hssfRow = hssfSheet.createRow(0);
@@ -336,9 +301,9 @@ public class GeneralOcrResource {
 			}
 
 			// 第二行表头
-			for (int i = 0; i < head1.length; i++) {
+			for (int i = 0; i < titles1.length; i++) {
 				hssfCell1 = hssfRow1.createCell(i);// 列索引从0开始
-				hssfCell1.setCellValue(head1[i]);// 列名1
+				hssfCell1.setCellValue(titles1[i]);// 列名1
 				hssfCell1.setCellStyle(hssfCellStyle);// 列居中显示
 			}
 
@@ -396,23 +361,23 @@ public class GeneralOcrResource {
 				hssfRow.createCell(7).setCellValue(picker);
 
 			}
-
-			for (int i = 0; i < headnum1.length; i++) {
-
-				hssfSheet.autoSizeColumn(i, true);
-				String[] temp = headnum1[i].split(",");
-				Integer startrow = Integer.parseInt(temp[0]);
-				Integer overrow = Integer.parseInt(temp[1]);
-				Integer startcol = Integer.parseInt(temp[2]);
-				Integer overcol = Integer.parseInt(temp[3]);
-				hssfSheet.addMergedRegion(new CellRangeAddress(startrow, overrow, startcol, overcol));
-			}
+//
+//			for (int i = 0; i < headnum1.length; i++) {
+//
+//				hssfSheet.autoSizeColumn(i, true);
+//				String[] temp = headnum1[i].split(",");
+//				Integer startrow = Integer.parseInt(temp[0]);
+//				Integer overrow = Integer.parseInt(temp[1]);
+//				Integer startcol = Integer.parseInt(temp[2]);
+//				Integer overcol = Integer.parseInt(temp[3]);
+//				hssfSheet.addMergedRegion(new CellRangeAddress(startrow, overrow, startcol, overcol));
+//			}
 			// 第三行表头 不需要合并单元格
 
-			if (titles != null && !(titles.length < 0))
-				for (int i = 0; i < titles.length; i++) {
+			if (titles2 != null && !(titles2.length < 0))
+				for (int i = 0; i < titles2.length; i++) {
 					hssfCell2 = hssfRow2.createCell(i);// 列索引从0开始
-					hssfCell2.setCellValue(titles[i]);// 列名1
+					hssfCell2.setCellValue(titles2[i]);// 列名1
 					hssfCell2.setCellStyle(hssfCellStyle);// 列居中显示
 				}
 
