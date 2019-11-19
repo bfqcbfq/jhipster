@@ -16,9 +16,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,7 +58,7 @@ import com.ivision.app.domain.WordsResult;
 @RestController
 @RequestMapping("/api/ocr/general")
 public class GeneralOcrResource {
-	
+
 	// 设置APPID/AK/SK
 	@Value("${iocr.app.id}")
 	private String appId;
@@ -93,8 +100,9 @@ public class GeneralOcrResource {
 			// 获取文件类型
 			String fileType = originalFileName.substring(originalFileName.lastIndexOf("."));
 
-			if (!(".jpg".equalsIgnoreCase(fileType) || ".jpeg".equalsIgnoreCase(fileType) || ".bpm".equalsIgnoreCase(fileType) 
-					|| ".png".equalsIgnoreCase(fileType) || ".tif".equalsIgnoreCase(fileType))) {
+			if (!(".jpg".equalsIgnoreCase(fileType) || ".jpeg".equalsIgnoreCase(fileType)
+					|| ".bpm".equalsIgnoreCase(fileType) || ".png".equalsIgnoreCase(fileType)
+					|| ".tif".equalsIgnoreCase(fileType))) {
 				baseResource.setErrorMessage("您上传的文件有误，请再确认一下");
 
 				return ResponseEntity.ok(baseResource);
@@ -114,12 +122,12 @@ public class GeneralOcrResource {
 
 				// 将传来的文件写入新建的文件
 				uploadFile.transferTo(new File(newFilePath));
-				
-			 IvisionSurveyBean ivisionSurvey = getResultByIocr(newFilePath);
 
-			 ivisionSurvey.setFilepath(newFilePath);
-			 
-			 Cache.put("ivisionSurvey", ivisionSurvey, Cache.CACHE_HOLD_TIME_24H);
+				IvisionSurveyBean ivisionSurvey = getResultByIocr(newFilePath);
+
+				ivisionSurvey.setFilepath(newFilePath);
+
+				Cache.put("ivisionSurvey", ivisionSurvey, Cache.CACHE_HOLD_TIME_24H);
 
 				return ResponseEntity.ok(ivisionSurvey);
 
@@ -144,11 +152,10 @@ public class GeneralOcrResource {
 	 * @throws IOException
 	 */
 	@GetMapping("/showDetails")
-	public ResponseEntity<IvisionSurveyBean> showUploadFileDetails(
-			@RequestParam(value = "filepath") String filepath) throws IOException {
-		
-		IvisionSurveyBean ivisionSurvey = (IvisionSurveyBean) Cache.get("ivisionSurvey");
+	public ResponseEntity<IvisionSurveyBean> showUploadFileDetails(@RequestParam(value = "filepath") String filepath)
+			throws IOException {
 
+		IvisionSurveyBean ivisionSurvey = (IvisionSurveyBean) Cache.get("ivisionSurvey");
 
 		return ResponseEntity.ok(ivisionSurvey);
 	}
@@ -177,18 +184,19 @@ public class GeneralOcrResource {
 
 			// 调用百度API接口
 			IvisionSurveyBean ivisionSurvey = (IvisionSurveyBean) Cache.get("ivisionSurvey");
-		 List<WordsResult> resultByIocrList = ivisionSurvey.getWordsResult();
+			List<WordsResult> resultByIocrList = ivisionSurvey.getWordsResult();
 
 			String title = CommonConstant.OCR_GENERAL_SURVEY_TITLE;
 			// 获取表头1
 			String[] head = { title };
-			String[] headnum = { "0,0,0,15" };
+			 String[] headnum = { "0,0,0,18" };
 			// 获取表头2
 			 String[] head1 = { "会社名", "所属-役職", "氏名", "電話番号", "E-mail" };
-			 String[] headnum1 = { "1,1,0,15" };
-			 
+			 String[] headnum1 = { "1,1,0,10" };
+
 			 String[] titles1 = { "会社名", "所属-役職", "氏名", "電話番号", "E-mail" };
-			 String[] titles2 = {"問題1","問題2","問題3","問題4","問題5","問題6","問題7","問題8","問題9","問題10"};
+			String[] titles2 = {"No", "会社名", "所属-役職", "氏名", "電話番号", "E-mail", "問題1", "問題2", "問題3", "問題4", "問題5", "問題6",
+					"問題7" };
 
 			this.exportFencers(head, headnum, head1, headnum1, titles1, titles2, out, null, resultByIocrList);
 
@@ -216,24 +224,23 @@ public class GeneralOcrResource {
 
 		// 传入可选参数调用接口
 		HashMap<String, String> options = new HashMap<String, String>();
-		
+
 		// 指定设定识别语言为 日语;检测图片朝向;检测语言类别
 		options.put("language_type", "JAP");
-        options.put("detect_direction", "true");
-        options.put("detect_language", "true");
-        options.put("probability", "true");
-		
-		
-		//设定是否检测语言种类参数
+		options.put("detect_direction", "true");
+		options.put("detect_language", "true");
+		options.put("probability", "true");
+
+		// 设定是否检测语言种类参数
 		// options.put("detect_language","true");
 
 		// 参数为本地路径
 		JSONObject jsonObject = client.general(iocrFilepath, options);
-		
+
 		String jsonObjectStr = jsonObject.toString();
 		IvisionSurveyBean IvisionSurvey = JSON.parseObject(jsonObjectStr, IvisionSurveyBean.class);
-		
-			return IvisionSurvey;
+
+		return IvisionSurvey;
 	}
 
 	/**
@@ -249,34 +256,41 @@ public class GeneralOcrResource {
 	 * @param deliveryDetails
 	 * @throws Exception
 	 */
-	private void exportFencers(String[] head, String[] headnum, String[] head1, String[] headnum1, String[] titles1,String[] titles2,
-			ServletOutputStream out, DeliverMessage deliverMessage, List<WordsResult> deliveryDetails) throws Exception {
+	private void exportFencers(String[] head, String[] headnum, String[] head1, String[] headnum1, String[] titles1,
+			String[] titles2, ServletOutputStream out, DeliverMessage deliverMessage, List<WordsResult> deliveryDetails)
+			throws Exception {
 		try {
 			HSSFWorkbook workbook = new HSSFWorkbook();
 
 			// 第二步，在webbook中添加一个sheet,对应Excel文件中的sheet
-			HSSFSheet hssfSheet = workbook.createSheet("アンケート");
+			HSSFSheet hssfSheet = workbook.createSheet("アンケット結果まとめ");
 
 			// 第三步，在sheet中添加表头第0行,老版本poi对Excel的行数列数有限制short
 			HSSFRow hssfRow = hssfSheet.createRow(0);
 			HSSFRow hssfRow1 = hssfSheet.createRow(1);
 			HSSFRow hssfRow2 = hssfSheet.createRow(2);
 			// 第四步，创建单元格，并设置值表头 设置表头居中
-			HSSFCellStyle hssfCellStyle = workbook.createCellStyle();
-			// 居中样式
-			// hssfCellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-
+			
+			
+			
 			HSSFCell hssfCell = null;// 第一行
-
-			 HSSFCell hssfCell1 = null;// 第二行
-
+			//HSSFCell hssfCell1 = null;// 第二行
 			HSSFCell hssfCell2 = null;// 第三行
 
 			// 第一行表头
 			for (int i = 0; i < head.length; i++) {
+				HSSFCellStyle hssfCellStyle = workbook.createCellStyle();
 				hssfCell = hssfRow.createCell(i);// 列索引从0开始
 				hssfCell.setCellValue(head[i]);// 列名1
-				hssfCell.setCellStyle(hssfCellStyle);// 列居中显示
+				 HSSFFont font = workbook.createFont();
+					font.setFontName("meiryo UI");
+					font.setFontHeightInPoints((short)12);
+					font.setBold(true);
+					hssfCellStyle.setAlignment(HorizontalAlignment.CENTER);
+					hssfCellStyle.setFont(font);
+					hssfCell.setCellStyle(hssfCellStyle);// 列居中显示
+				 
+				
 			}
 
 			// 动态合并单元格
@@ -290,69 +304,16 @@ public class GeneralOcrResource {
 				Integer overcol = Integer.parseInt(temp[3]);
 				hssfSheet.addMergedRegion(new CellRangeAddress(startrow, overrow, startcol, overcol));
 			}
-
-			// 第二行表头
-			for (int i = 0; i < titles1.length; i++) {
-				hssfCell1 = hssfRow1.createCell(i);// 列索引从0开始
-				hssfCell1.setCellValue(titles1[i]);// 列名1
-				hssfCell1.setCellStyle(hssfCellStyle);// 列居中显示
-			}
-
-			if (deliverMessage != null) {
-
-				hssfRow = hssfSheet.createRow(2);
-
-				// 创建单元格，并设置值
-				String deliveryNo = deliverMessage.getDeliveryNo();
-				if (StringUtils.isEmpty(deliveryNo)) {
-					deliveryNo = "-";
-				}
-				hssfRow.createCell(0).setCellValue(deliveryNo);
-
-				String deliveryCompany = "";
-				if (deliverMessage.getDeliveryCompany() != null) {
-					deliveryCompany = deliverMessage.getDeliveryCompany();
-				}
-				hssfRow.createCell(1).setCellValue(deliveryCompany);
-
-				String deliveryDate = "";
-				if (deliverMessage.getDeliveryDate() != null) {
-					deliveryDate = deliverMessage.getDeliveryDate();
-				}
-				hssfRow.createCell(2).setCellValue(deliveryDate);
-
-				String address = "";
-				if (deliverMessage.getAddress() != null) {
-					address = deliverMessage.getAddress();
-				}
-				hssfRow.createCell(3).setCellValue(address);
-
-				String contactNUmber = "";
-				if (deliverMessage.getContactNUmber() != null) {
-					contactNUmber = deliverMessage.getContactNUmber();
-				}
-				hssfRow.createCell(4).setCellValue(contactNUmber);
-
-				String note = "";
-				if (deliverMessage.getNote() != null) {
-					note = deliverMessage.getNote();
-				}
-				hssfRow.createCell(5).setCellValue(note);
-
-				String handler = "";
-				if (deliverMessage.getHandler() != null) {
-					handler = deliverMessage.getHandler();
-				}
-				hssfRow.createCell(6).setCellValue(handler);
-
-				String picker = "";
-				if (deliverMessage.getPicker() != null) {
-					picker = deliverMessage.getPicker();
-				}
-				hssfRow.createCell(7).setCellValue(picker);
-
-			}
-//
+			  // 第二行表头 
+//			for (int i = 0; i < titles1.length; i++) { 
+//				
+//				hssfCell1 = hssfRow1.createCell(i);
+//				// 列索引从0开始
+//				hssfCell1.setCellValue(titles1[i]);
+//				// 列名1
+//				hssfCell1.setCellStyle(hssfCellStyle);// 列居中显示 
+//			}
+			 
 //			for (int i = 0; i < headnum1.length; i++) {
 //
 //				hssfSheet.autoSizeColumn(i, true);
@@ -365,12 +326,23 @@ public class GeneralOcrResource {
 //			}
 			// 第三行表头 不需要合并单元格
 
-			if (titles2 != null && !(titles2.length < 0))
+			if (titles2 != null && !(titles2.length < 0)) {
+				HSSFCellStyle hssfCellStyle1 = workbook.createCellStyle();
 				for (int i = 0; i < titles2.length; i++) {
+					
 					hssfCell2 = hssfRow2.createCell(i);// 列索引从0开始
 					hssfCell2.setCellValue(titles2[i]);// 列名1
-					hssfCell2.setCellStyle(hssfCellStyle);// 列居中显示
+					
+					HSSFFont font1 = workbook.createFont();
+					font1.setFontName("meiryo UI");
+					hssfCellStyle1.setAlignment(HorizontalAlignment.CENTER);
+					hssfCellStyle1.setFont(font1);
+					hssfCellStyle1.setFillForegroundColor(IndexedColors.BLUE_GREY.getIndex());//设置背景色蓝
+					hssfCellStyle1.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+					 hssfCell2.setCellStyle(hssfCellStyle1);// 列居中显示
+
 				}
+			}
 
 			// 第五步，写入实体数据
 
@@ -395,7 +367,7 @@ public class GeneralOcrResource {
 			// 第七步，将文件输出到客户端浏览器
 			try {
 				workbook.write(out);
-				workbook.close();
+				//workbook.close();
 				out.flush();
 				out.close();
 			} catch (Exception e) {
@@ -408,6 +380,5 @@ public class GeneralOcrResource {
 		}
 
 	}
-	
 
 }

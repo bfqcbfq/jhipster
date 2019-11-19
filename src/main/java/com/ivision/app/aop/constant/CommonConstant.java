@@ -61,6 +61,12 @@ public class CommonConstant {
 	 * 易达软件出货单:type=3
 	 */
 	public static final String OCR_IOCR_YIDA_TYPE = "3";
+	/**
+	 * 
+	 * 文件·类型
+	 * 三菱重工市场调查问卷:type=3
+	 */
+	public static final String OCR_IOCR_SANLING_TYPE = "4";
 	
 	/**
 	 * 百度文字识别错误代码
@@ -70,7 +76,7 @@ public class CommonConstant {
 	/**
 	 * Ivision/NRI调查问卷标题
 	 */
-	public static final String OCR_GENERAL_SURVEY_TITLE = "「中国サプライチェーンを取り巻くデジタライゼーション」からのお客様情報";
+	public static final String OCR_GENERAL_SURVEY_TITLE = "「中国サプライチェーンを取り巻くデジタライゼーション」からのお客様情報－アンケット結果まとめ";
 	
 	/**
 	 * 调查问卷问题1~3单选选择项

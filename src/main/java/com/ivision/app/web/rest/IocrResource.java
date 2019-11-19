@@ -8,13 +8,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -87,7 +84,7 @@ public class IocrResource {
 
 	@Value("${iocr.template.id3}")
 	private String templateId3;
-
+	
 	// 定义上传文件的存放位置
 	@Value("${file.downLoad.path}")
 	private String filePath;
@@ -194,8 +191,8 @@ public class IocrResource {
 							Cache.put("ydInvoice", ydInvoice, Cache.CACHE_HOLD_TIME_24H);
 							ydInvoiceCacheList.add(ydInvoice);
 							return ResponseEntity.ok(ydInvoice);
+							
 						}
-
 					}
 
 				}

@@ -11,16 +11,7 @@ public class MxInvoice implements Serializable {
 	private String filepath;
 	private String title;
 	private MxDeliverMessage mxDeliverMessage;
-//	private String deliveryNo;
-//	private String deliveryCompany;
-//	private String deliveryDate;
-//	private String address;
-//	private String contactNUmber;
-//	private String note;
-//	private String handler;
-//	private String picker;
 	private List<MxDeliveryDetails>  deliveryDetails;
-//	private List<DeliveryDetails> deliveryDetails;
 	public MxInvoice() {
 		
 	}
