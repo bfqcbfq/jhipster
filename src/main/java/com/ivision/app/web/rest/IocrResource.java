@@ -31,6 +31,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.alibaba.fastjson.JSON;
 import com.baidu.aip.ocr.AipOcr;
 import com.ivision.app.aop.constant.CommonConstant;
 import com.ivision.app.cache.Cache;
@@ -38,6 +40,8 @@ import com.ivision.app.domain.BaseResource;
 import com.ivision.app.domain.DeliverMessage;
 import com.ivision.app.domain.DeliveryDetails;
 import com.ivision.app.domain.Invoice;
+import com.ivision.app.domain.IocrBaseResource;
+import com.ivision.app.domain.MitsubishiSurvey;
 import com.ivision.app.domain.MxDeliverMessage;
 import com.ivision.app.domain.MxDeliveryDetails;
 import com.ivision.app.domain.MxInvoice;
@@ -56,12 +60,13 @@ import com.ivision.app.domain.YdInvoice;
 @RestController
 @RequestMapping("/api/ocr/iocr")
 public class IocrResource {
-	
+
 	// 缓存同一模板List
 	private static List<Invoice> invoiceCacheList = new ArrayList<>();
 	private static List<MxInvoice> mxInvoiceCacheList = new ArrayList<>();
 	private static List<YdInvoice> ydInvoiceCacheList = new ArrayList<>();
-	
+	private static List<MitsubishiSurvey> mitsubishiSurveyList = new ArrayList<>();
+
 	@Value("${jhipster.clientApp.name}")
 	private String applicationName;
 
@@ -84,7 +89,10 @@ public class IocrResource {
 
 	@Value("${iocr.template.id3}")
 	private String templateId3;
-	
+
+	@Value("${iocr.template.id4}")
+	private String templateId4;
+
 	// 定义上传文件的存放位置
 	@Value("${file.downLoad.path}")
 	private String filePath;
@@ -106,6 +114,7 @@ public class IocrResource {
 		Invoice invoice = null;
 		MxInvoice mxInvoice = null;
 		YdInvoice ydInvoice = null;
+		MitsubishiSurvey mitsubishiSurvey = null;
 		BaseResource baseResource = null;
 
 		// 判断文件夹是否存在,不存在则创建
@@ -145,7 +154,10 @@ public class IocrResource {
 				List<JSONObject> jsonObjectList = getResultByIocr(newFilePath);
 
 				for (JSONObject jsonObject : jsonObjectList) {
-					String errorCode = jsonObject.get("error_code").toString();
+					IocrBaseResource iocrBaseResource = JSON.parseObject(jsonObject.toString(), IocrBaseResource.class);
+					int error_code = iocrBaseResource.getError_code();
+
+					String errorCode = error_code + "";
 					if (!errorCode.equals(CommonConstant.OCR_IOCR_ERRORCODE)) {
 						errorMessageList.add(errorCode);
 						// 上传错误，返回错误信息
@@ -178,7 +190,7 @@ public class IocrResource {
 							mxInvoice = jsonToMxInvoice(jsonObject);
 							mxInvoice.setTemplateType("明歆制衣出货单");
 							mxInvoice.setType(CommonConstant.OCR_IOCR_MINGXING_TYPE);
-							
+
 							Cache.put("mxInvoice", mxInvoice, Cache.CACHE_HOLD_TIME_24H);
 							mxInvoiceCacheList.add(mxInvoice);
 							return ResponseEntity.ok(mxInvoice);
@@ -187,10 +199,21 @@ public class IocrResource {
 							ydInvoice = jsonToYdInvoice(jsonObject);
 							ydInvoice.setTemplateType("易达软件出库单");
 							ydInvoice.setType(CommonConstant.OCR_IOCR_YIDA_TYPE);
-							
+
 							Cache.put("ydInvoice", ydInvoice, Cache.CACHE_HOLD_TIME_24H);
 							ydInvoiceCacheList.add(ydInvoice);
 							return ResponseEntity.ok(ydInvoice);
+
+						} else if (templateSign.equals(templateId4)) {
+							mitsubishiSurvey = new MitsubishiSurvey();
+							
+							mitsubishiSurvey = jsonToMitsubishiSurvey(jsonObject);
+							mitsubishiSurvey.setTemplateType("三菱重工调查问卷");
+							mitsubishiSurvey.setFilpathType(CommonConstant.OCR_IOCR_SANLING_TYPE);
+							
+							Cache.put("mitsubishiSurvey", mitsubishiSurvey, Cache.CACHE_HOLD_TIME_24H);
+							mitsubishiSurveyList.add(mitsubishiSurvey);
+							return ResponseEntity.ok(mitsubishiSurvey);
 							
 						}
 					}
@@ -206,7 +229,7 @@ public class IocrResource {
 			}
 
 		}
-		//上传发生错误，返回500
+		// 上传发生错误，返回500
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 	}
 
@@ -220,7 +243,6 @@ public class IocrResource {
 	@GetMapping("/showDetails")
 	public ResponseEntity<Object> showUploadFileDetails(@RequestParam(value = "filepathType") String filepathType,
 			HttpServletRequest request) throws IOException {
-
 
 		if (filepathType.equals(CommonConstant.OCR_IOCR_YINGFENG_TYPE)) {
 			Invoice invoice = (Invoice) Cache.get("invoice");
@@ -279,7 +301,7 @@ public class IocrResource {
 			String fileName = new String((newFileName).getBytes(), "UTF-8");
 			response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
 
-			//HttpSession session = request.getSession();
+			// HttpSession session = request.getSession();
 
 			if (filepathType.equals(CommonConstant.OCR_IOCR_YINGFENG_TYPE)) {
 				// 获取表头1
@@ -290,18 +312,18 @@ public class IocrResource {
 				this.exportFencers(head, headnum, null, null, titles, out, invoiceCacheList, null, null);
 
 			} else if (filepathType.equals(CommonConstant.OCR_IOCR_MINGXING_TYPE)) {
-				String title = CommonConstant.OCR_IOCR_MINGXING_TITLE;				
-				
+				String title = CommonConstant.OCR_IOCR_MINGXING_TITLE;
+
 				// 获取表头1
 				String[] head = { title };
 				String[] headnum = { "0,0,0,15" };
 				String[] headnum1 = { "1,1,0,15" };
 				String[] titles = { "款号", "款式", "颜色", "单位", "S", "M", "L", "小计", "单价", "金额", "备注" };
 
-				this.exportFencers(head, headnum, null, headnum1, titles, out, null, mxInvoiceCacheList,null);
+				this.exportFencers(head, headnum, null, headnum1, titles, out, null, mxInvoiceCacheList, null);
 			} else if (filepathType.equals(CommonConstant.OCR_IOCR_YIDA_TYPE)) {
 				// 获取表头1
-				String title = CommonConstant.OCR_IOCR_YIDA_TITLE;	
+				String title = CommonConstant.OCR_IOCR_YIDA_TITLE;
 				String[] head = { title };
 				String[] headnum = { "0,0,0,15" };
 				// 获取表头2
@@ -338,6 +360,7 @@ public class IocrResource {
 		templateSignList.add(templateId1);
 		templateSignList.add(templateId2);
 		templateSignList.add(templateId3);
+		templateSignList.add(templateId4);
 
 		// 传入可选参数调用接口
 		HashMap<String, String> options = new HashMap<String, String>();
@@ -366,7 +389,6 @@ public class IocrResource {
 
 		Invoice invoice = new Invoice();
 		DeliverMessage deliverMessage = new DeliverMessage();
-
 		// 將表格中每行數據放在一個對象中
 		// 表格第一行
 		DeliveryDetails deliveryDetails = new DeliveryDetails();
@@ -382,7 +404,8 @@ public class IocrResource {
 		DeliveryDetails deliveryDetails5 = new DeliveryDetails();
 		// 表格第七行
 		DeliveryDetails deliveryDetails6 = new DeliveryDetails();
-		List<DeliveryDetails> deliveryDetailsList = new ArrayList<>();
+
+		List<DeliveryDetails> deliveryDetailsList = deliveryDetailsList = new ArrayList<>();
 		// 获得账票标题
 		String templateName = jsonObject.getJSONObject("data").get("templateName").toString();
 		invoice.setTitle(templateName);
@@ -1214,6 +1237,90 @@ public class IocrResource {
 
 	}
 
+
+	public MitsubishiSurvey jsonToMitsubishiSurvey(JSONObject jsonObject) {
+		
+		MitsubishiSurvey mitsubishiSurvey = new MitsubishiSurvey();
+		
+		
+		JSONArray jsonArray = jsonObject.getJSONObject("data").getJSONArray("ret");
+		List<Object> list = jsonArray.toList();
+
+		for (int i = 0; i < list.size(); i++) {
+
+			@SuppressWarnings({ "unchecked", "rawtypes" })
+			HashMap<String, String> map = (HashMap) list.get(i);
+
+			String word = map.get("word");
+
+			switch (i) {
+			
+			case 0:
+			mitsubishiSurvey.setQuestionOne(word);
+			break;
+			
+			case 1:
+			mitsubishiSurvey.setEmail(word);
+			break;
+			
+			case 2:
+				mitsubishiSurvey.setCompanyName(word);
+				break;
+				
+			case 3:
+				mitsubishiSurvey.setTelphone(word);
+				break;
+				
+			case 4:
+				mitsubishiSurvey.setQuestionSeven(word);
+				break;
+				
+			case 5:
+				mitsubishiSurvey.setQuestionSix(word);
+				break;
+				
+			case 6:
+				mitsubishiSurvey.setQuestionNine(word);
+				break;
+				
+			case 7:
+				mitsubishiSurvey.setQuestionEight(word);
+				break;
+				
+			case 8:
+				mitsubishiSurvey.setQuestionThree(word);
+				break;
+				
+			case 9:
+				mitsubishiSurvey.setQuestionTwo(word);
+				break;
+				
+			case 10:
+				mitsubishiSurvey.setQuestionTen(word);
+				break;
+				
+			case 11:
+				mitsubishiSurvey.setQuestionFive(word);
+				break;
+				
+			case 12:
+				mitsubishiSurvey.setQuestionFour(word);
+				break;
+				
+			case 13:
+				mitsubishiSurvey.setName(word);
+				break;
+				
+			case 14:
+				mitsubishiSurvey.setComment(word);
+				break;
+			}
+			}
+
+		return mitsubishiSurvey;
+		
+		
+	}
 	
 	/**
 	 * 导出识别文字信息为Excel文件
@@ -1230,7 +1337,8 @@ public class IocrResource {
 	 * @throws Exception
 	 */
 	private void exportFencers(String[] head, String[] headnum, String[] head1, String[] headnum1, String[] titles,
-			ServletOutputStream out, List<Invoice> invoiceCacheList, List<MxInvoice> mxInvoiceCacheList, List<YdInvoice> ydInvoiceCacheList) throws Exception {
+			ServletOutputStream out, List<Invoice> invoiceCacheList, List<MxInvoice> mxInvoiceCacheList,
+			List<YdInvoice> ydInvoiceCacheList) throws Exception {
 		try {
 			HSSFWorkbook workbook = new HSSFWorkbook();
 
@@ -1277,7 +1385,7 @@ public class IocrResource {
 //				hssfCell1.setCellValue(head1[i]);// 列名1
 //				hssfCell1.setCellStyle(hssfCellStyle);// 列居中显示
 //			}
-			
+
 			// 发货方信息（表格外）
 //			if (deliverMessage != null) {
 //
@@ -1353,254 +1461,252 @@ public class IocrResource {
 
 			// 第五步，写入实体数据
 			if (invoiceCacheList != null && !invoiceCacheList.isEmpty()) {
-				
-				
+
 				int InvoiceBeginIndex = 0;
-				for(int i = 0 ;i< invoiceCacheList.size();i++) {
-					
+				for (int i = 0; i < invoiceCacheList.size(); i++) {
+
 					List<DeliveryDetails> deliveryDetails = invoiceCacheList.get(i).getDeliveryDetails();
-					
-					InvoiceBeginIndex = i*deliveryDetails.size();
 
-				for (int j = 0; j < deliveryDetails.size(); j++) {
-					hssfRow = hssfSheet.createRow(j+InvoiceBeginIndex+ 3);
-					DeliveryDetails de = deliveryDetails.get(j);
+					InvoiceBeginIndex = i * deliveryDetails.size();
 
-					// 第六步，创建单元格，并设置值
-					String storehouseNo = de.getStorehouseNo();
+					for (int j = 0; j < deliveryDetails.size(); j++) {
+						hssfRow = hssfSheet.createRow(j + InvoiceBeginIndex + 3);
+						DeliveryDetails de = deliveryDetails.get(j);
 
-					if (StringUtils.isEmpty(storehouseNo)) {
-						storehouseNo = "-";
+						// 第六步，创建单元格，并设置值
+						String storehouseNo = de.getStorehouseNo();
+
+						if (StringUtils.isEmpty(storehouseNo)) {
+							storehouseNo = "-";
+						}
+						hssfRow.createCell(0).setCellValue(storehouseNo);
+
+						String materialNo = "";
+						if (de.getMaterialNo() != null) {
+							materialNo = de.getMaterialNo();
+						}
+						hssfRow.createCell(1).setCellValue(materialNo);
+
+						String brand = "";
+						if (de.getBrand() != null) {
+							brand = de.getBrand();
+						}
+						hssfRow.createCell(2).setCellValue(brand);
+
+						String unit = "";
+						if (de.getUnit() != null) {
+							unit = de.getUnit();
+						}
+						hssfRow.createCell(3).setCellValue(unit);
+
+						String quantity = "";
+						if (de.getQuantity() != null) {
+							quantity = de.getQuantity();
+						}
+						hssfRow.createCell(4).setCellValue(quantity);
+
+						String singleWeight = "";
+						if (de.getSingleWeight() != null) {
+							singleWeight = de.getSingleWeight();
+						}
+						hssfRow.createCell(5).setCellValue(singleWeight);
+
+						String totalWeight = "";
+						if (de.getTotalWeight() != null) {
+							totalWeight = de.getTotalWeight();
+						}
+						hssfRow.createCell(6).setCellValue(totalWeight);
+
+						String batchNo = "";
+						if (de.getBatchNo() != null) {
+							batchNo = de.getBatchNo();
+						}
+						hssfRow.createCell(7).setCellValue(batchNo);
+
+						String date = "";
+						if (de.getDate() != null) {
+							date = de.getDate();
+						}
+						hssfRow.createCell(8).setCellValue(date);
+
+						String comment = "";
+						if (de.getComment() != null) {
+							comment = de.getComment();
+						}
+						hssfRow.createCell(9).setCellValue(comment);
+
 					}
-					hssfRow.createCell(0).setCellValue(storehouseNo);
-
-					String materialNo = "";
-					if (de.getMaterialNo() != null) {
-						materialNo = de.getMaterialNo();
-					}
-					hssfRow.createCell(1).setCellValue(materialNo);
-
-					String brand = "";
-					if (de.getBrand() != null) {
-						brand = de.getBrand();
-					}
-					hssfRow.createCell(2).setCellValue(brand);
-
-					String unit = "";
-					if (de.getUnit() != null) {
-						unit = de.getUnit();
-					}
-					hssfRow.createCell(3).setCellValue(unit);
-
-					String quantity = "";
-					if (de.getQuantity() != null) {
-						quantity = de.getQuantity();
-					}
-					hssfRow.createCell(4).setCellValue(quantity);
-
-					String singleWeight = "";
-					if (de.getSingleWeight() != null) {
-						singleWeight = de.getSingleWeight();
-					}
-					hssfRow.createCell(5).setCellValue(singleWeight);
-
-					String totalWeight = "";
-					if (de.getTotalWeight() != null) {
-						totalWeight = de.getTotalWeight();
-					}
-					hssfRow.createCell(6).setCellValue(totalWeight);
-
-					String batchNo = "";
-					if (de.getBatchNo() != null) {
-						batchNo = de.getBatchNo();
-					}
-					hssfRow.createCell(7).setCellValue(batchNo);
-
-					String date = "";
-					if (de.getDate() != null) {
-						date = de.getDate();
-					}
-					hssfRow.createCell(8).setCellValue(date);
-
-					String comment = "";
-					if (de.getComment() != null) {
-						comment = de.getComment();
-					}
-					hssfRow.createCell(9).setCellValue(comment);
 
 				}
-				
 
-			}
-			
 			}
 
 			// 明歆制衣
 			else if (mxInvoiceCacheList != null && !mxInvoiceCacheList.isEmpty()) {
 				int mxInvoiceBeginIndex = 0;
-				for(int i = 0 ;i< mxInvoiceCacheList.size();i++) {
-					
-					 List<MxDeliveryDetails> mxDeliveryDetails = mxInvoiceCacheList.get(i).getDeliveryDetails();
-					
-					mxInvoiceBeginIndex = i*mxDeliveryDetails.size();
-				
-				for (int j = 0; j < mxDeliveryDetails.size(); j++) {
-					hssfRow = hssfSheet.createRow(j+mxInvoiceBeginIndex + 3);
-					MxDeliveryDetails de = mxDeliveryDetails.get(j);
+				for (int i = 0; i < mxInvoiceCacheList.size(); i++) {
 
-					// 第六步，创建单元格，并设置值
-					String storehouseNo = de.getStyleNo();
+					List<MxDeliveryDetails> mxDeliveryDetails = mxInvoiceCacheList.get(i).getDeliveryDetails();
 
-					if (StringUtils.isEmpty(storehouseNo)) {
-						storehouseNo = "-";
+					mxInvoiceBeginIndex = i * mxDeliveryDetails.size();
+
+					for (int j = 0; j < mxDeliveryDetails.size(); j++) {
+						hssfRow = hssfSheet.createRow(j + mxInvoiceBeginIndex + 3);
+						MxDeliveryDetails de = mxDeliveryDetails.get(j);
+
+						// 第六步，创建单元格，并设置值
+						String storehouseNo = de.getStyleNo();
+
+						if (StringUtils.isEmpty(storehouseNo)) {
+							storehouseNo = "-";
+						}
+						hssfRow.createCell(0).setCellValue(storehouseNo);
+
+						String materialNo = "";
+						if (de.getStyle() != null) {
+							materialNo = de.getStyle();
+						}
+						hssfRow.createCell(1).setCellValue(materialNo);
+
+						String brand = "";
+						if (de.getColor() != null) {
+							brand = de.getColor();
+						}
+						hssfRow.createCell(2).setCellValue(brand);
+
+						String unit = "";
+						if (de.getUnit() != null) {
+							unit = de.getUnit();
+						}
+						hssfRow.createCell(3).setCellValue(unit);
+
+						String quantity = "";
+						if (de.getModelS() != null) {
+							quantity = de.getModelS();
+						}
+						hssfRow.createCell(4).setCellValue(quantity);
+
+						String singleWeight = "";
+						if (de.getModelM() != null) {
+							singleWeight = de.getModelM();
+						}
+						hssfRow.createCell(5).setCellValue(singleWeight);
+
+						String totalWeight = "";
+						if (de.getModelL() != null) {
+							totalWeight = de.getModelL();
+						}
+						hssfRow.createCell(6).setCellValue(totalWeight);
+
+						String batchNo = "";
+						if (de.getSubtotal() != null) {
+							batchNo = de.getSubtotal();
+						}
+						hssfRow.createCell(7).setCellValue(batchNo);
+
+						String date = "";
+						if (de.getUnitPrice() != null) {
+							date = de.getUnitPrice();
+						}
+						hssfRow.createCell(8).setCellValue(date);
+
+						String account = "";
+						if (de.getAccount() != null) {
+							account = de.getAccount();
+						}
+						hssfRow.createCell(9).setCellValue(account);
+
+						String comment = "";
+						if (de.getComment() != null) {
+							comment = de.getComment();
+						}
+						hssfRow.createCell(10).setCellValue(comment);
+
 					}
-					hssfRow.createCell(0).setCellValue(storehouseNo);
-
-					String materialNo = "";
-					if (de.getStyle() != null) {
-						materialNo = de.getStyle();
-					}
-					hssfRow.createCell(1).setCellValue(materialNo);
-
-					String brand = "";
-					if (de.getColor() != null) {
-						brand = de.getColor();
-					}
-					hssfRow.createCell(2).setCellValue(brand);
-
-					String unit = "";
-					if (de.getUnit() != null) {
-						unit = de.getUnit();
-					}
-					hssfRow.createCell(3).setCellValue(unit);
-
-					String quantity = "";
-					if (de.getModelS() != null) {
-						quantity = de.getModelS();
-					}
-					hssfRow.createCell(4).setCellValue(quantity);
-
-					String singleWeight = "";
-					if (de.getModelM() != null) {
-						singleWeight = de.getModelM();
-					}
-					hssfRow.createCell(5).setCellValue(singleWeight);
-
-					String totalWeight = "";
-					if (de.getModelL() != null) {
-						totalWeight = de.getModelL();
-					}
-					hssfRow.createCell(6).setCellValue(totalWeight);
-
-					String batchNo = "";
-					if (de.getSubtotal() != null) {
-						batchNo = de.getSubtotal();
-					}
-					hssfRow.createCell(7).setCellValue(batchNo);
-
-					String date = "";
-					if (de.getUnitPrice() != null) {
-						date = de.getUnitPrice();
-					}
-					hssfRow.createCell(8).setCellValue(date);
-
-					String account = "";
-					if (de.getAccount() != null) {
-						account = de.getAccount();
-					}
-					hssfRow.createCell(9).setCellValue(account);
-
-					String comment = "";
-					if (de.getComment() != null) {
-						comment = de.getComment();
-					}
-					hssfRow.createCell(10).setCellValue(comment);
 
 				}
 
-			}
-				
 			}
 
 			else if (ydInvoiceCacheList != null && !ydInvoiceCacheList.isEmpty()) {
-			
-					int ydInvoiceBeginIndex = 0;
-					for(int i = 0 ;i< ydInvoiceCacheList.size();i++) {
-						
-						  List<YdDeliveryDetails> ydDeliveryDetails = ydInvoiceCacheList.get(i).getYdDeliveryDetails();
-						
-						ydInvoiceBeginIndex = i*ydDeliveryDetails.size();
 
-				for (int j = 0; j < ydDeliveryDetails.size(); j++) {
-					hssfRow = hssfSheet.createRow(j+ydInvoiceBeginIndex + 3);
-					YdDeliveryDetails de = ydDeliveryDetails.get(j);
+				int ydInvoiceBeginIndex = 0;
+				for (int i = 0; i < ydInvoiceCacheList.size(); i++) {
 
-					// 第六步，创建单元格，并设置值
-					String storehouseNo = de.getOrderNumber();
+					List<YdDeliveryDetails> ydDeliveryDetails = ydInvoiceCacheList.get(i).getYdDeliveryDetails();
 
-					if (StringUtils.isEmpty(storehouseNo)) {
-						storehouseNo = "-";
+					ydInvoiceBeginIndex = i * ydDeliveryDetails.size();
+
+					for (int j = 0; j < ydDeliveryDetails.size(); j++) {
+						hssfRow = hssfSheet.createRow(j + ydInvoiceBeginIndex + 3);
+						YdDeliveryDetails de = ydDeliveryDetails.get(j);
+
+						// 第六步，创建单元格，并设置值
+						String storehouseNo = de.getOrderNumber();
+
+						if (StringUtils.isEmpty(storehouseNo)) {
+							storehouseNo = "-";
+						}
+						hssfRow.createCell(0).setCellValue(storehouseNo);
+
+						String materialNo = "";
+						if (de.getPartsNumber() != null) {
+							materialNo = de.getPartsNumber();
+						}
+						hssfRow.createCell(1).setCellValue(materialNo);
+
+						String brand = "";
+						if (de.getPartsName() != null) {
+							brand = de.getPartsName();
+						}
+						hssfRow.createCell(2).setCellValue(brand);
+
+						String unit = "";
+						if (de.getVehicleType() != null) {
+							unit = de.getVehicleType();
+						}
+						hssfRow.createCell(3).setCellValue(unit);
+
+						String quantity = "";
+						if (de.getProductionAarea() != null) {
+							quantity = de.getProductionAarea();
+						}
+						hssfRow.createCell(4).setCellValue(quantity);
+
+						String singleWeight = "";
+						if (de.getUnit() != null) {
+							singleWeight = de.getUnit();
+						}
+						hssfRow.createCell(5).setCellValue(singleWeight);
+
+						String totalWeight = "";
+						if (de.getUnitPrice() != null) {
+							totalWeight = de.getUnitPrice();
+						}
+						hssfRow.createCell(6).setCellValue(totalWeight);
+
+						String batchNo = "";
+						if (de.getQuantity() != null) {
+							batchNo = de.getQuantity();
+						}
+						hssfRow.createCell(7).setCellValue(batchNo);
+
+						String date = "";
+						if (de.getAccount() != null) {
+							date = de.getAccount();
+						}
+						hssfRow.createCell(8).setCellValue(date);
+
+						String comment = "";
+						if (de.getComment() != null) {
+							comment = de.getComment();
+						}
+						hssfRow.createCell(9).setCellValue(comment);
+
 					}
-					hssfRow.createCell(0).setCellValue(storehouseNo);
-
-					String materialNo = "";
-					if (de.getPartsNumber() != null) {
-						materialNo = de.getPartsNumber();
-					}
-					hssfRow.createCell(1).setCellValue(materialNo);
-
-					String brand = "";
-					if (de.getPartsName() != null) {
-						brand = de.getPartsName();
-					}
-					hssfRow.createCell(2).setCellValue(brand);
-
-					String unit = "";
-					if (de.getVehicleType() != null) {
-						unit = de.getVehicleType();
-					}
-					hssfRow.createCell(3).setCellValue(unit);
-
-					String quantity = "";
-					if (de.getProductionAarea() != null) {
-						quantity = de.getProductionAarea();
-					}
-					hssfRow.createCell(4).setCellValue(quantity);
-
-					String singleWeight = "";
-					if (de.getUnit() != null) {
-						singleWeight = de.getUnit();
-					}
-					hssfRow.createCell(5).setCellValue(singleWeight);
-
-					String totalWeight = "";
-					if (de.getUnitPrice() != null) {
-						totalWeight = de.getUnitPrice();
-					}
-					hssfRow.createCell(6).setCellValue(totalWeight);
-
-					String batchNo = "";
-					if (de.getQuantity() != null) {
-						batchNo = de.getQuantity();
-					}
-					hssfRow.createCell(7).setCellValue(batchNo);
-
-					String date = "";
-					if (de.getAccount() != null) {
-						date = de.getAccount();
-					}
-					hssfRow.createCell(8).setCellValue(date);
-
-					String comment = "";
-					if (de.getComment() != null) {
-						comment = de.getComment();
-					}
-					hssfRow.createCell(9).setCellValue(comment);
 
 				}
 
-			}
-				
 			}
 
 			// 第七步，将文件输出到客户端浏览器

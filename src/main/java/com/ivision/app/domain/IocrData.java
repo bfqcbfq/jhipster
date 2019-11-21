@@ -5,19 +5,19 @@ import java.util.List;
  * 返回JSON主数据
  * 
  */
-public class Data {
+public class IocrData {
 
-    private List<Ret> ret;
+    private List<IocrRet> ret;
     private String templateSign;
     private String templateName;
     private int scores;
     private boolean isStructured;
     private String logId;
     private int clockwiseAngle;
-    public void setRet(List<Ret> ret) {
+    public void setRet(List<IocrRet> ret) {
          this.ret = ret;
      }
-     public List<Ret> getRet() {
+     public List<IocrRet> getRet() {
          return ret;
      }
 

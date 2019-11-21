@@ -4,12 +4,18 @@
 package com.ivision.app.web.rest;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.FileAlreadyExistsException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -21,12 +27,18 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -45,7 +57,7 @@ import com.ivision.app.cache.Cache;
 import com.ivision.app.domain.BaseResource;
 import com.ivision.app.domain.DeliverMessage;
 import com.ivision.app.domain.IvisionSurveyBean;
-import com.ivision.app.domain.WordsResult;
+import com.ivision.app.domain.GeneralOcrWordsResult;
 
 /**
  * 调用百度通用文字识别API，实现文字识别
@@ -184,7 +196,7 @@ public class GeneralOcrResource {
 
 			// 调用百度API接口
 			IvisionSurveyBean ivisionSurvey = (IvisionSurveyBean) Cache.get("ivisionSurvey");
-			List<WordsResult> resultByIocrList = ivisionSurvey.getWordsResult();
+			List<GeneralOcrWordsResult> resultByIocrList = ivisionSurvey.getWordsResult();
 
 			String title = CommonConstant.OCR_GENERAL_SURVEY_TITLE;
 			// 获取表头1
@@ -257,128 +269,168 @@ public class GeneralOcrResource {
 	 * @throws Exception
 	 */
 	private void exportFencers(String[] head, String[] headnum, String[] head1, String[] headnum1, String[] titles1,
-			String[] titles2, ServletOutputStream out, DeliverMessage deliverMessage, List<WordsResult> deliveryDetails)
+			String[] titles2, ServletOutputStream out, DeliverMessage deliverMessage, List<GeneralOcrWordsResult> deliveryDetails)
 			throws Exception {
-		try {
-			HSSFWorkbook workbook = new HSSFWorkbook();
+		// 读取源文件
+        FileInputStream fis = new FileInputStream("G:/test.xlsx");
+        XSSFWorkbook workBook = new XSSFWorkbook(fis);
 
-			// 第二步，在webbook中添加一个sheet,对应Excel文件中的sheet
-			HSSFSheet hssfSheet = workbook.createSheet("アンケット結果まとめ");
+        // 进行模板的克隆(接下来的操作都是针对克隆后的sheet)
+        XSSFSheet sheet = workBook.cloneSheet(0);
+        workBook.setSheetName(0, "sheet-0"); // 给sheet命名
 
-			// 第三步，在sheet中添加表头第0行,老版本poi对Excel的行数列数有限制short
-			HSSFRow hssfRow = hssfSheet.createRow(0);
-			HSSFRow hssfRow1 = hssfSheet.createRow(1);
-			HSSFRow hssfRow2 = hssfSheet.createRow(2);
-			// 第四步，创建单元格，并设置值表头 设置表头居中
-			
-			
-			
-			HSSFCell hssfCell = null;// 第一行
-			//HSSFCell hssfCell1 = null;// 第二行
-			HSSFCell hssfCell2 = null;// 第三行
+        // 读取指定cell的内容
+        XSSFCell nameCell = sheet.getRow(1).getCell(0);
+        XSSFCell nameCell2 = sheet.getRow(1).getCell(1);
+        System.out.println(nameCell.getStringCellValue());
+        System.out.println(nameCell2.getStringCellValue());
 
-			// 第一行表头
-			for (int i = 0; i < head.length; i++) {
-				HSSFCellStyle hssfCellStyle = workbook.createCellStyle();
-				hssfCell = hssfRow.createCell(i);// 列索引从0开始
-				hssfCell.setCellValue(head[i]);// 列名1
-				 HSSFFont font = workbook.createFont();
-					font.setFontName("meiryo UI");
-					font.setFontHeightInPoints((short)12);
-					font.setBold(true);
-					hssfCellStyle.setAlignment(HorizontalAlignment.CENTER);
-					hssfCellStyle.setFont(font);
-					hssfCell.setCellStyle(hssfCellStyle);// 列居中显示
-				 
-				
-			}
+        // 替换单元格内容(注意获取的cell的下标是合并之前的下标)
+        replaceCellValue(sheet.getRow(1).getCell(2), "xxxxx时间");
+        replaceCellValue(sheet.getRow(2).getCell(2), "xxxxx人");
 
-			// 动态合并单元格
-			for (int i = 0; i < headnum.length; i++) {
+        // 动态插入数据-增加行
+        List<Map<String, Object>> datas = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("name", "name" + i);
+            data.put("age", "age" + i);
+            data.put("sex", "sex" + i);
+            datas.add(data);
+        }
+        // 插入行
+        sheet.shiftRows(4, 4 + datas.size(), datas.size(), true, false);// 第1个参数是指要开始插入的行，第2个参数是结尾行数,第三个参数表示动态添加的行数
+        for (int i = 0; i < datas.size(); i++) {
+            XSSFRow creRow = sheet.createRow(4 + i);
+            creRow.setRowStyle(sheet.getRow(4).getRowStyle());
+            creRow.createCell(0).setCellValue(datas.get(i).get("name").toString());
+            creRow.createCell(1).setCellValue(datas.get(i).get("age").toString());
+            creRow.createCell(2).setCellValue(datas.get(i).get("sex").toString());
+        }
 
-				hssfSheet.autoSizeColumn(i, true);
-				String[] temp = headnum[i].split(",");
-				Integer startrow = Integer.parseInt(temp[0]);
-				Integer overrow = Integer.parseInt(temp[1]);
-				Integer startcol = Integer.parseInt(temp[2]);
-				Integer overcol = Integer.parseInt(temp[3]);
-				hssfSheet.addMergedRegion(new CellRangeAddress(startrow, overrow, startcol, overcol));
-			}
-			  // 第二行表头 
-//			for (int i = 0; i < titles1.length; i++) { 
-//				
-//				hssfCell1 = hssfRow1.createCell(i);
-//				// 列索引从0开始
-//				hssfCell1.setCellValue(titles1[i]);
-//				// 列名1
-//				hssfCell1.setCellStyle(hssfCellStyle);// 列居中显示 
-//			}
-			 
-//			for (int i = 0; i < headnum1.length; i++) {
-//
-//				hssfSheet.autoSizeColumn(i, true);
-//				String[] temp = headnum1[i].split(",");
-//				Integer startrow = Integer.parseInt(temp[0]);
-//				Integer overrow = Integer.parseInt(temp[1]);
-//				Integer startcol = Integer.parseInt(temp[2]);
-//				Integer overcol = Integer.parseInt(temp[3]);
-//				hssfSheet.addMergedRegion(new CellRangeAddress(startrow, overrow, startcol, overcol));
-//			}
-			// 第三行表头 不需要合并单元格
+        // 输出为一个新的Excel，也就是动态修改完之后的excel
+        String fileName = "test" + System.currentTimeMillis() + ".xlsx";
+        OutputStream out1 = new FileOutputStream("G:" + "/" + fileName);
+        workBook.removeSheetAt(0); // 移除workbook中的模板sheet
+        workBook.write(out1);
 
-			if (titles2 != null && !(titles2.length < 0)) {
-				HSSFCellStyle hssfCellStyle1 = workbook.createCellStyle();
-				for (int i = 0; i < titles2.length; i++) {
-					
-					hssfCell2 = hssfRow2.createCell(i);// 列索引从0开始
-					hssfCell2.setCellValue(titles2[i]);// 列名1
-					
-					HSSFFont font1 = workbook.createFont();
-					font1.setFontName("meiryo UI");
-					hssfCellStyle1.setAlignment(HorizontalAlignment.CENTER);
-					hssfCellStyle1.setFont(font1);
-					hssfCellStyle1.setFillForegroundColor(IndexedColors.BLUE_GREY.getIndex());//设置背景色蓝
-					hssfCellStyle1.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-					 hssfCell2.setCellStyle(hssfCellStyle1);// 列居中显示
-
-				}
-			}
-
-			// 第五步，写入实体数据
-
-			if (deliveryDetails != null && !deliveryDetails.isEmpty()) {
-
-				for (int i = 0; i < deliveryDetails.size(); i++) {
-					hssfRow = hssfSheet.createRow(i + 3);
-					WordsResult de = deliveryDetails.get(i);
-
-					// 第六步，创建单元格，并设置值
-					String storehouseNo = de.getWords();
-
-					if (StringUtils.isEmpty(storehouseNo)) {
-						storehouseNo = "-";
-					}
-					hssfRow.createCell(0).setCellValue(storehouseNo);
-
-				}
-
-			}
-
-			// 第七步，将文件输出到客户端浏览器
-			try {
-				workbook.write(out);
-				//workbook.close();
-				out.flush();
-				out.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new Exception("导出信息失败！");
-		}
+        fis.close();
+        out1.flush();
+        out1.close();
 
 	}
+	
+	 /**
+    *
+    *(2003 xls后缀 导出)
+    * @param TODO
+    * @return void 返回类型
+    * @author xsw
+    * @2016-12-7上午10:44:00
+    */
+   public  void createXLS(String importFilePath,String exportFilePath) throws IOException{
+       try {
+           //excel模板路径
+           File fi=new File(importFilePath);
+           POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream(fi));
+           //读取excel模板
+           HSSFWorkbook wb = new HSSFWorkbook(fs);
+           //读取了模板内所有sheet内容
+           HSSFSheet sheet = wb.getSheetAt(0);
+
+           //如果这行没有了，整个公式都不会有自动计算的效果的
+           sheet.setForceFormulaRecalculation(true);
+
+
+           //在相应的单元格进行赋值
+           HSSFCell cell = sheet.getRow(11).getCell(6);//第11行 第6列
+           cell.setCellValue(1);
+           HSSFCell cell2 = sheet.getRow(11).getCell(7);
+           cell2.setCellValue(2);
+           sheet.getRow(12).getCell(6).setCellValue(12);
+           sheet.getRow(12).getCell(7).setCellValue(12);
+           //修改模板内容导出新模板
+           FileOutputStream out = new FileOutputStream(exportFilePath);
+           wb.write(out);
+           out.close();
+       }catch (Exception e) {
+           System.out.println("文件读取错误!");
+       }
+
+   }
+
+   /**
+    *
+    *(2007 xlsx后缀 导出)
+    * @param
+    * @return void 返回类型
+    * @author xsw
+    * @2016-12-7上午10:44:30
+    */
+   public  void createXLSX(String importFilePath,String exportFilePath) throws IOException{
+       //excel模板路径
+       File fi=new File(importFilePath);
+       InputStream in = new FileInputStream(fi);
+       //读取excel模板
+       XSSFWorkbook wb = new XSSFWorkbook(in);
+       //读取了模板内所有sheet内容
+       XSSFSheet sheet = wb.getSheetAt(0);
+
+       //如果这行没有了，整个公式都不会有自动计算的效果的
+       sheet.setForceFormulaRecalculation(true);
+
+
+       //在相应的单元格进行赋值
+       XSSFCell cell = sheet.getRow(11).getCell(6);//第12行 第7列
+       cell.setCellValue(1);
+       XSSFCell cell2 = sheet.getRow(11).getCell(7);
+       cell2.setCellValue(2);
+       sheet.getRow(12).getCell(6).setCellValue(3);
+       sheet.getRow(12).getCell(7).setCellValue(4);
+       //修改模板内容导出新模板
+       FileOutputStream out = new FileOutputStream(exportFilePath);
+       wb.write(out);
+       out.close();
+   }
+
+   /**
+    * @param @param  file
+    * @param @return
+    * @param @throws IOException
+    * @return List<String> (excel每行拼接成List中的String)
+    * @throws
+    * @Title: readExcel
+    * @Description: TODO(对外提供读取excel 的方法)
+    */
+   public  synchronized void readExcel(String importFilePath,String exportFilePath) throws IOException {
+       File file=new File(importFilePath);
+       String fileName = file.getName();
+       //List<String> list = new ArrayList<String>();
+       //根据其名称获取后缀
+       String extension = fileName.lastIndexOf(".") == -1 ? "" : fileName
+               .substring(fileName.lastIndexOf(".") + 1);
+       if ("xls".equals(extension)) {
+          // read2003Excel(new FileInputStream(file),exportFilePath);
+       } else if ("xlsx".equals(extension) || "xlsm".equals(extension)) {
+          // read2007Excel(new FileInputStream(file),exportFilePath);
+       } else if ("tmp".equals(extension)) {
+          // read2007Excel(new FileInputStream(file),exportFilePath);
+       } else {
+           throw new IOException("不支持的文件类型");
+       }
+   }
+   
+   /**
+    * 替换单元格的内容，单元格的获取位置是合并单元格之前的位置，也就是下标都是合并之前的下表
+    * 
+    * @param cell
+    *            单元格
+    * @param value
+    *            需要设置的值
+    */
+   public static void replaceCellValue(Cell cell, Object value) {
+       String val = value != null ? String.valueOf(value) : "";
+       cell.setCellValue(val);
+   }
 
 }

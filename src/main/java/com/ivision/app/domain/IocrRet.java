@@ -3,25 +3,25 @@ package com.ivision.app.domain;
 /**
  * 上传图片识别的文字内容
  */
-public class Ret {
+public class IocrRet {
 
-    private Location location;
+    private LocationByOcr location;
     private String word_name;
     private String word;
     private Probability probability;
-	public Ret() {
+	public IocrRet() {
 	}
-	public Ret(Location location, String word_name, String word, Probability probability) {
+	public IocrRet(LocationByOcr location, String word_name, String word, Probability probability) {
 		super();
 		this.location = location;
 		this.word_name = word_name;
 		this.word = word;
 		this.probability = probability;
 	}
-	public Location getLocation() {
+	public LocationByOcr getLocation() {
 		return location;
 	}
-	public void setLocation(Location location) {
+	public void setLocation(LocationByOcr location) {
 		this.location = location;
 	}
 	public String getWord_name() {

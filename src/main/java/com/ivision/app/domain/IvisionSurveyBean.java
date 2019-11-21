@@ -13,10 +13,10 @@ import java.util.List;
 public class IvisionSurveyBean extends BaseResource {
 
     private long logId;
-    private List<WordsResult> wordsResult;
+    private List<GeneralOcrWordsResult> wordsResult;
     private int wordsResult_num;
     private int direction;
-	public IvisionSurveyBean(long logId, List<WordsResult> wordsResult, int wordsResult_num, int direction) {
+	public IvisionSurveyBean(long logId, List<GeneralOcrWordsResult> wordsResult, int wordsResult_num, int direction) {
 		super();
 		this.logId = logId;
 		this.wordsResult = wordsResult;
@@ -33,10 +33,10 @@ public class IvisionSurveyBean extends BaseResource {
 	public void setLogId(long logId) {
 		this.logId = logId;
 	}
-	public List<WordsResult> getWordsResult() {
+	public List<GeneralOcrWordsResult> getWordsResult() {
 		return wordsResult;
 	}
-	public void setWordsResult(List<WordsResult> wordsResult) {
+	public void setWordsResult(List<GeneralOcrWordsResult> wordsResult) {
 		this.wordsResult = wordsResult;
 	}
 	public int getWordsResult_num() {

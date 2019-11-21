@@ -8,7 +8,7 @@ import java.util.List;
 public class GeneralOcrBean {
 
     private long logId;
-    private List<WordsResult> wordsResult;
+    private List<GeneralOcrWordsResult> wordsResult;
     private int wordsResultNum;
 	public long getLogId() {
 		return logId;
@@ -16,10 +16,10 @@ public class GeneralOcrBean {
 	public void setLogId(long logId) {
 		this.logId = logId;
 	}
-	public List<WordsResult> getWordsResult() {
+	public List<GeneralOcrWordsResult> getWordsResult() {
 		return wordsResult;
 	}
-	public void setWordsResult(List<WordsResult> wordsResult) {
+	public void setWordsResult(List<GeneralOcrWordsResult> wordsResult) {
 		this.wordsResult = wordsResult;
 	}
 	public int getWordsResultNum() {

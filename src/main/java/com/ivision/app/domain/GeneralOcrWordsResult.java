@@ -9,11 +9,11 @@ package com.ivision.app.domain;
  * @author bejson.com (i@bejson.com)
  * @website http://www.bejson.com/java2pojo/
  */
-public class WordsResult {
+public class GeneralOcrWordsResult {
 
     private Probability probability;
     private String words;
-    private Location location;
+    private LocationByOcr location;
     public void setProbability(Probability probability) {
          this.probability = probability;
      }
@@ -28,10 +28,10 @@ public class WordsResult {
          return words;
      }
 
-    public void setLocation(Location location) {
+    public void setLocation(LocationByOcr location) {
          this.location = location;
      }
-     public Location getLocation() {
+     public LocationByOcr getLocation() {
          return location;
      }
 

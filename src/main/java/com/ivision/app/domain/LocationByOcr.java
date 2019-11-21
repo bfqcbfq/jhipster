@@ -9,7 +9,7 @@ package com.ivision.app.domain;
  * @author bejson.com (i@bejson.com)
  * @website http://www.bejson.com/java2pojo/
  */
-public class Location {
+public class LocationByOcr {
 
     private int top;
     private int left;

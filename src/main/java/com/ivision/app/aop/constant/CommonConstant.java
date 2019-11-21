@@ -61,6 +61,7 @@ public class CommonConstant {
 	 * 易达软件出货单:type=3
 	 */
 	public static final String OCR_IOCR_YIDA_TYPE = "3";
+	
 	/**
 	 * 
 	 * 文件·类型
