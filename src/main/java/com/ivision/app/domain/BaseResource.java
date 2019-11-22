@@ -8,13 +8,14 @@ public class BaseResource {
 	private String filepath;
 	private String filpathType;
 	private String templateType;
+	private String type;
 
 	public BaseResource() {
 		super();
 	}
 
 	public BaseResource(String errorMessage, String errorCode, String warning, String filepath, String filpathType,
-			String templateType) {
+			String templateType, String type) {
 		super();
 		this.errorMessage = errorMessage;
 		this.errorCode = errorCode;
@@ -22,6 +23,7 @@ public class BaseResource {
 		this.filepath = filepath;
 		this.filpathType = filpathType;
 		this.templateType = templateType;
+		this.type = type;
 	}
 
 	public String getErrorMessage() {
@@ -72,10 +74,12 @@ public class BaseResource {
 		this.templateType = templateType;
 	}
 
-	@Override
-	public String toString() {
-		return "BaseResource [errorMessage=" + errorMessage + ", errorCode=" + errorCode + ", warning=" + warning
-				+ ", filepath=" + filepath + ", filpathType=" + filpathType + ", templateType=" + templateType + "]";
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	@Override
@@ -87,6 +91,7 @@ public class BaseResource {
 		result = prime * result + ((filepath == null) ? 0 : filepath.hashCode());
 		result = prime * result + ((filpathType == null) ? 0 : filpathType.hashCode());
 		result = prime * result + ((templateType == null) ? 0 : templateType.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		result = prime * result + ((warning == null) ? 0 : warning.hashCode());
 		return result;
 	}
@@ -125,6 +130,11 @@ public class BaseResource {
 				return false;
 		} else if (!templateType.equals(other.templateType))
 			return false;
+		if (type == null) {
+			if (other.type != null)
+				return false;
+		} else if (!type.equals(other.type))
+			return false;
 		if (warning == null) {
 			if (other.warning != null)
 				return false;
@@ -132,6 +142,16 @@ public class BaseResource {
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "BaseResource [errorMessage=" + errorMessage + ", errorCode=" + errorCode + ", warning=" + warning
+				+ ", filepath=" + filepath + ", filpathType=" + filpathType + ", templateType=" + templateType
+				+ ", type=" + type + "]";
+	}
+	
+	
+
 	
 	
 

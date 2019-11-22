@@ -209,7 +209,7 @@ public class IocrResource {
 							
 							mitsubishiSurvey = jsonToMitsubishiSurvey(jsonObject);
 							mitsubishiSurvey.setTemplateType("三菱重工调查问卷");
-							mitsubishiSurvey.setFilpathType(CommonConstant.OCR_IOCR_SANLING_TYPE);
+							mitsubishiSurvey.setType(CommonConstant.OCR_IOCR_SANLING_TYPE);
 							
 							Cache.put("mitsubishiSurvey", mitsubishiSurvey, Cache.CACHE_HOLD_TIME_24H);
 							mitsubishiSurveyList.add(mitsubishiSurvey);
@@ -272,6 +272,18 @@ public class IocrResource {
 			}
 
 			return ResponseEntity.ok(ydInvoice);
+		}
+		
+		if(filepathType.equals("4")) {
+			
+			MitsubishiSurvey mitsubishiSurvey = (MitsubishiSurvey) Cache.get("mitsubishiSurvey");
+			
+			if(mitsubishiSurvey == null) {
+				
+				return ResponseEntity.ok(mitsubishiSurvey);
+			}
+			
+			return ResponseEntity.ok(mitsubishiSurvey);
 		}
 
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
@@ -1260,15 +1272,15 @@ public class IocrResource {
 			break;
 			
 			case 1:
-			mitsubishiSurvey.setEmail(word);
+			mitsubishiSurvey.setMitsubishiEmail(word);
 			break;
 			
 			case 2:
-				mitsubishiSurvey.setCompanyName(word);
+				mitsubishiSurvey.setMitsubishiCompanyName(word);
 				break;
 				
 			case 3:
-				mitsubishiSurvey.setTelphone(word);
+				mitsubishiSurvey.setMitsubishiTelphone(word);
 				break;
 				
 			case 4:
@@ -1308,11 +1320,11 @@ public class IocrResource {
 				break;
 				
 			case 13:
-				mitsubishiSurvey.setName(word);
+				mitsubishiSurvey.setMitsubishiName(word);
 				break;
 				
 			case 14:
-				mitsubishiSurvey.setComment(word);
+				mitsubishiSurvey.setMitsubishiComment(word);
 				break;
 			}
 			}

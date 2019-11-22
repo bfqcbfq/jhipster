@@ -2,10 +2,10 @@ package com.ivision.app.domain;
 
 public class MitsubishiSurvey extends BaseResource {
 	
-	private String name;
-	private String companyName;
-	private String telphone;
-	private String email;
+	private String mitsubishiName;
+	private String mitsubishiCompanyName;
+	private String mitsubishiTelphone;
+	private String mitsubishiEmail;
 	private String questionOne;
 	private String questionTwo;
 	private String questionThree;
@@ -16,19 +16,19 @@ public class MitsubishiSurvey extends BaseResource {
 	private String questionEight;
 	private String questionNine;
 	private String questionTen;
-	private String comment;
+	private String mitsubishiComment;
 	public MitsubishiSurvey() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
-	public MitsubishiSurvey(String name, String companyName, String telphone, String email, String questionOne,
-			String questionTwo, String questionThree, String questionFour, String questionFive, String questionSix,
-			String questionSeven, String questionEight, String questionNine, String questionTen, String comment) {
+	public MitsubishiSurvey(String mitsubishiName, String mitsubishiCompanyName, String mitsubishiTelphone,
+			String mitsubishiEmail, String questionOne, String questionTwo, String questionThree, String questionFour,
+			String questionFive, String questionSix, String questionSeven, String questionEight, String questionNine,
+			String questionTen, String mitsubishiComment) {
 		super();
-		this.name = name;
-		this.companyName = companyName;
-		this.telphone = telphone;
-		this.email = email;
+		this.mitsubishiName = mitsubishiName;
+		this.mitsubishiCompanyName = mitsubishiCompanyName;
+		this.mitsubishiTelphone = mitsubishiTelphone;
+		this.mitsubishiEmail = mitsubishiEmail;
 		this.questionOne = questionOne;
 		this.questionTwo = questionTwo;
 		this.questionThree = questionThree;
@@ -39,31 +39,31 @@ public class MitsubishiSurvey extends BaseResource {
 		this.questionEight = questionEight;
 		this.questionNine = questionNine;
 		this.questionTen = questionTen;
-		this.comment = comment;
+		this.mitsubishiComment = mitsubishiComment;
 	}
-	public String getName() {
-		return name;
+	public String getMitsubishiName() {
+		return mitsubishiName;
 	}
-	public void setName(String name) {
-		this.name = name;
+	public void setMitsubishiName(String mitsubishiName) {
+		this.mitsubishiName = mitsubishiName;
 	}
-	public String getCompanyName() {
-		return companyName;
+	public String getMitsubishiCompanyName() {
+		return mitsubishiCompanyName;
 	}
-	public void setCompanyName(String companyName) {
-		this.companyName = companyName;
+	public void setMitsubishiCompanyName(String mitsubishiCompanyName) {
+		this.mitsubishiCompanyName = mitsubishiCompanyName;
 	}
-	public String getTelphone() {
-		return telphone;
+	public String getMitsubishiTelphone() {
+		return mitsubishiTelphone;
 	}
-	public void setTelphone(String telphone) {
-		this.telphone = telphone;
+	public void setMitsubishiTelphone(String mitsubishiTelphone) {
+		this.mitsubishiTelphone = mitsubishiTelphone;
 	}
-	public String getEmail() {
-		return email;
+	public String getMitsubishiEmail() {
+		return mitsubishiEmail;
 	}
-	public void setEmail(String email) {
-		this.email = email;
+	public void setMitsubishiEmail(String mitsubishiEmail) {
+		this.mitsubishiEmail = mitsubishiEmail;
 	}
 	public String getQuestionOne() {
 		return questionOne;
@@ -125,28 +125,30 @@ public class MitsubishiSurvey extends BaseResource {
 	public void setQuestionTen(String questionTen) {
 		this.questionTen = questionTen;
 	}
-	public String getComment() {
-		return comment;
+	public String getMitsubishiComment() {
+		return mitsubishiComment;
 	}
-	public void setComment(String comment) {
-		this.comment = comment;
+	public void setMitsubishiComment(String mitsubishiComment) {
+		this.mitsubishiComment = mitsubishiComment;
 	}
 	@Override
 	public String toString() {
-		return "MitsubishiSurvey [name=" + name + ", companyName=" + companyName + ", telphone=" + telphone + ", email="
-				+ email + ", questionOne=" + questionOne + ", questionTwo=" + questionTwo + ", questionThree="
-				+ questionThree + ", questionFour=" + questionFour + ", questionFive=" + questionFive + ", questionSix="
-				+ questionSix + ", questionSeven=" + questionSeven + ", questionEight=" + questionEight
-				+ ", questionNine=" + questionNine + ", questionTen=" + questionTen + ", comment=" + comment + "]";
+		return "MitsubishiSurvey [mitsubishiName=" + mitsubishiName + ", mitsubishiCompanyName=" + mitsubishiCompanyName
+				+ ", mitsubishiTelphone=" + mitsubishiTelphone + ", mitsubishiEmail=" + mitsubishiEmail
+				+ ", questionOne=" + questionOne + ", questionTwo=" + questionTwo + ", questionThree=" + questionThree
+				+ ", questionFour=" + questionFour + ", questionFive=" + questionFive + ", questionSix=" + questionSix
+				+ ", questionSeven=" + questionSeven + ", questionEight=" + questionEight + ", questionNine="
+				+ questionNine + ", questionTen=" + questionTen + ", mitsubishiComment=" + mitsubishiComment + "]";
 	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((comment == null) ? 0 : comment.hashCode());
-		result = prime * result + ((companyName == null) ? 0 : companyName.hashCode());
-		result = prime * result + ((email == null) ? 0 : email.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		int result = super.hashCode();
+		result = prime * result + ((mitsubishiComment == null) ? 0 : mitsubishiComment.hashCode());
+		result = prime * result + ((mitsubishiCompanyName == null) ? 0 : mitsubishiCompanyName.hashCode());
+		result = prime * result + ((mitsubishiEmail == null) ? 0 : mitsubishiEmail.hashCode());
+		result = prime * result + ((mitsubishiName == null) ? 0 : mitsubishiName.hashCode());
+		result = prime * result + ((mitsubishiTelphone == null) ? 0 : mitsubishiTelphone.hashCode());
 		result = prime * result + ((questionEight == null) ? 0 : questionEight.hashCode());
 		result = prime * result + ((questionFive == null) ? 0 : questionFive.hashCode());
 		result = prime * result + ((questionFour == null) ? 0 : questionFour.hashCode());
@@ -157,37 +159,41 @@ public class MitsubishiSurvey extends BaseResource {
 		result = prime * result + ((questionTen == null) ? 0 : questionTen.hashCode());
 		result = prime * result + ((questionThree == null) ? 0 : questionThree.hashCode());
 		result = prime * result + ((questionTwo == null) ? 0 : questionTwo.hashCode());
-		result = prime * result + ((telphone == null) ? 0 : telphone.hashCode());
 		return result;
 	}
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
+		if (!super.equals(obj))
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
 		MitsubishiSurvey other = (MitsubishiSurvey) obj;
-		if (comment == null) {
-			if (other.comment != null)
+		if (mitsubishiComment == null) {
+			if (other.mitsubishiComment != null)
 				return false;
-		} else if (!comment.equals(other.comment))
+		} else if (!mitsubishiComment.equals(other.mitsubishiComment))
 			return false;
-		if (companyName == null) {
-			if (other.companyName != null)
+		if (mitsubishiCompanyName == null) {
+			if (other.mitsubishiCompanyName != null)
 				return false;
-		} else if (!companyName.equals(other.companyName))
+		} else if (!mitsubishiCompanyName.equals(other.mitsubishiCompanyName))
 			return false;
-		if (email == null) {
-			if (other.email != null)
+		if (mitsubishiEmail == null) {
+			if (other.mitsubishiEmail != null)
 				return false;
-		} else if (!email.equals(other.email))
+		} else if (!mitsubishiEmail.equals(other.mitsubishiEmail))
 			return false;
-		if (name == null) {
-			if (other.name != null)
+		if (mitsubishiName == null) {
+			if (other.mitsubishiName != null)
 				return false;
-		} else if (!name.equals(other.name))
+		} else if (!mitsubishiName.equals(other.mitsubishiName))
+			return false;
+		if (mitsubishiTelphone == null) {
+			if (other.mitsubishiTelphone != null)
+				return false;
+		} else if (!mitsubishiTelphone.equals(other.mitsubishiTelphone))
 			return false;
 		if (questionEight == null) {
 			if (other.questionEight != null)
@@ -239,23 +245,8 @@ public class MitsubishiSurvey extends BaseResource {
 				return false;
 		} else if (!questionTwo.equals(other.questionTwo))
 			return false;
-		if (telphone == null) {
-			if (other.telphone != null)
-				return false;
-		} else if (!telphone.equals(other.telphone))
-			return false;
 		return true;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 
 }
