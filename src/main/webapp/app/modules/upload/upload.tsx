@@ -7,7 +7,6 @@ import './typethreedetail.css';
 import './loading.css';
 
 import axios from 'axios';
-import ReactDOM from 'react-dom';
   function guid() {
     function s4() {
       return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
@@ -54,6 +53,7 @@ import ReactDOM from 'react-dom';
     }];
     displayTwo: any;
     displayThree: any;
+    displayFour: any;
     adress: any;
     companyPhone: any;
     csahier: any;
@@ -100,6 +100,21 @@ import ReactDOM from 'react-dom';
        account: any;
        comment: any;
     }];
+    mitsubishiName: any;
+    mitsubishiCompanyName: any;
+    mitsubishiTelphone: any;
+    mitsubishiEmail: any;
+      questionOne: any;
+      questionTwo: any;
+      questionThree: any;
+      questionFour: any;
+      questionFive: any;
+      questionSix: any;
+      questionSeven: any;
+      questionEight: any;
+      questionNine: any;
+      questionTen: any;
+      mitsubishiComment: any;
     loading: any;
     name: any[];
     namedisplay: any;
@@ -142,6 +157,7 @@ import ReactDOM from 'react-dom';
       }],
       displayTwo: any,
       displayThree: any,
+      displayFour: any,
       adress: any,
       companyPhone: any,
       csahier: any,
@@ -188,6 +204,21 @@ import ReactDOM from 'react-dom';
         account: any,
         comment: any
      }],
+     mitsubishiName: any,
+     mitsubishiCompanyName: any,
+     mitsubishiTelphone: any,
+     mitsubishiEmail: any,
+      questionOne: any,
+      questionTwo: any,
+      questionThree: any,
+      questionFour: any,
+      questionFive: any,
+      questionSix: any,
+      questionSeven: any,
+      questionEight: any,
+      questionNine: any,
+      questionTen: any,
+      mitsubishiComment: any,
      loading: any,
      name: [],
      namedisplay: 'none',
@@ -252,6 +283,7 @@ import ReactDOM from 'react-dom';
         }],
         displayTwo: 'none',
         displayThree: 'none',
+        displayFour: 'none',
         adress: any,
         companyPhone: any,
         csahier: any,
@@ -298,6 +330,21 @@ import ReactDOM from 'react-dom';
           account: any,
           comment: any
        }],
+        mitsubishiName: any,
+        mitsubishiCompanyName: any,
+        mitsubishiTelphone: any,
+        mitsubishiEmail: any,
+        questionOne: any,
+        questionTwo: any,
+        questionThree: any,
+        questionFour: any,
+        questionFive: any,
+        questionSix: any,
+        questionSeven: any,
+        questionEight: any,
+        questionNine: any,
+        questionTen: any,
+        mitsubishiComment: any,
        loading: 'none',
        name: [],
        namedisplay: 'none',
@@ -717,6 +764,39 @@ import ReactDOM from 'react-dom';
               deliveryNo: detaildeliveryNo,
               ydDeliveryDetails: ydDeliveryDetailsArr
             });
+          } else if (type === '4') {
+            const mitsubishiNames = response.data.mitsubishiName;
+            const mitsubishiCompanyNames = response.data.mitsubishiCompanyName;
+            const mitsubishiTelphones = response.data.mitsubishiTelphone;
+            const mitsubishiEmails = response.data.mitsubishiEmail;
+            const questionOnes = response.data.questionOne;
+            const questionTwos = response.data.questionTwo;
+            const questionThrees = response.data.questionThree;
+            const questionFours = response.data.questionFour;
+            const questionFives = response.data.questionFive;
+            const questionSixs = response.data.questionSix;
+            const questionSevens = response.data.questionSeven;
+            const questionEights = response.data.questionEight;
+            const questionNines = response.data.questionNine;
+            const questionTens = response.data.questionTen;
+            const mitsubishiComments = response.data.mitsubishiComment;
+            this.setState({
+              displayFour: 'block',
+              mitsubishiName: mitsubishiNames,
+              mitsubishiCompanyName: mitsubishiCompanyNames,
+              mitsubishiTelphone: mitsubishiTelphones,
+              mitsubishiEmail: mitsubishiEmails,
+              questionOne: questionOnes,
+              questionTwo: questionTwos,
+              questionThree: questionThrees,
+              questionFour: questionFours,
+              questionFive: questionFives,
+              questionSix: questionSixs,
+              questionSeven: questionSevens,
+              questionEight: questionEights,
+              questionNine: questionNines,
+              mitsubishiComment: mitsubishiComments
+            });
           }
 
       })
@@ -727,7 +807,7 @@ import ReactDOM from 'react-dom';
     }
     //  详情关闭
     clockClick(event: any) {
-      this.setState({ display: 'none', displayTwo: 'none', displayThree: 'none' });
+      this.setState({ display: 'none', displayTwo: 'none', displayThree: 'none', displayFour: 'none' });
     }
     // 显示错误提示
     showError(event: any) {
@@ -904,6 +984,78 @@ import ReactDOM from 'react-dom';
            </div>
            </div>
       </div>
+      { /* 模板2 */}
+    <div className="popLayer" style = {{ display: this.state.displayTwo }}>
+      <span className="close" onClick={this.clockClick}>关闭</span>
+      <div className="popBox">
+        <div className="title">{this.state.title}</div>
+      <div><span className="sellorder">出货单</span><span className="page">页码: 1/1</span></div>
+        <div className="leftcontent">
+         <ul>
+           <li>客户代码:{this.state.businessCode}</li>
+         <li>地址:{this.state.address}</li>
+         </ul>
+      </div>
+      <div className="rightcontent">
+        <ul>
+          <li>出货单号:{this.state.deliveryNo}</li>
+          <li>出货日期:{this.state.deliveryDate}</li>
+        </ul>
+      </div>
+    <div className="firstdiv">
+      <table>
+          <thead>
+            <tr>
+              <th>款号</th>
+              <th>款式</th>
+              <th>颜色</th>
+              <th>单位</th>
+              <th>S</th>
+              <th>M</th>
+              <th>L</th>
+              <th>小计</th>
+              <th>单价</th>
+              <th>金额</th>
+              <th>备注</th>
+            </tr>
+          </thead>
+          <tbody>
+              {
+                       // tslint:disable-next-line: ter-arrow-body-style
+                       this.state.MxDeliveryDetails.map((details, index) => {
+                           return(
+                            // tslint:disable-next-line: jsx-key
+                            <tr key={index}>
+                                  <td>{details.styleNo}</td>
+                                  <td>{details.style}</td>
+                                  <td>{details.color}</td>
+                                  <td>{details.unit}</td>
+                                  <td>{details.modelS}</td>
+                                  <td>{details.modelM}</td>
+                                  <td>{details.modelL}</td>
+                                  <td>{details.subtotal}</td>
+                                  <td>{details.unitPrice}</td>
+                                  <td>{details.account}</td>
+                                  <td>{details.comment}</td>
+                          </tr>
+                           );
+                       })
+                     }
+          </tbody>
+        </table>
+      <div className="bottomcontent">
+        <span className="totalnum">合计数量:{this.state.totalQuantity}</span>
+        <span className="totalmoney">合计金额:{this.state.totalAmount}</span>
+      </div>
+      <div>收到货后,请立即验货,货物如有问题,请于一星期内通知,逾期本公司恕不负责.</div>
+      <div>
+        <span>收货人签名:{this.state.deliverySign}</span>
+        <span className="sig">送货人签名:{this.state.handlerSign}</span>
+        <span className="sig">制单人:{this.state.orderMaker}</span>
+      </div>
+      </div>
+      </div>
+    </div>
       { /* 模板3 */}
       <div className="popLayer" style = {{ display: this.state.displayThree }}>
       <span className="close" onClick={this.clockClick}>关闭</span>
@@ -986,79 +1138,10 @@ import ReactDOM from 'react-dom';
       </div>
       </div>
     </div>
-    { /* 模板2 */}
-    <div className="popLayer" style = {{ display: this.state.displayTwo }}>
-      <span className="close" onClick={this.clockClick}>关闭</span>
-      <div className="popBox">
-        <div className="title">{this.state.title}</div>
-      <div><span className="sellorder">出货单</span><span className="page">页码: 1/1</span></div>
-        <div className="leftcontent">
-         <ul>
-           <li>客户代码:{this.state.businessCode}</li>
-         <li>地址:{this.state.address}</li>
-         </ul>
-      </div>
-      <div className="rightcontent">
-        <ul>
-          <li>出货单号:{this.state.deliveryNo}</li>
-          <li>出货日期:{this.state.deliveryDate}</li>
-        </ul>
-      </div>
-    <div className="firstdiv">
-      <table>
-          <thead>
-            <tr>
-              <th>款号</th>
-              <th>款式</th>
-              <th>颜色</th>
-              <th>单位</th>
-              <th>S</th>
-              <th>M</th>
-              <th>L</th>
-              <th>小计</th>
-              <th>单价</th>
-              <th>金额</th>
-              <th>备注</th>
-            </tr>
-          </thead>
-          <tbody>
-              {
-                       // tslint:disable-next-line: ter-arrow-body-style
-                       this.state.MxDeliveryDetails.map((details, index) => {
-                           return(
-                            // tslint:disable-next-line: jsx-key
-                            <tr key={index}>
-                                  <td>{details.styleNo}</td>
-                                  <td>{details.style}</td>
-                                  <td>{details.color}</td>
-                                  <td>{details.unit}</td>
-                                  <td>{details.modelS}</td>
-                                  <td>{details.modelM}</td>
-                                  <td>{details.modelL}</td>
-                                  <td>{details.subtotal}</td>
-                                  <td>{details.unitPrice}</td>
-                                  <td>{details.account}</td>
-                                  <td>{details.comment}</td>
-                          </tr>
-                           );
-                       })
-                     }
-          </tbody>
-        </table>
-      <div className="bottomcontent">
-        <span className="totalnum">合计数量:{this.state.totalQuantity}</span>
-        <span className="totalmoney">合计金额:{this.state.totalAmount}</span>
-      </div>
-      <div>收到货后,请立即验货,货物如有问题,请于一星期内通知,逾期本公司恕不负责.</div>
-      <div>
-        <span>收货人签名:{this.state.deliverySign}</span>
-        <span className="sig">送货人签名:{this.state.handlerSign}</span>
-        <span className="sig">制单人:{this.state.orderMaker}</span>
-      </div>
-      </div>
-      </div>
-    </div>
-    <div style={{ 'display': 'none' }}>
+    { /* 模板4 */}
+    <div className="popLayer" style={{ display: this.state.displayFour }}>
+    <span className="close" onClick={this.clockClick}>关闭</span>
+    <div className="popBox">
       <ul>
           <li>皆様</li>
           <li>お疲れ様です。</li>
@@ -1069,6 +1152,7 @@ import ReactDOM from 'react-dom';
           <li>*2018年7月16日より、わが社の銀号名称が変更となりましたので、その以後の発票ご発行に関しては、新銀号名称にて実施ください。</li>
           <li>以上宜し〈お願いいたします。</li>
       </ul>
+      </div>
      </div>
     <div>
       <div className="ajax-loading" id="ajaxLoading" style={{ display: this.state.loading }}>
