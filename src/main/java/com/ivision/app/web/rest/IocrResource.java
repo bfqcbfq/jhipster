@@ -1,6 +1,8 @@
 package com.ivision.app.web.rest;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.text.SimpleDateFormat;
@@ -18,7 +20,11 @@ import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,6 +62,10 @@ import com.ivision.app.domain.YdInvoice;
  * <p>
  * 实现文件的上传，下载及页面展示
  * </p>
+ */
+/**
+ * @author wanglei
+ *
  */
 @RestController
 @RequestMapping("/api/ocr/iocr")
@@ -311,7 +321,7 @@ public class IocrResource {
 			// 定义Excel文件新名称
 			String newFileName = dateFormat.format(now) + System.currentTimeMillis();
 			String fileName = new String((newFileName).getBytes(), "UTF-8");
-			response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
+			response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xlsx");
 
 			// HttpSession session = request.getSession();
 
@@ -343,6 +353,9 @@ public class IocrResource {
 				String[] titles = { "序号", "配件编号", "配件名称", "车型", "产地", "单位", "单价", "数量", "金额", "备注" };
 
 				this.exportFencers(head, headnum, null, headnum1, titles, out, null, null, ydInvoiceCacheList);
+			} else if (filepathType.equals(CommonConstant.OCR_IOCR_SANLING_TYPE)) {
+				
+				this.exportExcel(out);
 			}
 
 		} catch (Exception e) {
@@ -369,10 +382,11 @@ public class IocrResource {
 		client.setSocketTimeoutInMillis(180000);
 
 		List<String> templateSignList = new ArrayList<String>();
-		templateSignList.add(templateId1);
-		templateSignList.add(templateId2);
-		templateSignList.add(templateId3);
-		templateSignList.add(templateId4);
+		
+		 templateSignList.add(templateId1); 
+		 templateSignList.add(templateId2);
+		 templateSignList.add(templateId3);
+		 templateSignList.add(templateId4);
 
 		// 传入可选参数调用接口
 		HashMap<String, String> options = new HashMap<String, String>();
@@ -417,7 +431,7 @@ public class IocrResource {
 		// 表格第七行
 		DeliveryDetails deliveryDetails6 = new DeliveryDetails();
 
-		List<DeliveryDetails> deliveryDetailsList = deliveryDetailsList = new ArrayList<>();
+		List<DeliveryDetails> deliveryDetailsList  = new ArrayList<>();
 		// 获得账票标题
 		String templateName = jsonObject.getJSONObject("data").get("templateName").toString();
 		invoice.setTitle(templateName);
@@ -1472,6 +1486,7 @@ public class IocrResource {
 			}
 
 			// 第五步，写入实体数据
+			// 神丰科技出货单
 			if (invoiceCacheList != null && !invoiceCacheList.isEmpty()) {
 
 				int InvoiceBeginIndex = 0;
@@ -1640,6 +1655,7 @@ public class IocrResource {
 
 			}
 
+			// 易达软件
 			else if (ydInvoiceCacheList != null && !ydInvoiceCacheList.isEmpty()) {
 
 				int ydInvoiceBeginIndex = 0;
@@ -1737,5 +1753,109 @@ public class IocrResource {
 		}
 
 	}
+	
+	/**
+	 * 使用外部Excel模板导出
+	 * 
+	 * @param out
+	 * @throws FileNotFoundException
+	 */
+	public void exportExcel(ServletOutputStream out) throws FileNotFoundException {
+		
+		// 读取源文件
+        FileInputStream fis = new FileInputStream("D:\\FilesAndDatas\\serverResources\\三菱重工MGS-CN调查问卷.xlsx");
+        XSSFWorkbook workBook;
+		try {
+			workBook = new XSSFWorkbook(fis);
+		
+
+        // 进行模板的克隆(接下来的操作都是针对克隆后的sheet)
+        XSSFSheet sheet = workBook.cloneSheet(0);
+        workBook.setSheetName(0, "调查问卷结果"); // 给sheet命名
+
+        // 读取指定cell的内容
+//        XSSFCell nameCell = sheet.getRow(1).getCell(0);
+//        XSSFCell nameCell2 = sheet.getRow(1).getCell(1);
+//        System.out.println(nameCell.getStringCellValue());
+//        System.out.println(nameCell2.getStringCellValue());
+
+        // 替换单元格内容(注意获取的cell的下标是合并之前的下标)
+//        replaceCellValue(sheet.getRow(1).getCell(2), "xxxxx时间");
+//        replaceCellValue(sheet.getRow(2).getCell(2), "xxxxx人");
+
+        // 动态插入数据-增加行
+//        List<Map<String, Object>> datas = new ArrayList<>();
+//        for (int i = 1; i < 101; i++) {
+//            Map<String, Object> data = new HashMap<>();
+//            data.put("no", "" + i);
+//            data.put("name", "姓名" + i);
+//            data.put("companyName", "公司名称" + i);
+//            data.put("telphone", "电话" + i);
+//            data.put("email", "E-mail" + i);
+//            data.put("q1", "问题一" + i);
+//            data.put("q2", "问题二" + i);
+//            data.put("q3", "问题三" + i);
+//            data.put("q4", "问题四" + i);
+//            data.put("q5", "问题五" + i);
+//            data.put("q6", "问题六" + i);
+//            data.put("q7", "问题七" + i);
+//            data.put("q8", "问题八" + i);
+//            data.put("q9", "问题九" + i);
+//            data.put("q10", "问题十" + i);
+//            data.put("comment", "意见" + i);
+//            datas.add(data);
+//        }
+        // 插入行
+         //sheet.shiftRows(4, 4 + mitsubishiSurveyList.size(), mitsubishiSurveyList.size(), false, false);// 第1个参数是指要开始插入的行，第2个参数是结尾行数,第三个参数表示动态添加的行数
+        for (int i = 0; i < mitsubishiSurveyList.size(); i++) {
+            XSSFRow creRow = sheet.createRow(4 + i);
+            
+            creRow.setRowStyle(sheet.getRow(4).getRowStyle());
+			creRow.createCell(0).setCellValue(i+1);																	
+			creRow.createCell(1).setCellValue(mitsubishiSurveyList.get(i).getMitsubishiName().replaceAll(" ", ""));
+            creRow.createCell(2).setCellValue(mitsubishiSurveyList.get(i).getMitsubishiCompanyName().replaceAll(" ", ""));
+            creRow.createCell(3).setCellValue(mitsubishiSurveyList.get(i).getMitsubishiTelphone().replaceAll(" ", ""));
+            creRow.createCell(4).setCellValue(mitsubishiSurveyList.get(i).getMitsubishiEmail().replaceAll(" ", ""));
+            creRow.createCell(5).setCellValue(mitsubishiSurveyList.get(i).getQuestionOne().trim().replaceAll(" ", ""));
+            creRow.createCell(6).setCellValue(mitsubishiSurveyList.get(i).getQuestionTwo().replaceAll(" ", ""));
+            creRow.createCell(7).setCellValue(mitsubishiSurveyList.get(i).getQuestionThree().replaceAll(" ", ""));
+            creRow.createCell(8).setCellValue(mitsubishiSurveyList.get(i).getQuestionFour().replaceAll(" ", ""));
+            creRow.createCell(9).setCellValue(mitsubishiSurveyList.get(i).getQuestionFive().replaceAll(" ", ""));
+            creRow.createCell(10).setCellValue(mitsubishiSurveyList.get(i).getQuestionSix().replaceAll(" ", ""));
+            creRow.createCell(11).setCellValue(mitsubishiSurveyList.get(i).getQuestionSeven().replaceAll(" ", ""));
+            creRow.createCell(12).setCellValue(mitsubishiSurveyList.get(i).getQuestionEight().replaceAll(" ", ""));
+            creRow.createCell(13).setCellValue(mitsubishiSurveyList.get(i).getQuestionNine().replaceAll(" ", ""));
+            creRow.createCell(14).setCellValue(mitsubishiSurveyList.get(i).getQuestionTen().replaceAll(" ", ""));
+			creRow.createCell(15).setCellValue(mitsubishiSurveyList.get(i).getMitsubishiComment().replaceAll(" ", ""));
+        }
+
+        // 输出为一个新的Excel，也就是动态修改完之后的excel
+        //String fileName = "test" + System.currentTimeMillis() + ".xlsx";
+        //OutputStream out = new FileOutputStream("D:\\FilesAndDatas\\serverResources\\" + fileName1);
+        workBook.removeSheetAt(0); // 移除workbook中的模板sheet
+        workBook.write(out);
+
+        fis.close();
+        out.flush();
+        out.close();
+        
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+     * 替换单元格的内容，单元格的获取位置是合并单元格之前的位置，也就是下标都是合并之前的下表
+     * 
+     * @param cell
+     *            单元格
+     * @param value
+     *            需要设置的值
+     */
+    public static void replaceCellValue(Cell cell, Object value) {
+        String val = value != null ? String.valueOf(value) : "";
+        cell.setCellValue(val);
+    }
 
 }

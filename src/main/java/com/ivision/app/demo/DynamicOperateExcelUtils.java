@@ -18,12 +18,12 @@ public class DynamicOperateExcelUtils {
 
 	public static void main(String[] args) throws IOException {
 		// 读取源文件
-        FileInputStream fis = new FileInputStream("D:\\FilesAndDatas\\serverResources\\Ivisionアンケート.xlsx");
+        FileInputStream fis = new FileInputStream("D:\\FilesAndDatas\\serverResources\\三菱重工MGS-CN调查问卷.xlsx");
         XSSFWorkbook workBook = new XSSFWorkbook(fis);
 
         // 进行模板的克隆(接下来的操作都是针对克隆后的sheet)
         XSSFSheet sheet = workBook.cloneSheet(0);
-        workBook.setSheetName(0, "アンケート結果まとめ"); // 给sheet命名
+        workBook.setSheetName(0, "调查问卷结果"); // 给sheet命名
 
         // 读取指定cell的内容
 //        XSSFCell nameCell = sheet.getRow(1).getCell(0);
@@ -40,23 +40,21 @@ public class DynamicOperateExcelUtils {
         for (int i = 1; i < 101; i++) {
             Map<String, Object> data = new HashMap<>();
             data.put("no", "" + i);
-            data.put("kaisyamei", "会社名" + i);
-            data.put("syozoku", "所属／役職" + i);
-            data.put("simei", "氏名" + i);
-            data.put("denwabangou", "電話番号" + i);
+            data.put("name", "姓名" + i);
+            data.put("companyName", "公司名称" + i);
+            data.put("telphone", "电话" + i);
             data.put("email", "E-mail" + i);
-            data.put("senntaku1", "選択一" + i);
-            data.put("kaitou1", "回答一" + i);
-            data.put("senntaku2", "選択二" + i);
-            data.put("kaitou2", "回答二" + i);
-            data.put("senntaku3", "選択三" + i);
-            data.put("kaitou3", "回答三" + i);
-            data.put("kaitou4", "回答四" + i);
-            data.put("kaitou5", "回答五" + i);
-            data.put("senntaku6", "選択六" + i);
-            data.put("kaitou6", "回答六" + i);
-            data.put("senntaku7", "選択七" + i);
-            data.put("kaitou7", "回答七" + i);
+            data.put("q1", "问题一" + i);
+            data.put("q2", "问题二" + i);
+            data.put("q3", "问题三" + i);
+            data.put("q4", "问题四" + i);
+            data.put("q5", "问题五" + i);
+            data.put("q6", "问题六" + i);
+            data.put("q7", "问题七" + i);
+            data.put("q8", "问题八" + i);
+            data.put("q9", "问题九" + i);
+            data.put("q10", "问题十" + i);
+            data.put("comment", "意见" + i);
             datas.add(data);
         }
         // 插入行
@@ -66,23 +64,21 @@ public class DynamicOperateExcelUtils {
             
             creRow.setRowStyle(sheet.getRow(4).getRowStyle());
             creRow.createCell(0).setCellValue(datas.get(i).get("no").toString());
-            creRow.createCell(1).setCellValue(datas.get(i).get("kaisyamei").toString());
-            creRow.createCell(2).setCellValue(datas.get(i).get("syozoku").toString());
-            creRow.createCell(3).setCellValue(datas.get(i).get("simei").toString());
-            creRow.createCell(4).setCellValue(datas.get(i).get("denwabangou").toString());
-            creRow.createCell(5).setCellValue(datas.get(i).get("email").toString());
-            creRow.createCell(6).setCellValue(datas.get(i).get("senntaku1").toString());
-            creRow.createCell(7).setCellValue(datas.get(i).get("kaitou1").toString());
-            creRow.createCell(8).setCellValue(datas.get(i).get("senntaku2").toString());
-            creRow.createCell(9).setCellValue(datas.get(i).get("kaitou2").toString());
-            creRow.createCell(10).setCellValue(datas.get(i).get("senntaku3").toString());
-            creRow.createCell(11).setCellValue(datas.get(i).get("kaitou3").toString());
-            creRow.createCell(12).setCellValue(datas.get(i).get("kaitou4").toString());
-            creRow.createCell(13).setCellValue(datas.get(i).get("kaitou5").toString());
-            creRow.createCell(14).setCellValue(datas.get(i).get("senntaku6").toString());
-            creRow.createCell(15).setCellValue(datas.get(i).get("kaitou6").toString());
-            creRow.createCell(16).setCellValue(datas.get(i).get("senntaku7").toString());
-            creRow.createCell(17).setCellValue(datas.get(i).get("kaitou7").toString());
+            creRow.createCell(1).setCellValue(datas.get(i).get("name").toString());
+            creRow.createCell(2).setCellValue(datas.get(i).get("companyName").toString());
+            creRow.createCell(3).setCellValue(datas.get(i).get("telphone").toString());
+            creRow.createCell(4).setCellValue(datas.get(i).get("email").toString());
+            creRow.createCell(5).setCellValue(datas.get(i).get("q1").toString());
+            creRow.createCell(6).setCellValue(datas.get(i).get("q2").toString());
+            creRow.createCell(7).setCellValue(datas.get(i).get("q3").toString());
+            creRow.createCell(8).setCellValue(datas.get(i).get("q4").toString());
+            creRow.createCell(9).setCellValue(datas.get(i).get("q5").toString());
+            creRow.createCell(10).setCellValue(datas.get(i).get("q6").toString());
+            creRow.createCell(11).setCellValue(datas.get(i).get("q7").toString());
+            creRow.createCell(12).setCellValue(datas.get(i).get("q8").toString());
+            creRow.createCell(13).setCellValue(datas.get(i).get("q9").toString());
+            creRow.createCell(14).setCellValue(datas.get(i).get("q10").toString());
+            creRow.createCell(15).setCellValue(datas.get(i).get("comment").toString());
         }
 
         // 输出为一个新的Excel，也就是动态修改完之后的excel
