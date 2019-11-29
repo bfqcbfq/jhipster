@@ -70,6 +70,11 @@ import com.ivision.app.domain.YdInvoice;
 @RestController
 @RequestMapping("/api/ocr/iocr")
 public class IocrResource {
+	
+	public IocrResource() {
+		
+		
+	}
 
 	// 缓存同一模板List
 	private static List<Invoice> invoiceCacheList = new ArrayList<>();
@@ -1767,44 +1772,11 @@ public class IocrResource {
         XSSFWorkbook workBook;
 		try {
 			workBook = new XSSFWorkbook(fis);
-		
 
         // 进行模板的克隆(接下来的操作都是针对克隆后的sheet)
         XSSFSheet sheet = workBook.cloneSheet(0);
         workBook.setSheetName(0, "调查问卷结果"); // 给sheet命名
 
-        // 读取指定cell的内容
-//        XSSFCell nameCell = sheet.getRow(1).getCell(0);
-//        XSSFCell nameCell2 = sheet.getRow(1).getCell(1);
-//        System.out.println(nameCell.getStringCellValue());
-//        System.out.println(nameCell2.getStringCellValue());
-
-        // 替换单元格内容(注意获取的cell的下标是合并之前的下标)
-//        replaceCellValue(sheet.getRow(1).getCell(2), "xxxxx时间");
-//        replaceCellValue(sheet.getRow(2).getCell(2), "xxxxx人");
-
-        // 动态插入数据-增加行
-//        List<Map<String, Object>> datas = new ArrayList<>();
-//        for (int i = 1; i < 101; i++) {
-//            Map<String, Object> data = new HashMap<>();
-//            data.put("no", "" + i);
-//            data.put("name", "姓名" + i);
-//            data.put("companyName", "公司名称" + i);
-//            data.put("telphone", "电话" + i);
-//            data.put("email", "E-mail" + i);
-//            data.put("q1", "问题一" + i);
-//            data.put("q2", "问题二" + i);
-//            data.put("q3", "问题三" + i);
-//            data.put("q4", "问题四" + i);
-//            data.put("q5", "问题五" + i);
-//            data.put("q6", "问题六" + i);
-//            data.put("q7", "问题七" + i);
-//            data.put("q8", "问题八" + i);
-//            data.put("q9", "问题九" + i);
-//            data.put("q10", "问题十" + i);
-//            data.put("comment", "意见" + i);
-//            datas.add(data);
-//        }
         // 插入行
          //sheet.shiftRows(4, 4 + mitsubishiSurveyList.size(), mitsubishiSurveyList.size(), false, false);// 第1个参数是指要开始插入的行，第2个参数是结尾行数,第三个参数表示动态添加的行数
         for (int i = 0; i < mitsubishiSurveyList.size(); i++) {

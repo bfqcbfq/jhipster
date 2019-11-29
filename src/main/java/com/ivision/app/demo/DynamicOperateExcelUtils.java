@@ -18,7 +18,7 @@ public class DynamicOperateExcelUtils {
 
 	public static void main(String[] args) throws IOException {
 		// 读取源文件
-        FileInputStream fis = new FileInputStream("D:\\FilesAndDatas\\serverResources\\三菱重工MGS-CN调查问卷.xlsx");
+        FileInputStream fis = new FileInputStream("D:\\FilesAndDatas\\serverResources\\三菱重工MGS-CN调查问卷结果.xlsx");
         XSSFWorkbook workBook = new XSSFWorkbook(fis);
 
         // 进行模板的克隆(接下来的操作都是针对克隆后的sheet)

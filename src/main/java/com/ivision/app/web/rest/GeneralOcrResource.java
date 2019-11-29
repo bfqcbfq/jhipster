@@ -8,33 +8,21 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.FileAlreadyExistsException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFFont;
-import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -42,7 +30,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,12 +39,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSON;
 import com.baidu.aip.ocr.AipOcr;
-import com.ivision.app.aop.constant.CommonConstant;
 import com.ivision.app.cache.Cache;
 import com.ivision.app.domain.BaseResource;
-import com.ivision.app.domain.DeliverMessage;
 import com.ivision.app.domain.IvisionSurveyBean;
+import com.ivision.app.domain.MitsubishiSurvey;
 import com.ivision.app.domain.GeneralOcrWordsResult;
+import com.ivision.app.domain.IvisionAndNriSemira;
 
 /**
  * 调用百度通用文字识别API，实现文字识别
@@ -70,7 +57,10 @@ import com.ivision.app.domain.GeneralOcrWordsResult;
 @RestController
 @RequestMapping("/api/ocr/general")
 public class GeneralOcrResource {
-
+	
+	private static List<IvisionAndNriSemira> IvisionAndNriSemiraList = new ArrayList<>();
+	private static List<MitsubishiSurvey> mitsubishiSurveyList = new ArrayList<>();
+	
 	// 设置APPID/AK/SK
 	@Value("${iocr.app.id}")
 	private String appId;
@@ -178,14 +168,17 @@ public class GeneralOcrResource {
 	 * @param filepath
 	 * @param response
 	 * @return
+	 * @throws Exception 
 	 */
 	@GetMapping("/download")
-	public void exportExcel(@RequestParam(value = "filepath") String filepath, HttpServletResponse response) {
+	public void exportExcel(@RequestParam(value = "filepath") String filepath, HttpServletResponse response) throws Exception {
 
 		response.setContentType("application/force-download;charset=UTF-8");
 
-		try {
-			ServletOutputStream out = response.getOutputStream();
+			ServletOutputStream out;
+			try {
+				out = response.getOutputStream();
+			
 			Date now = new Date();
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 
@@ -198,24 +191,16 @@ public class GeneralOcrResource {
 			IvisionSurveyBean ivisionSurvey = (IvisionSurveyBean) Cache.get("ivisionSurvey");
 			List<GeneralOcrWordsResult> resultByIocrList = ivisionSurvey.getWordsResult();
 
-			String title = CommonConstant.OCR_GENERAL_SURVEY_TITLE;
-			// 获取表头1
-			String[] head = { title };
-			 String[] headnum = { "0,0,0,18" };
-			// 获取表头2
-			 String[] head1 = { "会社名", "所属-役職", "氏名", "電話番号", "E-mail" };
-			 String[] headnum1 = { "1,1,0,10" };
+			this.exportFencers(out, resultByIocrList);
+			
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-			 String[] titles1 = { "会社名", "所属-役職", "氏名", "電話番号", "E-mail" };
-			String[] titles2 = {"No", "会社名", "所属-役職", "氏名", "電話番号", "E-mail", "問題1", "問題2", "問題3", "問題4", "問題5", "問題6",
-					"問題7" };
-
-			this.exportFencers(head, headnum, head1, headnum1, titles1, titles2, out, null, resultByIocrList);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
+
+
 
 	/**
 	 * 百度文字识别位置高精度版API调用（返回数据结构不佳）
@@ -268,56 +253,38 @@ public class GeneralOcrResource {
 	 * @param deliveryDetails
 	 * @throws Exception
 	 */
-	private void exportFencers(String[] head, String[] headnum, String[] head1, String[] headnum1, String[] titles1,
-			String[] titles2, ServletOutputStream out, DeliverMessage deliverMessage, List<GeneralOcrWordsResult> deliveryDetails)
+	private void exportFencers(ServletOutputStream out, List<GeneralOcrWordsResult> deliveryDetails)
 			throws Exception {
 		// 读取源文件
-        FileInputStream fis = new FileInputStream("G:/test.xlsx");
-        XSSFWorkbook workBook = new XSSFWorkbook(fis);
+        FileInputStream fis = new FileInputStream("D:\\FilesAndDatas\\serverResources\\三菱重工MGS-CN调查问卷.xlsx");
+        XSSFWorkbook workBook;
+		try {
+			workBook = new XSSFWorkbook(fis);
 
         // 进行模板的克隆(接下来的操作都是针对克隆后的sheet)
         XSSFSheet sheet = workBook.cloneSheet(0);
-        workBook.setSheetName(0, "sheet-0"); // 给sheet命名
+        workBook.setSheetName(0, "调查问卷结果"); // 给sheet命名
 
-        // 读取指定cell的内容
-        XSSFCell nameCell = sheet.getRow(1).getCell(0);
-        XSSFCell nameCell2 = sheet.getRow(1).getCell(1);
-        System.out.println(nameCell.getStringCellValue());
-        System.out.println(nameCell2.getStringCellValue());
-
-        // 替换单元格内容(注意获取的cell的下标是合并之前的下标)
-        replaceCellValue(sheet.getRow(1).getCell(2), "xxxxx时间");
-        replaceCellValue(sheet.getRow(2).getCell(2), "xxxxx人");
-
-        // 动态插入数据-增加行
-        List<Map<String, Object>> datas = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            Map<String, Object> data = new HashMap<>();
-            data.put("name", "name" + i);
-            data.put("age", "age" + i);
-            data.put("sex", "sex" + i);
-            datas.add(data);
-        }
         // 插入行
-        sheet.shiftRows(4, 4 + datas.size(), datas.size(), true, false);// 第1个参数是指要开始插入的行，第2个参数是结尾行数,第三个参数表示动态添加的行数
-        for (int i = 0; i < datas.size(); i++) {
-            XSSFRow creRow = sheet.createRow(4 + i);
-            creRow.setRowStyle(sheet.getRow(4).getRowStyle());
-            creRow.createCell(0).setCellValue(datas.get(i).get("name").toString());
-            creRow.createCell(1).setCellValue(datas.get(i).get("age").toString());
-            creRow.createCell(2).setCellValue(datas.get(i).get("sex").toString());
+         //sheet.shiftRows(4, 4 + mitsubishiSurveyList.size(), mitsubishiSurveyList.size(), false, false);// 第1个参数是指要开始插入的行，第2个参数是结尾行数,第三个参数表示动态添加的行数
+        for (GeneralOcrWordsResult wordsResult : deliveryDetails) {
+            XSSFRow creRow = sheet.createRow(0);
+            
+			creRow.createCell(1).setCellValue(wordsResult.getWords());
         }
 
         // 输出为一个新的Excel，也就是动态修改完之后的excel
-        String fileName = "test" + System.currentTimeMillis() + ".xlsx";
-        OutputStream out1 = new FileOutputStream("G:" + "/" + fileName);
         workBook.removeSheetAt(0); // 移除workbook中的模板sheet
-        workBook.write(out1);
+        workBook.write(out);
 
         fis.close();
-        out1.flush();
-        out1.close();
-
+        out.flush();
+        out.close();
+        
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	 /**
