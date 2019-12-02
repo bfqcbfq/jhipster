@@ -1768,7 +1768,7 @@ public class IocrResource {
 	public void exportExcel(ServletOutputStream out) throws FileNotFoundException {
 		
 		// 读取源文件
-        FileInputStream fis = new FileInputStream("D:\\FilesAndDatas\\serverResources\\三菱重工MGS-CN调查问卷.xlsx");
+        FileInputStream fis = new FileInputStream("D:\\FilesAndDatas\\serverResources\\三菱重工MGS-CN调查问卷结果.xlsx");
         XSSFWorkbook workBook;
 		try {
 			workBook = new XSSFWorkbook(fis);

@@ -65,7 +65,7 @@ public class CommonConstant {
 	/**
 	 * 
 	 * 文件·类型
-	 * 三菱重工市场调查问卷:type=3
+	 * 三菱重工市场调查问卷:type=4
 	 */
 	public static final String OCR_IOCR_SANLING_TYPE = "4";
 	
