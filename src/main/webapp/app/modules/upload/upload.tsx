@@ -1176,7 +1176,7 @@ class Upload extends React.Component<any, ImgProps, []> {
                 <li>选项：A: 泰尔认证  B: Uptime认证  C: 国三排放  D: 其他</li>
                 <li>问题9：通常希望发电机组的交货周期是多长时间&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：<strong>{this.state.questionNine}</strong></li>
                 <li>选项：A: 2个月  B: 3个月  C: 4个月以上也可以  D: 其他</li>
-                <li>问题10是否使用过或者了解过三菱重工的柴油发电机组或者发动机产品&nbsp;&nbsp;&nbsp;回答(请填写字母)：<strong>{this.state.questionTen}</strong></li>
+                <li>问题10：是否使用过或者了解过三菱重工的柴油发电机组或者发动机产品&nbsp;&nbsp;回答(请填写字母)：<strong>{this.state.questionTen}</strong></li>
                 <li>选项：A: 是  B: 否</li>
               </ul>
             </div>
