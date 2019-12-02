@@ -1,0 +1,156 @@
+.content{
+	margin: auto;
+	border: 1px solid rgba(178,189,209,.2);
+	height: 500px;
+}
+.imgUrlStyle{
+	width: 232px;
+	margin-left: 32px;
+}
+.forlale{
+    width: 100%;
+    padding-left: 43%;
+    margin-top: 3%;
+}
+.firstli{
+    float: left;
+    list-style-type: none;
+    padding-left: 20%;
+}
+.secondli{
+    float: left;
+    padding-left: 20%;
+    list-style-type: none;
+}
+.thirdli{
+    list-style-type: none;
+    padding-left: 20%;
+    float: left;
+}
+.fourli{
+    float: left;
+    padding-left: 18.6%;
+    list-style-type: none;
+}
+.choosefile{
+    color: #487df0;
+    cursor: pointer;
+}
+.top{
+    border: 1px solid rgba(178,189,209,.2);
+    height: 35px;
+    line-height: 35px;
+    background-color: rgba(66, 69, 73, 0.2);
+}
+.fileName{
+    color: blue;
+    width: 37.2%;
+    display: inline-block;
+    margin-left: 4%;
+    text-align: center;
+}
+.state{
+    color: green;
+    margin-left: 2.5%;
+}
+.del{
+    margin-left: 3px;
+    background-color: #f44336;
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 3px 2px;
+    cursor: pointer;
+    width: 50px;
+}
+.allFile{
+    width: 100%;
+    border: 1px solid #ffffff;
+    float: left;
+}
+.formDiv{
+    margin-top: 300px;
+}
+.download{
+    padding-left: 3px;
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 3px 2px;
+    cursor: pointer;
+    width: 50px;
+}
+.displayshow{
+    background-color: #008CBA;
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 3px 2px;
+    cursor: pointer;
+    width: 50px;
+    margin-left: 271px;
+}
+.upform{
+    height: 164px;
+    border: 2px dashed #A9A9A9;
+    width: 90%;
+    margin-left: 5%;
+    border-radius: 5px;
+    background: beige;
+}
+.type{
+    margin-left: 16%;
+    width: 123px;
+    display: inline-block;
+    text-align: center;
+}
+.gengone{
+    margin-left: 15.5%;
+    width: 100px;
+    display: inline-block;
+    text-align: center;
+}
+.gengtwo{
+    margin-left: 19%;
+}
+.newtype{
+    margin-left: 276px;
+}
+.newdisplayshow{
+    background-color: #008CBA;
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 3px 2px;
+    cursor: pointer;
+    margin-left: 325px;
+    width: 50px;
+}
+.drag{
+    padding-left: 30px;
+}
+.over{
+    width: 100%;
+    overflow-y: auto;
+    max-height: 300px;
+}
+.dragover{
+    margin-left: 46%;
+}
+.overone{
+    width: 100%;
+    overflow-y: auto;
+}

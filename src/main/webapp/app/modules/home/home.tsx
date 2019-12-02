@@ -96,14 +96,19 @@ export const Home = (props: IHomeProp) => {
           !
         </p>
       </Col>
-      <Col md="3" className="pad">
+      <Col md="2" className="pad">
         <Link to="/upload" className="alert-link">
-           自定义模板文字识别(IOCR)
+           自定义模板文字识别
         </Link>
       </Col>
-      <Col md="3" className="pad">
+      <Col md="2" className="pad">
         <Link to="/uploadForGeneral" className="alert-link">
-           通用文字识别(日本語認識可能)
+           通用文字识别
+        </Link>
+      </Col>
+      <Col md="2" className="pad">
+        <Link to="/uploadForJP" className="alert-link">
+           日本語文字認識
         </Link>
       </Col>
     </Row>

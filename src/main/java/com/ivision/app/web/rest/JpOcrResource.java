@@ -55,8 +55,8 @@ import com.ivision.app.domain.IvisionAndNriSemira;
  */
 
 @RestController
-@RequestMapping("/api/ocr/general")
-public class GeneralOcrResource {
+@RequestMapping("/api/ocr/jp")
+public class JpOcrResource {
 	
 	private static List<IvisionAndNriSemira> IvisionAndNriSemiraList = new ArrayList<>();
 	private static List<MitsubishiSurvey> mitsubishiSurveyList = new ArrayList<>();
@@ -129,7 +129,7 @@ public class GeneralOcrResource {
 
 				ivisionSurvey.setFilepath(newFilePath);
 
-				Cache.put("ivisionSurvey", ivisionSurvey, Cache.CACHE_HOLD_TIME_24H);
+				Cache.put("ivisionSurveyJp", ivisionSurvey, Cache.CACHE_HOLD_TIME_24H);
 
 				return ResponseEntity.ok(ivisionSurvey);
 
@@ -154,12 +154,15 @@ public class GeneralOcrResource {
 	 * @throws IOException
 	 */
 	@GetMapping("/showDetails")
-	public ResponseEntity<IvisionSurveyBean> showUploadFileDetails(@RequestParam(value = "filepath") String filepath)
+	public ResponseEntity<GeneralOcrWordsResult> showUploadFileDetails(@RequestParam(value = "filepath") String filepath)
 			throws IOException {
 
-		IvisionSurveyBean ivisionSurvey = (IvisionSurveyBean) Cache.get("ivisionSurvey");
+		IvisionSurveyBean ivisionSurvey = (IvisionSurveyBean) Cache.get("ivisionSurveyJp");
 		
-		return ResponseEntity.ok(ivisionSurvey);
+		List<GeneralOcrWordsResult> wordsResult = ivisionSurvey.getWordsResult();
+		GeneralOcrWordsResult generalOcrWordsResult = wordsResult.get(wordsResult.size()-1);
+
+		return ResponseEntity.ok(generalOcrWordsResult);
 	}
 
 	/**
@@ -188,7 +191,7 @@ public class GeneralOcrResource {
 			response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
 
 			// 调用百度API接口
-			IvisionSurveyBean ivisionSurvey = (IvisionSurveyBean) Cache.get("ivisionSurvey");
+			IvisionSurveyBean ivisionSurvey = (IvisionSurveyBean) Cache.get("ivisionSurveyJp");
 			List<GeneralOcrWordsResult> resultByIocrList = ivisionSurvey.getWordsResult();
 
 			this.exportFencers(out, resultByIocrList);

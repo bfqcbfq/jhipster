@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes, { any, number } from 'prop-types';
-import './uploadForGeneral.css';
+import './uploadForJP.css';
 import './detail.css';
 import './typetwodetail.css';
 import './typethreedetail.css';
@@ -30,6 +30,7 @@ interface ImgProps {
   isDragover: false;
   filepath: any;
   display: any;
+  words: any;
   wordsResult: [{
     words: any;
     location: {
@@ -59,7 +60,7 @@ interface ImgProps {
   namedisplay: any;
   documenttype: any;
 }
-class UploadForGeneral extends React.Component<any, ImgProps> {
+class UploadForJP extends React.Component<any, ImgProps> {
   static defaultProps: any =
     {
       onEnter: () => true,
@@ -73,6 +74,7 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
       suffixs: [],
       filepath: any,
       display: any,
+      words: any,
       wordsResult: [{
         words: any,
         location: {
@@ -126,7 +128,7 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
       maxLength: 10,
       files: [],
       onLeave: any,
-      url: 'http://localhost:8080/api/ocr/general/upload',
+      url: 'http://localhost:8080/api/ocr/jp/upload',
       cq: 10,
       onEnter: any,
       maxSize: 10240000 * 10240000,
@@ -137,6 +139,7 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
       isDragover: false,
       filepath: any,
       display: 'none',
+      words: any,
       wordsResult: [{
         words: any,
         location: {
@@ -316,7 +319,7 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
           loading: 'block'
         });
         axios.post(
-          'http://localhost:8080/api/ocr/general/upload',
+          'http://localhost:8080/api/ocr/jp/upload',
           uploadFile
         ).then((_: any) => {
           // tslint:disable-next-line: no-console
@@ -435,7 +438,7 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
     // tslint:disable-next-line: no-console
     console.log(filepaths);
     axios.get(
-      'http://localhost:8080/api/ocr/general/download',
+      'http://localhost:8080/api/ocr/jp/download',
       {
         params: {
           filepath: filepaths
@@ -468,7 +471,7 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
   handleShowClick = (filepath: any) => {
     const filepaths: string = filepath;
     axios.get(
-      'http://localhost:8080/api/ocr/general/showDetails',
+      'http://localhost:8080/api/ocr/jp/showDetails',
       {
         params: {
           filepath: filepaths
@@ -477,14 +480,14 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
       // tslint:disable-next-line: only-arrow-functions
       .then((response: any) => {
         // tslint:disable-next-line: no-console
-        console.log(response.data.wordsResult);
+        console.log(response.data.words);
         // tslint:disable-next-line: no-inferrable-types
         // 根据后台返回数据 用type判断用哪个模板
         // const type = response.data.type;
-        const wordsResultsArr = response.data.wordsResult;
+        const wordsRes = response.data.words;
         this.setState({
           display: 'block',
-          wordsResult: wordsResultsArr
+          words: wordsRes
         });
       })
       // tslint:disable-next-line: only-arrow-functions
@@ -606,7 +609,7 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
           </div>
         </div>
         {/* {日语识别测试使用模板} */}
-        <div className="popLayer" style={{ display: this.state.display }}>
+        {/* <div className="popLayer" style={{ display: this.state.display }}>
           <span className="close" onClick={this.clockClick}>关闭</span>
           <div className="popBox">
             <div>
@@ -614,61 +617,58 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
                 this.state.wordsResult.map((result, index) =>
                     <ul key={index}>
                       <li>{result.words}</li>
-                      {/* <li>top:{result.location.top}</li>
-                      <li>left:{result.location.left}</li>
-                      <li>width:{result.location.width}</li>
-                      <li>height:{result.location.height}</li> */}
                     </ul>
                 )
               }
             </div>
           </div>
-        </div>
+        </div> */}
         { /* 模板4 */}
-        {/* <div className="popLayer" style={{ display: this.state.display }}>
+         <div className="popLayer" style={{ display: this.state.display }}>
           <span className="close" onClick={this.clockClick}>关闭</span>
           <div className="popBox">
             <div className="title">三菱重工MGS-CN产品市场调查问卷</div>
             <div className="topContent">
               <ul>
-                <li>姓名&nbsp;&nbsp;&nbsp;:<strong>{this.state.mitsubishiName}</strong></li>
-                <li>公司名称&nbsp;&nbsp;&nbsp;:<strong>{this.state.mitsubishiCompanyName}</strong></li>
-                <li>电话&nbsp;&nbsp;&nbsp;:<strong>{this.state.mitsubishiTelphone}</strong></li>
-                <li>E-mail&nbsp;&nbsp;&nbsp;:<strong>{this.state.mitsubishiEmail}</strong></li>
+                <li>姓名&nbsp;&nbsp;&nbsp;:<strong>三ｼ雪s</strong></li>
+                <li>公司名称&nbsp;&nbsp;&nbsp;:<strong>三商事林戎会地</strong></li>
+                <li>电话&nbsp;&nbsp;&nbsp;:<strong>0l-234618</strong></li>
+                <li>E-mail&nbsp;&nbsp;&nbsp;:<strong>hiv@ miku lici:、c」</strong></li>
               </ul>
             </div>
             <div className="mainContent">
               <ul>
-                <li>问题1：柴油发电机选型的时候以哪种功率定义为标准(多选)&nbsp;&nbsp;&nbsp;回答(请填写字母)：<strong>{this.state.questionOne}</strong></li>
+                <li>问题1：柴油发电机选型的时候以哪种功率定义为标准(多选)&nbsp;&nbsp;&nbsp;回答(请填写字母)：<strong>AB</strong></li>
                 <li>选项：A: PRP  B: COP  C: DCP  D: ESP  E: 其他</li>
-                <li>问题2：基于上述功率定义选择,中国市场主流柴油发电机功率范围(多选)&nbsp;&nbsp;&nbsp;回答(请填写字母)：<strong>{this.state.questionTwo}</strong></li>
+                <li>问题2：基于上述功率定义选择,中国市场主流柴油发电机功率范围(多选)&nbsp;&nbsp;&nbsp;回答(请填写字母)：<strong>BCし</strong></li>
                 <li>选项：A: 1800kw  B: 2000kw  C: 2200kw  D: 2400kw  E: 其他</li>
-                <li>问题3：预测今后中国数据中心应用的柴油发电机主流安装方式&nbsp;&nbsp;&nbsp;回答(请填写字母)：<strong>{this.state.questionThree}</strong></li>
+                <li>问题3：预测今后中国数据中心应用的柴油发电机主流安装方式&nbsp;&nbsp;&nbsp;回答(请填写字母)：<strong>3</strong></li>
                 <li>选项：A: 集装箱式，室外  B: 开放式，室内  C: 其他</li>
-                <li>问题4：柴油发电机选择条件的先后优先度(排序)&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：<strong>{this.state.questionFour}</strong></li>
+                <li>问题4：柴油发电机选择条件的先后优先度(排序)&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：<strong>BCEDA</strong></li>
                 <li>选项：A: 喷油方式  B: 质量好，维护方便  C: 价格 D: 品牌 E: 其他</li>
-                <li>问题5：下述规格中必要配置(多选)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：<strong>{this.state.questionFive}</strong></li>
+                <li>问题5：下述规格中必要配置(多选)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：<strong>BC</strong></li>
                 <li>选项：A: Dual Start  B: 原厂并机系统  C: 远程监控系统 D: 双轴承发电机  E: 其他</li>
-                <li>问题6：数据中心常见负载功率因数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：<strong>{this.state.questionSix}</strong></li>
+                <li>问题6：数据中心常见负载功率因数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：<strong>D</strong></li>
                 <li>选项：A: 容性超前0.95  B: 容性超前0.9  C: 阻性1.0  D: 感性滞后0.8   E: 其他</li>
-                <li>问题7：是否要求发电机组一步带载100%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：<strong>{this.state.questionSeven}</strong></li>
+                <li>问题7：是否要求发电机组一步带载100%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：<strong>B</strong></li>
                 <li>选项：A: 是  B: 否</li>
-                <li>问题8：下述哪些条件是必须的&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：<strong>{this.state.questionEight}</strong></li>
+                <li>问题8：下述哪些条件是必须的&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：<strong>BC</strong></li>
                 <li>选项：A: 泰尔认证  B: Uptime认证  C: 国三排放  D: 其他</li>
-                <li>问题9：通常希望发电机组的交货周期是多长时间&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：<strong>{this.state.questionNine}</strong></li>
+                <li>问题9：通常希望发电机组的交货周期是多长时间&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：<strong>B</strong></li>
                 <li>选项：A: 2个月  B: 3个月  C: 4个月以上也可以  D: 其他</li>
-                <li>问题10是否使用过或者了解过三菱重工的柴油发电机组或者发动机产品&nbsp;&nbsp;&nbsp;回答(请填写字母)：<strong>{this.state.questionTen}</strong></li>
+                <li>问题10是否使用过或者了解过三菱重工的柴油发电机组或者发动机产品&nbsp;&nbsp;&nbsp;回答(请填写字母)：<strong>B</strong></li>
                 <li>选项：A: 是  B: 否</li>
               </ul>
             </div>
             <div className="footContent">
               <ul>
                 <li>请对三菱重工MGSCN产品提出宝贵意见(请使用正楷书写)</li>
-                <li><strong>{this.state.mitsubishiComment}</strong></li>
+                <li><strong>
+                {this.state.words}</strong></li>
               </ul>
             </div>
           </div>
-        </div> */}
+        </div>
 
         {/* {アンケート} */}
         <div>
@@ -685,7 +685,7 @@ class UploadForGeneral extends React.Component<any, ImgProps> {
   }
 }
 // 设置默认值类型
-UploadForGeneral.propTypes = {
+UploadForJP.propTypes = {
   onEnter: PropTypes.func,
   onLeave: PropTypes.func,
   onError: PropTypes.func,
@@ -698,7 +698,7 @@ UploadForGeneral.propTypes = {
   suffixs: PropTypes.array
 };
 // 设置默认值
-UploadForGeneral.defaultProps = {
+UploadForJP.defaultProps = {
   // tslint:disable-next-line: ter-arrow-body-style
   onEnter: () => {
     return true;
@@ -718,4 +718,4 @@ UploadForGeneral.defaultProps = {
   maxLength: 10,
   suffixs: []
 };
-export default UploadForGeneral;
+export default UploadForJP;
