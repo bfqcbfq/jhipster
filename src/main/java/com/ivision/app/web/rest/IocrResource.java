@@ -55,6 +55,7 @@ import com.ivision.app.domain.YdDeliverMessage;
 import com.ivision.app.domain.YdDeliveryDetails;
 import com.ivision.app.domain.YdInvoice;
 
+
 /**
  * 
  * 调用百度自定义文字识别API，实现上传图片识别
@@ -71,11 +72,6 @@ import com.ivision.app.domain.YdInvoice;
 @RequestMapping("/api/ocr/iocr")
 public class IocrResource {
 	
-	public IocrResource() {
-		
-		
-	}
-
 	// 缓存同一模板List
 	private static List<Invoice> invoiceCacheList = new ArrayList<>();
 	private static List<MxInvoice> mxInvoiceCacheList = new ArrayList<>();
@@ -223,9 +219,8 @@ public class IocrResource {
 							mitsubishiSurvey = new MitsubishiSurvey();
 							
 							mitsubishiSurvey = jsonToMitsubishiSurvey(jsonObject);
-							mitsubishiSurvey.setTemplateType("三菱重工调查问卷");
+							mitsubishiSurvey.setTemplateType("三菱重工问卷");
 							mitsubishiSurvey.setType(CommonConstant.OCR_IOCR_SANLING_TYPE);
-							
 							Cache.put("mitsubishiSurvey", mitsubishiSurvey, Cache.CACHE_HOLD_TIME_24H);
 							mitsubishiSurveyList.add(mitsubishiSurvey);
 							return ResponseEntity.ok(mitsubishiSurvey);
@@ -269,7 +264,7 @@ public class IocrResource {
 			return ResponseEntity.ok(invoice);
 		}
 
-		if (filepathType.equals("2")) {
+		if (filepathType.equals(CommonConstant.OCR_IOCR_MINGXING_TYPE)) {
 			MxInvoice mxInvoice = (MxInvoice) Cache.get("mxInvoice");
 			if (mxInvoice == null) {
 
@@ -279,7 +274,7 @@ public class IocrResource {
 			return ResponseEntity.ok(mxInvoice);
 
 		}
-		if (filepathType.equals("3")) {
+		if (filepathType.equals(CommonConstant.OCR_IOCR_YIDA_TYPE)) {
 			YdInvoice ydInvoice = (YdInvoice) Cache.get("ydInvoice");
 			if (ydInvoice == null) {
 
@@ -289,7 +284,7 @@ public class IocrResource {
 			return ResponseEntity.ok(ydInvoice);
 		}
 		
-		if(filepathType.equals("4")) {
+		if(filepathType.equals(CommonConstant.OCR_IOCR_SANLING_TYPE)) {
 			
 			MitsubishiSurvey mitsubishiSurvey = (MitsubishiSurvey) Cache.get("mitsubishiSurvey");
 			
@@ -1784,21 +1779,21 @@ public class IocrResource {
             
             creRow.setRowStyle(sheet.getRow(4).getRowStyle());
 			creRow.createCell(0).setCellValue(i+1);																	
-			creRow.createCell(1).setCellValue(mitsubishiSurveyList.get(i).getMitsubishiName().replaceAll(" ", ""));
-            creRow.createCell(2).setCellValue(mitsubishiSurveyList.get(i).getMitsubishiCompanyName().replaceAll(" ", ""));
-            creRow.createCell(3).setCellValue(mitsubishiSurveyList.get(i).getMitsubishiTelphone().replaceAll(" ", ""));
-            creRow.createCell(4).setCellValue(mitsubishiSurveyList.get(i).getMitsubishiEmail().replaceAll(" ", ""));
-            creRow.createCell(5).setCellValue(mitsubishiSurveyList.get(i).getQuestionOne().trim().replaceAll(" ", ""));
-            creRow.createCell(6).setCellValue(mitsubishiSurveyList.get(i).getQuestionTwo().replaceAll(" ", ""));
-            creRow.createCell(7).setCellValue(mitsubishiSurveyList.get(i).getQuestionThree().replaceAll(" ", ""));
-            creRow.createCell(8).setCellValue(mitsubishiSurveyList.get(i).getQuestionFour().replaceAll(" ", ""));
-            creRow.createCell(9).setCellValue(mitsubishiSurveyList.get(i).getQuestionFive().replaceAll(" ", ""));
-            creRow.createCell(10).setCellValue(mitsubishiSurveyList.get(i).getQuestionSix().replaceAll(" ", ""));
-            creRow.createCell(11).setCellValue(mitsubishiSurveyList.get(i).getQuestionSeven().replaceAll(" ", ""));
-            creRow.createCell(12).setCellValue(mitsubishiSurveyList.get(i).getQuestionEight().replaceAll(" ", ""));
-            creRow.createCell(13).setCellValue(mitsubishiSurveyList.get(i).getQuestionNine().replaceAll(" ", ""));
-            creRow.createCell(14).setCellValue(mitsubishiSurveyList.get(i).getQuestionTen().replaceAll(" ", ""));
-			creRow.createCell(15).setCellValue(mitsubishiSurveyList.get(i).getMitsubishiComment().replaceAll(" ", ""));
+			creRow.createCell(1).setCellValue(mitsubishiSurveyList.get(i).getMitsubishiName().toUpperCase().replaceAll(" ", ""));
+            creRow.createCell(2).setCellValue(mitsubishiSurveyList.get(i).getMitsubishiCompanyName().toUpperCase().replaceAll(" ", ""));
+            creRow.createCell(3).setCellValue(mitsubishiSurveyList.get(i).getMitsubishiTelphone().toUpperCase().replaceAll(" ", ""));
+            creRow.createCell(4).setCellValue(mitsubishiSurveyList.get(i).getMitsubishiEmail().toUpperCase().replaceAll(" ", ""));
+            creRow.createCell(5).setCellValue(mitsubishiSurveyList.get(i).getQuestionOne().toUpperCase().replaceAll(" ", ""));
+            creRow.createCell(6).setCellValue(mitsubishiSurveyList.get(i).getQuestionTwo().toUpperCase().replaceAll(" ", ""));
+            creRow.createCell(7).setCellValue(mitsubishiSurveyList.get(i).getQuestionThree().toUpperCase().replaceAll(" ", ""));
+            creRow.createCell(8).setCellValue(mitsubishiSurveyList.get(i).getQuestionFour().toUpperCase().replaceAll(" ", ""));
+            creRow.createCell(9).setCellValue(mitsubishiSurveyList.get(i).getQuestionFive().toUpperCase().replaceAll(" ", ""));
+            creRow.createCell(10).setCellValue(mitsubishiSurveyList.get(i).getQuestionSix().toUpperCase().replaceAll(" ", ""));
+            creRow.createCell(11).setCellValue(mitsubishiSurveyList.get(i).getQuestionSeven().toUpperCase().replaceAll(" ", ""));
+            creRow.createCell(12).setCellValue(mitsubishiSurveyList.get(i).getQuestionEight().toUpperCase().replaceAll(" ", ""));
+            creRow.createCell(13).setCellValue(mitsubishiSurveyList.get(i).getQuestionNine().toUpperCase().replaceAll(" ", ""));
+            creRow.createCell(14).setCellValue(mitsubishiSurveyList.get(i).getQuestionTen().toUpperCase().replaceAll(" ", ""));
+			creRow.createCell(15).setCellValue(mitsubishiSurveyList.get(i).getMitsubishiComment().toUpperCase().replaceAll(" ", ""));
         }
 
         // 输出为一个新的Excel，也就是动态修改完之后的excel

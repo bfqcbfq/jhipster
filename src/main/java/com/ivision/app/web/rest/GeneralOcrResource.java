@@ -256,7 +256,7 @@ public class GeneralOcrResource {
 	private void exportFencers(ServletOutputStream out, List<GeneralOcrWordsResult> deliveryDetails)
 			throws Exception {
 		// 读取源文件
-        FileInputStream fis = new FileInputStream("D:\\FilesAndDatas\\serverResources\\三菱重工MGS-CN调查问卷.xlsx");
+        FileInputStream fis = new FileInputStream("D:\\FilesAndDatas\\serverResources\\三菱重工MGS-CN调查问卷General.xlsx");
         XSSFWorkbook workBook;
 		try {
 			workBook = new XSSFWorkbook(fis);
@@ -267,10 +267,13 @@ public class GeneralOcrResource {
 
         // 插入行
          //sheet.shiftRows(4, 4 + mitsubishiSurveyList.size(), mitsubishiSurveyList.size(), false, false);// 第1个参数是指要开始插入的行，第2个参数是结尾行数,第三个参数表示动态添加的行数
+       int i = 0;
         for (GeneralOcrWordsResult wordsResult : deliveryDetails) {
-            XSSFRow creRow = sheet.createRow(0);
+            XSSFRow creRow = sheet.createRow(i);
             
-			creRow.createCell(1).setCellValue(wordsResult.getWords());
+			creRow.createCell(0).setCellValue(wordsResult.getWords());
+			
+			i+=1;
         }
 
         // 输出为一个新的Excel，也就是动态修改完之后的excel

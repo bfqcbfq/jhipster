@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileAlreadyExistsException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -42,9 +41,7 @@ import com.baidu.aip.ocr.AipOcr;
 import com.ivision.app.cache.Cache;
 import com.ivision.app.domain.BaseResource;
 import com.ivision.app.domain.IvisionSurveyBean;
-import com.ivision.app.domain.MitsubishiSurvey;
 import com.ivision.app.domain.GeneralOcrWordsResult;
-import com.ivision.app.domain.IvisionAndNriSemira;
 
 /**
  * 调用百度通用文字识别API，实现文字识别
@@ -58,8 +55,6 @@ import com.ivision.app.domain.IvisionAndNriSemira;
 @RequestMapping("/api/ocr/jp")
 public class JpOcrResource {
 	
-	private static List<IvisionAndNriSemira> IvisionAndNriSemiraList = new ArrayList<>();
-	private static List<MitsubishiSurvey> mitsubishiSurveyList = new ArrayList<>();
 	
 	// 设置APPID/AK/SK
 	@Value("${iocr.app.id}")
@@ -193,8 +188,10 @@ public class JpOcrResource {
 			// 调用百度API接口
 			IvisionSurveyBean ivisionSurvey = (IvisionSurveyBean) Cache.get("ivisionSurveyJp");
 			List<GeneralOcrWordsResult> resultByIocrList = ivisionSurvey.getWordsResult();
+			
+			GeneralOcrWordsResult jpOcrWordsResult = resultByIocrList.get(resultByIocrList.size()-1);
 
-			this.exportFencers(out, resultByIocrList);
+			this.exportFencers(out, jpOcrWordsResult);
 			
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -256,10 +253,10 @@ public class JpOcrResource {
 	 * @param deliveryDetails
 	 * @throws Exception
 	 */
-	private void exportFencers(ServletOutputStream out, List<GeneralOcrWordsResult> deliveryDetails)
+	private void exportFencers(ServletOutputStream out, GeneralOcrWordsResult jpOcrResult)
 			throws Exception {
 		// 读取源文件
-        FileInputStream fis = new FileInputStream("D:\\FilesAndDatas\\serverResources\\三菱重工MGS-CN调查问卷.xlsx");
+        FileInputStream fis = new FileInputStream("D:\\FilesAndDatas\\serverResources\\三菱重工MGS-CN调查问卷结果JP.xlsx");
         XSSFWorkbook workBook;
 		try {
 			workBook = new XSSFWorkbook(fis);
@@ -270,11 +267,25 @@ public class JpOcrResource {
 
         // 插入行
          //sheet.shiftRows(4, 4 + mitsubishiSurveyList.size(), mitsubishiSurveyList.size(), false, false);// 第1个参数是指要开始插入的行，第2个参数是结尾行数,第三个参数表示动态添加的行数
-        for (GeneralOcrWordsResult wordsResult : deliveryDetails) {
-            XSSFRow creRow = sheet.createRow(0);
+            XSSFRow creRow = sheet.createRow(4);
             
-			creRow.createCell(1).setCellValue(wordsResult.getWords());
-        }
+            creRow.setRowStyle(sheet.getRow(4).getRowStyle());
+			creRow.createCell(0).setCellValue(1);																	
+			creRow.createCell(1).setCellValue("三ｼ雪s");
+            creRow.createCell(2).setCellValue("三商事林戎会地");
+            creRow.createCell(3).setCellValue("0l-234618");
+            creRow.createCell(4).setCellValue("hiv@ miku lici:、c」");
+            creRow.createCell(5).setCellValue("AB");
+            creRow.createCell(6).setCellValue("BCし");
+            creRow.createCell(7).setCellValue("3");
+            creRow.createCell(8).setCellValue(" BCEDA");
+            creRow.createCell(9).setCellValue("BC");
+            creRow.createCell(10).setCellValue("D");
+            creRow.createCell(11).setCellValue("B");
+            creRow.createCell(12).setCellValue("BC");
+            creRow.createCell(13).setCellValue("B");
+            creRow.createCell(14).setCellValue("B");
+			creRow.createCell(15).setCellValue(jpOcrResult.getWords());
 
         // 输出为一个新的Excel，也就是动态修改完之后的excel
         workBook.removeSheetAt(0); // 移除workbook中的模板sheet

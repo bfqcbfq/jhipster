@@ -798,6 +798,7 @@ class Upload extends React.Component<any, ImgProps, []> {
             questionSeven: questionSevens,
             questionEight: questionEights,
             questionNine: questionNines,
+            questionTen: questionTens,
             mitsubishiComment: mitsubishiComments
           });
         }
