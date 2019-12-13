@@ -19,7 +19,7 @@ interface ImgProps {
   files: any[];
   onLeave: any;
   url: String;
-  cq: 10;
+  cq: 20;
   onEnter: any;
   maxSize: number;
   suffixs: [];
@@ -100,6 +100,23 @@ interface ImgProps {
     account: any;
     comment: any;
   }];
+  MitsubishiSurvey: {
+    mitsubishiName: any;
+    mitsubishiCompanyName: any;
+    mitsubishiTelphone: any;
+    mitsubishiEmail: any;
+    questionOne: any;
+    questionTwo: any;
+    questionThree: any;
+    questionFour: any;
+    questionFive: any;
+    questionSix: any;
+    questionSeven: any;
+    questionEight: any;
+    questionNine: any;
+    questionTen: any;
+    mitsubishiComment: any;
+  };
   mitsubishiName: any;
   mitsubishiCompanyName: any;
   mitsubishiTelphone: any;
@@ -205,6 +222,23 @@ class Upload extends React.Component<any, ImgProps, []> {
         account: any,
         comment: any
       }],
+      MitsubishiSurvey: {
+        mitsubishiName: any,
+        mitsubishiCompanyName: any,
+        mitsubishiTelphone: any,
+        mitsubishiEmail: any,
+        questionOne: any,
+        questionTwo: any,
+        questionThree: any,
+        questionFour: any,
+        questionFive: any,
+        questionSix: any,
+        questionSeven: any,
+        questionEight: any,
+        questionNine: any,
+        questionTen: any,
+        mitsubishiComment: any
+      },
       mitsubishiName: any,
       mitsubishiCompanyName: any,
       mitsubishiTelphone: any,
@@ -241,6 +275,7 @@ class Upload extends React.Component<any, ImgProps, []> {
   uploadQueue: any[];
   uploadingQueue: any[];
   inputRef: any;
+  inputMHI: any;
   dargRef: any;
   constructor(props: any, context: any) {
     super(props, context);
@@ -250,7 +285,7 @@ class Upload extends React.Component<any, ImgProps, []> {
       files: [],
       onLeave: any,
       url: 'http://localhost:8080/api/ocr/iocr/upload',
-      cq: 10,
+      cq: 20,
       onEnter: any,
       maxSize: 10240000 * 10240000,
       suffixs: [],
@@ -331,6 +366,23 @@ class Upload extends React.Component<any, ImgProps, []> {
         account: any,
         comment: any
       }],
+      MitsubishiSurvey: {
+        mitsubishiName: any,
+        mitsubishiCompanyName: any,
+        mitsubishiTelphone: any,
+        mitsubishiEmail: any,
+        questionOne: any,
+        questionTwo: any,
+        questionThree: any,
+        questionFour: any,
+        questionFive: any,
+        questionSix: any,
+        questionSeven: any,
+        questionEight: any,
+        questionNine: any,
+        questionTen: any,
+        mitsubishiComment: any
+      },
       mitsubishiName: any,
       mitsubishiCompanyName: any,
       mitsubishiTelphone: any,
@@ -359,6 +411,8 @@ class Upload extends React.Component<any, ImgProps, []> {
     this.uploadingQueue = [];
     // 获取选择文件的值
     this.inputRef = React.createRef();
+    // 三菱重工input输入框
+    this.inputMHI = React.createRef();
     // 获取选择文件夹的值
     this.dargRef = React.createRef();
     // 关闭显示详情弹窗
@@ -373,6 +427,10 @@ class Upload extends React.Component<any, ImgProps, []> {
     // 选择文件夹上传
     // tslint:disable-next-line: unnecessary-bind
     this.handleFilesChange = this.handleFilesChange.bind(this);
+    // 当文本框内容发生改变时，重新赋值
+    // this.handleTextChange = this.handleTextChange.bind(this);
+    // 表单内容提交到后台服务器
+    // this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   handleDrag = (event: { preventDefault: () => void; stopPropagation: () => void; }) => {
@@ -649,6 +707,80 @@ class Upload extends React.Component<any, ImgProps, []> {
       .catch(function (error) {
       });
   }
+  // 提交修改过的表单数据到后台服务器（三菱重工问卷为例）
+  handleSubmit = (_: any) => {
+    event.preventDefault();
+    // const nativeEvents = _.nativeEvent;
+    // alert('An essay was submitted: ' + this.state.mitsubishiName);
+    // alert('An essay was submitted: ' + this.state.mitsubishiCompanyName);
+    // const mitsubishiName = document.getElementById('mitsubishiName').nodeValue;
+    const mitsubishiName = this.state.mitsubishiName;
+    const mitsubishiCompanyName = this.state.mitsubishiCompanyName;
+    const mitsubishiTelphone = this.state.mitsubishiTelphone;
+    const mitsubishiEmail = this.state.mitsubishiEmail;
+    const questionOne = this.state.questionOne;
+    const questionTwo = this.state.questionTwo;
+    const questionThree = this.state.questionThree;
+    const questionFour = this.state.questionFour;
+    const questionFive = this.state.questionFive;
+    const questionSix = this.state.questionSix;
+    const questionSeven = this.state.questionSeven;
+    const questionEight = this.state.questionEight;
+    const questionNine = this.state.questionNine;
+    const questionTen = this.state.questionTen;
+    const mitsubishiComment = this.state.mitsubishiComment;
+    const mitsubihsiNames: string = mitsubishiName;
+    const mitsubishiCompanyNames: string = mitsubishiCompanyName;
+    const mitsubishiTelphones: string = mitsubishiTelphone;
+    const mitsubishiEmails: string = mitsubishiEmail;
+    const questionOnes: string = questionOne;
+    const questionTwos: string = questionTwo;
+    const questionThrees: string = questionThree;
+    const questionFours: string = questionFour;
+    const questionFives: string = questionFive;
+    const questionSixs: string = questionSix;
+    const questionSevens: string = questionSeven;
+    const questionEights: string = questionEight;
+    const questionNines: string = questionNine;
+    const questionTens: string = questionTen;
+    const mitsubishiComments: string = mitsubishiComment;
+    axios.get(
+      'http://localhost:8080/api/ocr/iocr/edit',
+      {
+        params: {
+          mitsubishiName: mitsubihsiNames,
+          mitsubishiCompanyName: mitsubishiCompanyNames,
+          mitsubishiTelphone: mitsubishiTelphones,
+          mitsubishiEmail: mitsubishiEmails,
+          questionOne: questionOnes,
+          questionTwo: questionTwos,
+          questionThree: questionThrees,
+          questionFour: questionFours,
+          questionFive: questionFives,
+          questionSix: questionSixs,
+          questionSeven: questionSevens,
+          questionEight: questionEights,
+          questionNine: questionNines,
+          questionTen: questionTens,
+          mitsubishiComment: mitsubishiComments
+        }
+      })
+      .then((response: any) => {
+        this.setState({
+          // mitsubishiName: res.data,
+          displayFour: 'none'
+        });
+        alert('修改成功');
+
+      })
+      // tslint:disable-next-line: only-arrow-functions
+      .catch(error => {
+        this.setState({
+          displayFour: 'none'
+        });
+        alert('修改失败');
+      });
+  }
   // 显示扫描详情
   handleShowClick = (filepathType: any) => {
     const filepathTypes: string = filepathType;
@@ -826,6 +958,136 @@ class Upload extends React.Component<any, ImgProps, []> {
     document.getElementById('dragfile').setAttribute('webkitdirectory', ' ');
     document.getElementById('dragfile').setAttribute('directory', ' ');
     document.getElementById('dragfile').setAttribute('multiple', ' ');
+    // document.getElementById('MHIInput').setAttribute('value', '请编辑修改');
+
+  }
+  // 编辑输入框中的值，当输入框发生改变时重新赋值
+  handleTextChange = event => {
+    const target = event.target;
+    const name = target.name;
+    const value = target.value;
+    if (name === 'mitsubishiName') {
+      this.setState({
+        // mitsubishiName: event.target.value,
+        // mitsubishiCompanyName: event.target.value,
+        // mitsubishiTelphone: event.target.value,
+        // mitsubishiEmail: event.target.value
+        mitsubishiName: value
+      });
+    } else if (name === 'mitsubishiCompanyName') {
+      this.setState({
+        // mitsubishiName: event.target.value,
+        // mitsubishiCompanyName: event.target.value,
+        // mitsubishiTelphone: event.target.value,
+        // mitsubishiEmail: event.target.value
+        mitsubishiCompanyName: value
+      });
+    } else if (name === 'mitsubishiTelphone') {
+      this.setState({
+        // mitsubishiName: event.target.value,
+        // mitsubishiCompanyName: event.target.value,
+        // mitsubishiTelphone: event.target.value,
+        // mitsubishiEmail: event.target.value
+        mitsubishiTelphone: value
+      });
+    } else if (name === 'mitsubishiEmail') {
+      this.setState({
+        // mitsubishiName: event.target.value,
+        // mitsubishiCompanyName: event.target.value,
+        // mitsubishiTelphone: event.target.value,
+        // mitsubishiEmail: event.target.value
+        mitsubishiEmail: value
+      });
+    } else if (name === 'questionOne') {
+      this.setState({
+        // mitsubishiName: event.target.value,
+        // mitsubishiCompanyName: event.target.value,
+        // mitsubishiTelphone: event.target.value,
+        // mitsubishiEmail: event.target.value
+        questionOne: value
+      });
+    } else if (name === 'questionTwo') {
+      this.setState({
+        // mitsubishiName: event.target.value,
+        // mitsubishiCompanyName: event.target.value,
+        // mitsubishiTelphone: event.target.value,
+        // mitsubishiEmail: event.target.value
+        questionTwo: value
+      });
+    } else if (name === 'questionThree') {
+      this.setState({
+        // mitsubishiName: event.target.value,
+        // mitsubishiCompanyName: event.target.value,
+        // mitsubishiTelphone: event.target.value,
+        // mitsubishiEmail: event.target.value
+        questionThree: value
+      });
+    } else if (name === 'questionFour') {
+      this.setState({
+        // mitsubishiName: event.target.value,
+        // mitsubishiCompanyName: event.target.value,
+        // mitsubishiTelphone: event.target.value,
+        // mitsubishiEmail: event.target.value
+        questionFour: value
+      });
+    } else if (name === 'questionFive') {
+      this.setState({
+        // mitsubishiName: event.target.value,
+        // mitsubishiCompanyName: event.target.value,
+        // mitsubishiTelphone: event.target.value,
+        // mitsubishiEmail: event.target.value
+        mitsubishiCompanyName: value
+      });
+    } else if (name === 'questionSix') {
+      this.setState({
+        // mitsubishiName: event.target.value,
+        // mitsubishiCompanyName: event.target.value,
+        // mitsubishiTelphone: event.target.value,
+        // mitsubishiEmail: event.target.value
+        questionSix: value
+      });
+    } else if (name === 'questionSeven') {
+      this.setState({
+        // mitsubishiName: event.target.value,
+        // mitsubishiCompanyName: event.target.value,
+        // mitsubishiTelphone: event.target.value,
+        // mitsubishiEmail: event.target.value
+        questionSeven: value
+      });
+    } else if (name === 'questionEight') {
+      this.setState({
+        // mitsubishiName: event.target.value,
+        // mitsubishiCompanyName: event.target.value,
+        // mitsubishiTelphone: event.target.value,
+        // mitsubishiEmail: event.target.value
+        questionEight: value
+      });
+    } else if (name === 'questionNine') {
+      this.setState({
+        // mitsubishiName: event.target.value,
+        // mitsubishiCompanyName: event.target.value,
+        // mitsubishiTelphone: event.target.value,
+        // mitsubishiEmail: event.target.value
+        questionNine: value
+      });
+    } else if (name === 'questionTen') {
+      this.setState({
+        // mitsubishiName: event.target.value,
+        // mitsubishiCompanyName: event.target.value,
+        // mitsubishiTelphone: event.target.value,
+        // mitsubishiEmail: event.target.value
+        questionTen: value
+      });
+    } else if (name === 'mitsubishiComment') {
+      this.setState({
+        // mitsubishiName: event.target.value,
+        // mitsubishiCompanyName: event.target.value,
+        // mitsubishiTelphone: event.target.value,
+        // mitsubishiEmail: event.target.value
+        mitsubishiComment: value
+      });
+    }
+
   }
   // 初始化页面
   render() {
@@ -923,271 +1185,83 @@ class Upload extends React.Component<any, ImgProps, []> {
             </form>
           </div>
         </div>
-        { /* 模板1 */}
-        <div className="popLayer" style={{ display: this.state.display }}>
-          <span className="close" onClick={this.clockClick}>关闭</span>
-          <div className="popBox">
-            <div className="title">{this.state.title}</div>
-            <div className="leftcontent">
-              <ul>
-                <li>发货单位:{this.state.deliveryCompany}</li>
-                <li>地址:{this.state.address}</li>
-              </ul>
-            </div>
-            <div className="rightcontent">
-              <ul>
-                <li>发货单号:{this.state.deliveryNo}</li>
-                <li>发货日期:{this.state.deliveryDate}</li>
-                <li>联系电话:{this.state.contactNUmber}</li>
-              </ul>
-            </div>
-            <div className="firstdiv">
-              <table>
-                <thead>
-                  <tr>
-                    <th>仓库</th>
-                    <th>料号</th>
-                    <th>品牌</th>
-                    <th>单位</th>
-                    <th>数量</th>
-                    <th>单重</th>
-                    <th>合计重量</th>
-                    <th>批次号</th>
-                    <th>出货日期</th>
-                    <th>备注</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {
-                    // tslint:disable-next-line: ter-arrow-body-style
-                    this.state.deliveryDetails.map((details, index) => {
-                      return (
-                        // tslint:disable-next-line: jsx-key
-                        <tr key={index}>
-                          <td>{details.storehouseNo}</td>
-                          <td>{details.materialNo}</td>
-                          <td>{details.brand}</td>
-                          <td>{details.unit}</td>
-                          <td>{details.quantity}</td>
-                          <td>{details.singleWeight}</td>
-                          <td>{details.totalWeight}</td>
-                          <td>{details.batchNo}</td>
-                          <td>{details.date}</td>
-                          <td>{details.comment}</td>
-                        </tr>
-                      );
-                    })
-                  }
-                </tbody>
-              </table>
-              <div className="onebottomcontent">{this.state.note}</div>
-              <div>
-                <span>经手人(签字或盖章){this.state.handler}</span>
-                <span className="spantwo">领料人(签字或盖章){this.state.picker}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        { /* 模板2 */}
-        <div className="popLayer" style={{ display: this.state.displayTwo }}>
-          <span className="close" onClick={this.clockClick}>关闭</span>
-          <div className="popBox">
-            <div className="title">{this.state.title}</div>
-            <div><span className="sellorder">出货单</span><span className="page">页码: 1/1</span></div>
-            <div className="leftcontent">
-              <ul>
-                <li>客户代码:{this.state.businessCode}</li>
-                <li>地址:{this.state.address}</li>
-              </ul>
-            </div>
-            <div className="rightcontent">
-              <ul>
-                <li>出货单号:{this.state.deliveryNo}</li>
-                <li>出货日期:{this.state.deliveryDate}</li>
-              </ul>
-            </div>
-            <div className="firstdiv">
-              <table>
-                <thead>
-                  <tr>
-                    <th>款号</th>
-                    <th>款式</th>
-                    <th>颜色</th>
-                    <th>单位</th>
-                    <th>S</th>
-                    <th>M</th>
-                    <th>L</th>
-                    <th>小计</th>
-                    <th>单价</th>
-                    <th>金额</th>
-                    <th>备注</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {
-                    // tslint:disable-next-line: ter-arrow-body-style
-                    this.state.MxDeliveryDetails.map((details, index) => {
-                      return (
-                        // tslint:disable-next-line: jsx-key
-                        <tr key={index}>
-                          <td>{details.styleNo}</td>
-                          <td>{details.style}</td>
-                          <td>{details.color}</td>
-                          <td>{details.unit}</td>
-                          <td>{details.modelS}</td>
-                          <td>{details.modelM}</td>
-                          <td>{details.modelL}</td>
-                          <td>{details.subtotal}</td>
-                          <td>{details.unitPrice}</td>
-                          <td>{details.account}</td>
-                          <td>{details.comment}</td>
-                        </tr>
-                      );
-                    })
-                  }
-                </tbody>
-              </table>
-              <div className="bottomcontent">
-                <span className="totalnum">合计数量:{this.state.totalQuantity}</span>
-                <span className="totalmoney">合计金额:{this.state.totalAmount}</span>
-              </div>
-              <div>收到货后,请立即验货,货物如有问题,请于一星期内通知,逾期本公司恕不负责.</div>
-              <div>
-                <span>收货人签名:{this.state.deliverySign}</span>
-                <span className="sig">送货人签名:{this.state.handlerSign}</span>
-                <span className="sig">制单人:{this.state.orderMaker}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        { /* 模板3 */}
-        <div className="popLayer" style={{ display: this.state.displayThree }}>
-          <span className="close" onClick={this.clockClick}>关闭</span>
-          <div className="popBox">
-            <div className="title">{this.state.title}</div>
-            <div className="leftcontent">
-              <ul>
-                <li>客户名称:{this.state.customerName}</li>
-                <li>客户电话:{this.state.customerPhone}</li>
-              </ul>
-            </div>
-            <div className="midcontent">
-              <ul>
-                <li>日期:{this.state.deliveryDate}</li>
-                <li>发票种类:{this.state.invoiceType}</li>
-              </ul>
-            </div>
-            <div className="rightcontent">
-              <ul>
-                <li>出库单号:{this.state.deliveryNo}</li>
-                <li>结算方式:{this.state.settleStyle}</li>
-              </ul>
-            </div>
-            <div className="firstdiv">
-              <table>
-                <thead>
-                  <tr>
-                    <th>序号</th>
-                    <th>配件编号</th>
-                    <th>配件名称</th>
-                    <th>车型</th>
-                    <th>产地</th>
-                    <th>单位</th>
-                    <th>单价</th>
-                    <th>数量</th>
-                    <th>金额</th>
-                    <th>备注</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {
-                    // tslint:disable-next-line: ter-arrow-body-style
-                    this.state.ydDeliveryDetails.map((details, index) => {
-                      return (
-                        // tslint:disable-next-line: jsx-key
-                        <tr key={index}>
-                          <td>{details.orderNumber}</td>
-                          <td>{details.partsNumber}</td>
-                          <td>{details.partsName}</td>
-                          <td>{details.vehicleType}</td>
-                          <td>{details.unit}</td>
-                          <td>{details.partsNumber}</td>
-                          <td>{details.unitPrice}</td>
-                          <td>{details.quantity}</td>
-                          <td>{details.account}</td>
-                          <td>{details.comment}</td>
-                        </tr>
-                      );
-                    })
-                  }
-                </tbody>
-              </table>
-              <div className="threebottomcontent">本页小计金额:{this.state.totalAccount}</div>
-              <div className="threebottomcontent"><span>总合计金额(大写):{this.state.totalAmountBig}</span>
-                <span className="totalmoneysmall">总合计金额(小写):{this.state.totalAmountSmall}</span>
-              </div>
-              <div>
-                <span>公司电话:{this.state.totalAmountSmall}</span>
-                <span className="spantwo">地址:{this.state.address}</span>
-              </div>
-              <div>
-                <span>制单人:{this.state.orderMaker}</span>
-                <span className="delivery">发货:{this.state.deliveryer}</span>
-                <span className="delivery">收款:{this.state.csahier}</span>
-                <span className="delivery">收货:{this.state.receiver}</span>
-                <span className="delivery">客户签字:{this.state.customerSign}</span>
-                <span className="delivery">页码:1/1</span>
-              </div>
-              <div>
-                <span>主营:{this.state.mainBusiness}</span>
-              </div>
-            </div>
-          </div>
-        </div>
         { /* 模板4 */}
         <div className="popLayer" style={{ display: this.state.displayFour }}>
           <span className="close" onClick={this.clockClick}>关闭</span>
           <div className="popBox">
-            <div className="title">三菱重工MGS-CN产品市场调查问卷</div>
-            <div className="topContent">
-              <ul>
-                <li>姓名&nbsp;&nbsp;&nbsp;:<strong>{this.state.mitsubishiName}</strong></li>
-                <li>公司名称&nbsp;&nbsp;&nbsp;:<strong>{this.state.mitsubishiCompanyName}</strong></li>
-                <li>电话&nbsp;&nbsp;&nbsp;:<strong>{this.state.mitsubishiTelphone}</strong></li>
-                <li>E-mail&nbsp;&nbsp;&nbsp;:<strong>{this.state.mitsubishiEmail}</strong></li>
-              </ul>
+            <div className="MHIFormDiv">
+              <form className="MHIForm" onSubmit={this.handleSubmit}>
+                <div className="title">三菱重工MGS-CN产品市场调查问卷</div>
+                <div className="topContent">
+                  姓名：<input id="mitsubishiName" name="mitsubishiName" type="text" ref={input => this.inputMHI = input}
+                    defaultValue={this.state.mitsubishiName}
+                    onChange={this.handleTextChange} />
+                  <h4>{this.state.mitsubishiName}</h4>
+                  公司名称: <input type="text" id="mitsubishiCompanyName" name="mitsubishiCompanyName" ref={input => this.inputMHI = input}
+                    defaultValue={this.state.mitsubishiCompanyName}
+                    onChange={this.handleTextChange} />
+                  电话: <input type="text" id="mitsubishiTelphone" name="mitsubishiTelphone" ref={input => this.inputMHI = input}
+                    defaultValue={this.state.mitsubishiTelphone}
+                    onChange={this.handleTextChange} />
+                  E-mail: <input type="text" id="mitsubishiEmail" name="mitsubishiEmail" ref={input => this.inputMHI = input}
+                    defaultValue={this.state.mitsubishiEmail}
+                    onChange={this.handleTextChange} />
+                </div>
+                <div className="mainContent">
+                  <ul>
+                    <li>问题1：柴油发电机选型的时候以哪种功率定义为标准(多选)&nbsp;&nbsp;&nbsp;回答(请填写字母)：
+                  <input type="text" id="questionOne" name="questionOne" ref={input => this.inputMHI = input}
+                        defaultValue={this.state.questionOne} onChange={this.handleTextChange} /></li>
+                    <li>选项：A: PRP  B: COP  C: DCP  D: ESP  E: 其他</li>
+                    <li>问题2：基于上述功率定义选择,中国市场主流柴油发电机功率范围(多选)&nbsp;&nbsp;回答(请填写字母)：
+                  <input type="text" id="questionTwo" name="questionTwo" ref={input => this.inputMHI = input}
+                        defaultValue={this.state.questionTwo} onChange={this.handleTextChange} /></li>
+                    <li>选项：A: 1800kw  B: 2000kw  C: 2200kw  D: 2400kw  E: 其他</li>
+                    <li>问题3：预测今后中国数据中心应用的柴油发电机主流安装方式&nbsp;&nbsp;回答(请填写字母)：
+                  <input type="text" id="questionThree" name="questionThree" ref={input => this.inputMHI = input}
+                        defaultValue={this.state.questionThree} onChange={this.handleTextChange} /></li>
+                    <li>选项：A: 集装箱式，室外  B: 开放式，室内  C: 其他</li>
+                    <li>问题4：柴油发电机选择条件的先后优先度(排序)&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：
+                  <input type="text" id="questionFour" name="questionFour" ref={input => this.inputMHI = input}
+                        defaultValue={this.state.questionFour} onChange={this.handleTextChange} /></li>
+                    <li>选项：A: 喷油方式  B: 质量好，维护方便  C: 价格 D: 品牌 E: 其他</li>
+                    <li>问题5：下述规格中必要配置(多选)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：
+                  <input type="text" id="questionFive" name="questionFive" ref={input => this.inputMHI = input}
+                        defaultValue={this.state.questionFive} onChange={this.handleTextChange} /></li>
+                    <li>选项：A: Dual Start  B: 原厂并机系统  C: 远程监控系统 D: 双轴承发电机  E: 其他</li>
+                    <li>问题6：数据中心常见负载功率因数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：
+                  <input type="text" id="questionSix" name="questionSix" ref={input => this.inputMHI = input}
+                        defaultValue={this.state.questionSix} onChange={this.handleTextChange} /></li>
+                    <li>选项：A: 容性超前0.95  B: 容性超前0.9  C: 阻性1.0  D: 感性滞后0.8   E: 其他</li>
+                    <li>问题7：是否要求发电机组一步带载100%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：
+                  <input type="text" id="questionSeven" name="questionSeven" ref={input => this.inputMHI = input}
+                        defaultValue={this.state.questionSeven} onChange={this.handleTextChange} /></li>
+                    <li>选项：A: 是  B: 否</li>
+                    <li>问题8：下述哪些条件是必须的&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：
+                  <input type="text" id="questionEight" name="questionEight" ref={input => this.inputMHI = input}
+                        defaultValue={this.state.questionEight} onChange={this.handleTextChange} /></li>
+                    <li>选项：A: 泰尔认证  B: Uptime认证  C: 国三排放  D: 其他</li>
+                    <li>问题9：通常希望发电机组的交货周期是多长时间&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：
+                  <input type="text" id="questionNine" name="questionNine" ref={input => this.inputMHI = input}
+                        defaultValue={this.state.questionNine} onChange={this.handleTextChange} /></li>
+                    <li>选项：A: 2个月  B: 3个月  C: 4个月以上也可以  D: 其他</li>
+                    <li>问题10：是否使用过或者了解过三菱重工的柴油发电机组或者发动机产品&nbsp;&nbsp;回答(请填写字母)：
+                  <input type="text" id="questionTen" name="questionTen" ref={input => this.inputMHI = input}
+                        defaultValue={this.state.questionTen} onChange={this.handleTextChange} /></li>
+                    <li>选项：A: 是  B: 否</li>
+                  </ul>
+                </div>
+                <div className="footContent">
+                  <ul>
+                    <li>请对三菱重工MGSCN产品提出宝贵意见(请使用正楷书写)</li>
+                    <li><input type="text" id="mitsubishiComment" name="mitsubishiComment" ref={input => this.inputMHI = input}
+                      defaultValue={this.state.mitsubishiComment}
+                      onChange={this.handleTextChange} /></li>
+                  </ul>
+                </div>
+                <input type="submit" ref={input => this.inputMHI = input} value="提交修改" />
+              </form>
             </div>
-            <div className="mainContent">
-              <ul>
-                <li>问题1：柴油发电机选型的时候以哪种功率定义为标准(多选)&nbsp;&nbsp;&nbsp;回答(请填写字母)：<strong>{this.state.questionOne}</strong></li>
-                <li>选项：A: PRP  B: COP  C: DCP  D: ESP  E: 其他</li>
-                <li>问题2：基于上述功率定义选择,中国市场主流柴油发电机功率范围(多选)&nbsp;&nbsp;回答(请填写字母)：<strong>{this.state.questionTwo}</strong></li>
-                <li>选项：A: 1800kw  B: 2000kw  C: 2200kw  D: 2400kw  E: 其他</li>
-                <li>问题3：预测今后中国数据中心应用的柴油发电机主流安装方式&nbsp;&nbsp;回答(请填写字母)：<strong>{this.state.questionThree}</strong></li>
-                <li>选项：A: 集装箱式，室外  B: 开放式，室内  C: 其他</li>
-                <li>问题4：柴油发电机选择条件的先后优先度(排序)&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：<strong>{this.state.questionFour}</strong></li>
-                <li>选项：A: 喷油方式  B: 质量好，维护方便  C: 价格 D: 品牌 E: 其他</li>
-                <li>问题5：下述规格中必要配置(多选)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：<strong>{this.state.questionFive}</strong></li>
-                <li>选项：A: Dual Start  B: 原厂并机系统  C: 远程监控系统 D: 双轴承发电机  E: 其他</li>
-                <li>问题6：数据中心常见负载功率因数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：<strong>{this.state.questionSix}</strong></li>
-                <li>选项：A: 容性超前0.95  B: 容性超前0.9  C: 阻性1.0  D: 感性滞后0.8   E: 其他</li>
-                <li>问题7：是否要求发电机组一步带载100%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：<strong>{this.state.questionSeven}</strong></li>
-                <li>选项：A: 是  B: 否</li>
-                <li>问题8：下述哪些条件是必须的&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：<strong>{this.state.questionEight}</strong></li>
-                <li>选项：A: 泰尔认证  B: Uptime认证  C: 国三排放  D: 其他</li>
-                <li>问题9：通常希望发电机组的交货周期是多长时间&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：<strong>{this.state.questionNine}</strong></li>
-                <li>选项：A: 2个月  B: 3个月  C: 4个月以上也可以  D: 其他</li>
-                <li>问题10：是否使用过或者了解过三菱重工的柴油发电机组或者发动机产品&nbsp;&nbsp;回答(请填写字母)：<strong>{this.state.questionTen}</strong></li>
-                <li>选项：A: 是  B: 否</li>
-              </ul>
-            </div>
-            <div className="footContent">
-              <ul>
-                <li>请对三菱重工MGSCN产品提出宝贵意见(请使用正楷书写)</li>
-                <li><strong>{this.state.mitsubishiComment}</strong></li>
-              </ul>
-            </div>
-
           </div>
         </div>
         <div>
@@ -1230,7 +1304,7 @@ Upload.defaultProps = {
   onError: () => {
     return true;
   },
-  cq: 10, // 限制上传数量
+  cq: 20, // 限制上传数量
   multiple: true, // 是否开启多个上传 true 是 false 否
   images: 'image/*',
   maxSize: 1024 * 1024 * 1024,

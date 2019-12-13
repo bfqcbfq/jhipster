@@ -1,6 +1,7 @@
 package imageanalyzer.common;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -1184,4 +1185,20 @@ public class ImageAnalyzerCommon {
 		else
 			return false;
 	}
+	
+	// 对上传图片大小和分辨率进行调整
+	 public static BufferedImage resize(int targetWidth, int targetHeight, BufferedImage src) {
+         double scaleW = (double) targetWidth / (double) src.getWidth();
+         double scaleH = (double) targetHeight / (double) src.getHeight();
+ 
+         double scale = scaleW < scaleH ? scaleW : scaleH;
+ 
+         BufferedImage result = new BufferedImage((int) (src.getWidth() * scale), (int) (src.getHeight() * scale), BufferedImage.TYPE_INT_ARGB);
+ 
+         Graphics2D g2d = result.createGraphics();
+         g2d.drawImage(src, 0, 0, result.getWidth(), result.getHeight(), null);
+         g2d.dispose();
+ 
+         return result;
+ }
 }

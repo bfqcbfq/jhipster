@@ -3,6 +3,7 @@
  */
 package com.ivision.app.web.rest;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -15,6 +16,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
@@ -43,6 +45,9 @@ import com.ivision.app.cache.Cache;
 import com.ivision.app.domain.BaseResource;
 import com.ivision.app.domain.IvisionSurveyBean;
 import com.ivision.app.domain.MitsubishiSurvey;
+
+import imageanalyzer.common.ImageAnalyzerCommon;
+
 import com.ivision.app.domain.GeneralOcrWordsResult;
 import com.ivision.app.domain.IvisionAndNriSemira;
 
@@ -58,8 +63,6 @@ import com.ivision.app.domain.IvisionAndNriSemira;
 @RequestMapping("/api/ocr/general")
 public class GeneralOcrResource {
 	
-	private static List<IvisionAndNriSemira> IvisionAndNriSemiraList = new ArrayList<>();
-	private static List<MitsubishiSurvey> mitsubishiSurveyList = new ArrayList<>();
 	
 	// 设置APPID/AK/SK
 	@Value("${iocr.app.id}")
@@ -123,9 +126,22 @@ public class GeneralOcrResource {
 			try {
 
 				// 将传来的文件写入新建的文件
-				uploadFile.transferTo(new File(newFilePath));
+				 uploadFile.transferTo(new File(newFilePath));
+				//File file2 = new File(newFilePath);
+				
 
-				IvisionSurveyBean ivisionSurvey = getResultByIocr(newFilePath);
+				BufferedImage  image = ImageIO.read(new File(newFilePath));
+				
+				BufferedImage newImage = resetMaxSize(image);
+				
+				System.out.println(newImage.getWidth());
+				System.out.println(newImage.getHeight());
+				
+				String resetFile = "D:\\FilesAndDatas\\upload\\reset\\"+newFileName;
+				
+				ImageIO.write(newImage, "JPG", new File(resetFile));
+
+				IvisionSurveyBean ivisionSurvey = getResultByIocr(resetFile);
 
 				ivisionSurvey.setFilepath(newFilePath);
 
@@ -402,5 +418,25 @@ public class GeneralOcrResource {
        String val = value != null ? String.valueOf(value) : "";
        cell.setCellValue(val);
    }
+   
+   private BufferedImage resetMaxSize(BufferedImage image) {
+   	
+   	int maxSize = 4096;
+       int height = image.getHeight();
+       int width = image.getWidth();
+       if (height < maxSize && width < maxSize) {
+               return image;
+       }
+       int newWidth;
+       int newHeight;
+       if (width > height) {
+               newWidth = maxSize;
+               newHeight = (int) (maxSize * (double) height / width);
+       } else {
+               newWidth = (int) (maxSize * (double) width / height);
+               newHeight = maxSize;
+       }
+       return ImageAnalyzerCommon.resize(newWidth, newHeight, image);
+}
 
 }
