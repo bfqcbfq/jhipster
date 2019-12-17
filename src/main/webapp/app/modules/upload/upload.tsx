@@ -28,6 +28,7 @@ interface ImgProps {
   images: 'image/*';
   isDragover: false;
   filepath: any;
+  type: any;
   display: any;
   title: any;
   deliverMessage: [];
@@ -150,6 +151,7 @@ class Upload extends React.Component<any, ImgProps, []> {
       maxLength: number,
       suffixs: [],
       filepath: any,
+      type: any,
       display: any,
       title: any,
       deliverMessage: [],
@@ -294,6 +296,7 @@ class Upload extends React.Component<any, ImgProps, []> {
       images: 'image/*',
       isDragover: false,
       filepath: any,
+      type: any,
       display: 'none',
       title: any,
       deliverMessage: [],
@@ -571,6 +574,7 @@ class Upload extends React.Component<any, ImgProps, []> {
           // tslint:disable-next-line: no-console
           console.log(message);
           const templatetype = _.data.templateType;
+          const filepath = _.data.filepath;
           if (filepathType !== null && filepathType !== undefined && filepathType !== '') {
             // tslint:disable-next-line: no-console
             console.log(filepathType);
@@ -578,6 +582,7 @@ class Upload extends React.Component<any, ImgProps, []> {
               current.success = true;
               current.filepathType = filepathType;
               current.templatetype = templatetype;
+              current.filepath = filepath;
               return {
                 files: [...prevState.files, current]
               };
@@ -675,6 +680,7 @@ class Upload extends React.Component<any, ImgProps, []> {
     console.log(filepathType);
     // tslint:disable-next-line: no-inferrable-types
     const filepathTypes: string = filepathType;
+    // const filepaths: string = filepath;
     // tslint:disable-next-line: no-console
     console.log(filepathTypes);
     axios.get(
@@ -729,6 +735,8 @@ class Upload extends React.Component<any, ImgProps, []> {
     const questionNine = this.state.questionNine;
     const questionTen = this.state.questionTen;
     const mitsubishiComment = this.state.mitsubishiComment;
+    const filepath = this.state.filepath;
+    const type = this.state.type;
     const mitsubihsiNames: string = mitsubishiName;
     const mitsubishiCompanyNames: string = mitsubishiCompanyName;
     const mitsubishiTelphones: string = mitsubishiTelphone;
@@ -744,6 +752,8 @@ class Upload extends React.Component<any, ImgProps, []> {
     const questionNines: string = questionNine;
     const questionTens: string = questionTen;
     const mitsubishiComments: string = mitsubishiComment;
+    const filepaths: string = filepath;
+    const types: string = type;
     axios.get(
       'http://localhost:8080/api/ocr/iocr/edit',
       {
@@ -762,13 +772,15 @@ class Upload extends React.Component<any, ImgProps, []> {
           questionEight: questionEights,
           questionNine: questionNines,
           questionTen: questionTens,
-          mitsubishiComment: mitsubishiComments
+          mitsubishiComment: mitsubishiComments,
+          filepath: filepaths,
+          type: types
         }
       })
       .then((response: any) => {
         this.setState({
           // mitsubishiName: res.data,
-          displayFour: 'none'
+          // displayFour: 'none'
         });
         alert('修改成功');
 
@@ -776,18 +788,20 @@ class Upload extends React.Component<any, ImgProps, []> {
       // tslint:disable-next-line: only-arrow-functions
       .catch(error => {
         this.setState({
-          displayFour: 'none'
+          // displayFour: 'none'
         });
         alert('修改失败');
       });
   }
   // 显示扫描详情
-  handleShowClick = (filepathType: any) => {
+  handleShowClick = (filepath: any, filepathType: any) => {
+    const filepaths: string = filepath;
     const filepathTypes: string = filepathType;
     axios.get(
       'http://localhost:8080/api/ocr/iocr/showDetails',
       {
         params: {
+          filepath: filepaths,
           filepathType: filepathTypes
         }
       })
@@ -914,6 +928,7 @@ class Upload extends React.Component<any, ImgProps, []> {
           const questionNines = response.data.questionNine;
           const questionTens = response.data.questionTen;
           const mitsubishiComments = response.data.mitsubishiComment;
+          // const filepaths = response.data.filepath;
           this.setState({
             displayFour: 'block',
             title: titles,
@@ -931,7 +946,9 @@ class Upload extends React.Component<any, ImgProps, []> {
             questionEight: questionEights,
             questionNine: questionNines,
             questionTen: questionTens,
-            mitsubishiComment: mitsubishiComments
+            mitsubishiComment: mitsubishiComments,
+            filepath: filepaths,
+            type: filepathTypes
           });
         }
 
@@ -1036,7 +1053,7 @@ class Upload extends React.Component<any, ImgProps, []> {
         // mitsubishiCompanyName: event.target.value,
         // mitsubishiTelphone: event.target.value,
         // mitsubishiEmail: event.target.value
-        mitsubishiCompanyName: value
+        questionFive: value
       });
     } else if (name === 'questionSix') {
       this.setState({
@@ -1134,9 +1151,9 @@ class Upload extends React.Component<any, ImgProps, []> {
                       <span className="fileName">{file.name}</span>
                       {file.success ? <span className="state">成功</span> : <span>失败/模板类型未定义</span>}
                       {file.success ? <span className="type">{file.templatetype}</span> : <span className="newtype">无</span>}
-                      {file.success ? <span className="displayshow" onClick={this.handleShowClick.bind(this, file.filepathType)}>查看</span> :
+                      {file.success ? <span className="displayshow" onClick={this.handleShowClick.bind(this, file.filepath, file.filepathType)}>查看</span> :
                         <span className="newdisplayshow">查看</span>}
-                      {file.success ? <span className="download" onClick={this.handleDownLoadClick.bind(this, file.filepathType)}>下载</span> :
+                      {file.success ? <span className="download" onClick={this.handleDownLoadClick.bind(this, file.filepath, file.filepathType)}>下载</span> :
                         <span className="download">下载</span>}
                       <span className="del" onClick={this.handleCloseClick.bind(this, file.guid)}>删除</span>
                     </div>

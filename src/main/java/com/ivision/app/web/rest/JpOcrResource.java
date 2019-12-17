@@ -122,7 +122,7 @@ public class JpOcrResource {
 
 				IvisionSurveyBean ivisionSurvey = getResultByIocr(newFilePath);
 
-				ivisionSurvey.setFilepath(newFilePath);
+				ivisionSurvey.setfilepath(newFilePath);
 
 				Cache.put("ivisionSurveyJp", ivisionSurvey, Cache.CACHE_HOLD_TIME_24H);
 

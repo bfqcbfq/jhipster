@@ -50,11 +50,11 @@ public class BaseResource {
 		this.warning = warning;
 	}
 
-	public String getFilepath() {
+	public String getfilepath() {
 		return filepath;
 	}
 
-	public void setFilepath(String filepath) {
+	public void setfilepath(String filepath) {
 		this.filepath = filepath;
 	}
 

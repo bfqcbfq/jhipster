@@ -143,8 +143,7 @@ public class GeneralOcrResource {
 
 				IvisionSurveyBean ivisionSurvey = getResultByIocr(resetFile);
 
-				ivisionSurvey.setFilepath(newFilePath);
-
+				ivisionSurvey.setfilepath(newFilePath);
 				Cache.put("ivisionSurvey", ivisionSurvey, Cache.CACHE_HOLD_TIME_24H);
 
 				return ResponseEntity.ok(ivisionSurvey);
