@@ -1118,6 +1118,7 @@ class Upload extends React.Component<any, ImgProps, []> {
               <li className="secondli">状态</li>
               <li className="fourli">类型</li>
               <li className="thirdli">操作</li>
+              <li className="fifthli"><button className="batchExportFile">批量导出</button></li>
             </ul>
             <div className="over" style={{ display: this.state.namedisplay }}>
               {
@@ -1210,19 +1211,20 @@ class Upload extends React.Component<any, ImgProps, []> {
               <form className="MHIForm" onSubmit={this.handleSubmit}>
                 <div className="title">三菱重工MGS-CN产品市场调查问卷</div>
                 <div className="topContent">
-                  姓名：<input id="mitsubishiName" name="mitsubishiName" type="text" ref={input => this.inputMHI = input}
+                  <ul>
+                    <li> 姓名：<input id="mitsubishiName" name="mitsubishiName" type="text" ref={input => this.inputMHI = input}
                     defaultValue={this.state.mitsubishiName}
-                    onChange={this.handleTextChange} />
-                  <h4>{this.state.mitsubishiName}</h4>
-                  公司名称: <input type="text" id="mitsubishiCompanyName" name="mitsubishiCompanyName" ref={input => this.inputMHI = input}
+                    onChange={this.handleTextChange} /></li>
+                    <li>公司名称: <input type="text" id="mitsubishiCompanyName" name="mitsubishiCompanyName" ref={input => this.inputMHI = input}
                     defaultValue={this.state.mitsubishiCompanyName}
-                    onChange={this.handleTextChange} />
-                  电话: <input type="text" id="mitsubishiTelphone" name="mitsubishiTelphone" ref={input => this.inputMHI = input}
+                    onChange={this.handleTextChange} /></li>
+                    <li>电话: <input type="text" id="mitsubishiTelphone" name="mitsubishiTelphone" ref={input => this.inputMHI = input}
                     defaultValue={this.state.mitsubishiTelphone}
-                    onChange={this.handleTextChange} />
-                  E-mail: <input type="text" id="mitsubishiEmail" name="mitsubishiEmail" ref={input => this.inputMHI = input}
+                    onChange={this.handleTextChange} /></li>
+                    <li>E-mail: <input type="text" id="mitsubishiEmail" name="mitsubishiEmail" ref={input => this.inputMHI = input}
                     defaultValue={this.state.mitsubishiEmail}
-                    onChange={this.handleTextChange} />
+                    onChange={this.handleTextChange} /></li>
+                  </ul>
                 </div>
                 <div className="mainContent">
                   <ul>
