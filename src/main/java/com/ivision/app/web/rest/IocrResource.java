@@ -161,10 +161,10 @@ public class IocrResource {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 
 		// 定义文件下载本地新名称
-		String newFileName = dateFormat.format(now) + System.nanoTime();
+		String newFileName = dateFormat.format(now) + System.nanoTime()+ fileType;
 
 		// 新文件的路径
-		String newFilePath = filePath + newFileName + fileType;
+		String newFilePath = filePath + newFileName;
 
 		try {
 
@@ -239,11 +239,11 @@ public class IocrResource {
 
 						mitsubishiSurvey.setTemplateType("三菱重工问卷");
 						mitsubishiSurvey.setType(CommonConstant.OCR_IOCR_SANLING_TYPE);
-						mitsubishiSurvey.setFilepath(newFileName);
+						mitsubishiSurvey.setFilepath(newFilePath);
 
 						baseResource.setTemplateType("三菱重工问卷");
 						baseResource.setType(CommonConstant.OCR_IOCR_SANLING_TYPE);
-						baseResource.setfilepath(newFileName);
+						baseResource.setfilepath(newFilePath);
 						Cache.put("baseResource", baseResource, Cache.CACHE_HOLD_TIME_24H);
 //						Cache.put("mitsubishiSurvey", mitsubishiSurvey, Cache.CACHE_HOLD_TIME_24H);
 						mitsubishiService.save(mitsubishiSurvey);

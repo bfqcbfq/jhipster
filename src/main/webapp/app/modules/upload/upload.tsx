@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes, { any, number } from 'prop-types';
+import { PhotoProvider, PhotoConsumer } from 'react-photo-view';
+import ReactDOM from 'react-dom';
 import './upload.css';
 import './detail.css';
 import './typetwodetail.css';
@@ -794,9 +796,10 @@ class Upload extends React.Component<any, ImgProps, []> {
       });
   }
   // 显示扫描详情
-  handleShowClick = (filepath: any, filepathType: any) => {
-    const filepaths: string = filepath;
-    const filepathTypes: string = filepathType;
+  handleShowClick = (file: any) => {
+    const filepaths: string = file.filepath;
+    const filepathTypes: string = file.filepathType;
+    // }
     axios.get(
       'http://localhost:8080/api/ocr/iocr/showDetails',
       {
@@ -812,106 +815,7 @@ class Upload extends React.Component<any, ImgProps, []> {
         // tslint:disable-next-line: no-inferrable-types
         // 根据后台返回数据 用type判断用哪个模板
         const type = response.data.type;
-        if (type === '1') {
-          const titles = response.data.title;
-          const deliverMessages = response.data.deliverMessage;
-          const detaildeliveryNo = deliverMessages.deliveryNo;
-          const detailaddress = deliverMessages.address;
-          const detailcontactNUmber = deliverMessages.contactNUmber;
-          const detaildeliveryCompany = deliverMessages.deliveryCompany;
-          const detaildeliveryDate = deliverMessages.deliveryDate;
-          const detailhandler = deliverMessages.handler;
-          const detailnote = deliverMessages.note;
-          const detailpicker = deliverMessages.picker;
-          const deliveryDetailsArr = response.data.deliveryDetails;
-          this.setState({
-            display: 'block',
-            title: titles,
-            deliveryNo: detaildeliveryNo,
-            address: detailaddress,
-            contactNUmber: detailcontactNUmber,
-            deliveryCompany: detaildeliveryCompany,
-            deliveryDate: detaildeliveryDate,
-            handler: detailhandler,
-            note: detailnote,
-            picker: detailpicker,
-            deliveryDetails: deliveryDetailsArr
-          });
-        } else if (type === '2') {
-          const titles = response.data.title;
-          const mxDeliverMessage = response.data.mxDeliverMessage;
-          const deaddress = mxDeliverMessage.address;
-          const debusinessCode = mxDeliverMessage.businessCode;
-          const dedeliveryDate = mxDeliverMessage.deliveryDate;
-          const dedeliveryNo = mxDeliverMessage.deliveryNo;
-          const dedeliverySign = mxDeliverMessage.deliverySign;
-          const dehandlerSign = mxDeliverMessage.handlerSign;
-          const denote = mxDeliverMessage.note;
-          const deorderMaker = mxDeliverMessage.orderMaker;
-          const detotalAmount = mxDeliverMessage.totalAmount;
-          const detotalQuantity = mxDeliverMessage.totalQuantity;
-          const deliveryDetailsArr = response.data.deliveryDetails;
-          this.setState({
-            displayTwo: 'block',
-            title: titles,
-            address: deaddress,
-            businessCode: debusinessCode,
-            deliveryDate: dedeliveryDate,
-            deliveryNo: dedeliveryNo,
-            deliverySign: dedeliverySign,
-            handlerSign: dehandlerSign,
-            note: denote,
-            orderMaker: deorderMaker,
-            totalAmount: detotalAmount,
-            totalQuantity: detotalQuantity,
-            MxDeliveryDetails: deliveryDetailsArr
-          });
-        } else if (type === '3') {
-          const titles = response.data.title;
-          const ydDeliverMessages = response.data.ydDeliverMessage;
-          const detailadress = ydDeliverMessages.adress;
-          const detailcompanyPhone = ydDeliverMessages.companyPhone;
-          const detailcsahier = ydDeliverMessages.csahier;
-          const detailcustomerName = ydDeliverMessages.customerName;
-          const detailcustomerPhone = ydDeliverMessages.customerPhone;
-          const detailcustomerSign = ydDeliverMessages.customerSign;
-          const detaildeliveryDate = ydDeliverMessages.deliveryDate;
-          const detaildeliveryNo = ydDeliverMessages.deliveryNo;
-          const detaildeliveryer = ydDeliverMessages.deliveryer;
-          const detailinvoiceType = ydDeliverMessages.invoiceType;
-          const detailmainBusiness = ydDeliverMessages.mainBusiness;
-          const detailorderMaker = ydDeliverMessages.orderMaker;
-          const detailpage = ydDeliverMessages.page;
-          const detailreceiver = ydDeliverMessages.receiver;
-          const detailsettleStyle = ydDeliverMessages.settleStyle;
-          const detailtotalAccount = ydDeliverMessages.totalAccount;
-          const detailtotalAmountBig = ydDeliverMessages.totalAmountBig;
-          const detailtotalAmountSmall = ydDeliverMessages.totalAmountSmall;
-          const ydDeliveryDetailsArr = response.data.ydDeliveryDetails;
-          this.setState({
-            displayThree: 'block',
-            title: titles,
-            adress: detailadress,
-            companyPhone: detailcompanyPhone,
-            csahier: detailcsahier,
-            customerName: detailcustomerName,
-            customerPhone: detailcustomerPhone,
-            customerSign: detailcustomerSign,
-            deliveryer: detaildeliveryer,
-            invoiceType: detailinvoiceType,
-            mainBusiness: detailmainBusiness,
-            orderMaker: detailorderMaker,
-            page: detailpage,
-            receiver: detailreceiver,
-            settleStyle: detailsettleStyle,
-            totalAccount: detailtotalAccount,
-            totalAmountBig: detailtotalAmountBig,
-            totalAmountSmall: detailtotalAmountSmall,
-            deliveryDate: detaildeliveryDate,
-            deliveryNo: detaildeliveryNo,
-            ydDeliveryDetails: ydDeliveryDetailsArr
-          });
-        } else if (type === '4') {
+        if (type === '4') {
           const titles = response.data.title;
           const mitsubishiNames = response.data.mitsubishiName;
           const mitsubishiCompanyNames = response.data.mitsubishiCompanyName;
@@ -951,10 +855,39 @@ class Upload extends React.Component<any, ImgProps, []> {
             type: filepathTypes
           });
         }
-
+        const uploadFile = document.getElementById('file');
+        const container = document.getElementById('MHIFormDiv');
+        const img = document.createElement('img');
+        if (container.hasChildNodes()) {
+          container.removeChild(img);
+        }
+        // if (container.hasChildNodes) {
+        //   container.remove();
+        //   container.remove();
+        // }
+        // for(let i=0;i<files.length;i++){
+        // img.height = 4096;
+        // img.src = window.URL.createObjectURL(file);
+        img.alt = 'demoImg';
+        img.setAttribute('src', file.filepath);
+        // img.src = {this.state.filepath};
+        // img.onload = () => {
+        //   window.URL.revokeObjectURL(img.src);
+        // };
+        container.appendChild(img);
+        return (
+          <PhotoProvider>
+            {
+              <PhotoConsumer src={file}>
+                <img src={file} alt="" />
+              </PhotoConsumer>
+            }
+          </PhotoProvider>
+        );
       })
       // tslint:disable-next-line: only-arrow-functions
       .catch(function (error) {
+
       });
 
   }
@@ -1151,7 +1084,7 @@ class Upload extends React.Component<any, ImgProps, []> {
                       <span className="fileName">{file.name}</span>
                       {file.success ? <span className="state">成功</span> : <span>失败/模板类型未定义</span>}
                       {file.success ? <span className="type">{file.templatetype}</span> : <span className="newtype">无</span>}
-                      {file.success ? <span className="displayshow" onClick={this.handleShowClick.bind(this, file.filepath, file.filepathType)}>查看</span> :
+                      {file.success ? <span className="displayshow" onClick={this.handleShowClick.bind(this, file)}>查看</span> :
                         <span className="newdisplayshow">查看</span>}
                       {file.success ? <span className="download" onClick={this.handleDownLoadClick.bind(this, file.filepath, file.filepathType)}>下载</span> :
                         <span className="download">下载</span>}
@@ -1206,78 +1139,73 @@ class Upload extends React.Component<any, ImgProps, []> {
         <div className="popLayer" style={{ display: this.state.displayFour }}>
           <span className="close" onClick={this.clockClick}>关闭</span>
           <div className="popBox">
-            <div className="MHIFormDiv">
-              <form className="MHIForm" onSubmit={this.handleSubmit}>
-                <div className="title">三菱重工MGS-CN产品市场调查问卷</div>
+            <div className="MHIFormDiv" id="MHIFormDiv" >
+              {/* <img src={require('D:\FilesAndDatas\aupload\20191218122755239149693937000.png')} /> */}
+              {/* <form className="MHIForm" onSubmit={this.handleSubmit}>
+                <div className="title" />
                 <div className="topContent">
-                  姓名：<input id="mitsubishiName" name="mitsubishiName" type="text" ref={input => this.inputMHI = input}
-                    defaultValue={this.state.mitsubishiName}
-                    onChange={this.handleTextChange} />
-                  <h4>{this.state.mitsubishiName}</h4>
-                  公司名称: <input type="text" id="mitsubishiCompanyName" name="mitsubishiCompanyName" ref={input => this.inputMHI = input}
-                    defaultValue={this.state.mitsubishiCompanyName}
-                    onChange={this.handleTextChange} />
-                  电话: <input type="text" id="mitsubishiTelphone" name="mitsubishiTelphone" ref={input => this.inputMHI = input}
-                    defaultValue={this.state.mitsubishiTelphone}
-                    onChange={this.handleTextChange} />
-                  E-mail: <input type="text" id="mitsubishiEmail" name="mitsubishiEmail" ref={input => this.inputMHI = input}
-                    defaultValue={this.state.mitsubishiEmail}
-                    onChange={this.handleTextChange} />
+                  <ul>
+                    <li><input id="mitsubishiName" name="mitsubishiName" type="text" ref={input => this.inputMHI = input}
+                      defaultValue={this.state.mitsubishiName}
+                      onChange={this.handleTextChange} /></li>
+                    <li><input type="text" id="mitsubishiCompanyName" name="mitsubishiCompanyName" ref={input => this.inputMHI = input}
+                      defaultValue={this.state.mitsubishiCompanyName}
+                      onChange={this.handleTextChange} /></li>
+                    <li><input type="text" id="mitsubishiTelphone" name="mitsubishiTelphone" ref={input => this.inputMHI = input}
+                      defaultValue={this.state.mitsubishiTelphone}
+                      onChange={this.handleTextChange} /></li>
+                    <li><input type="text" id="mitsubishiEmail" name="mitsubishiEmail" ref={input => this.inputMHI = input}
+                      defaultValue={this.state.mitsubishiEmail}
+                      onChange={this.handleTextChange} /></li>
+                  </ul>
                 </div>
                 <div className="mainContent">
                   <ul>
-                    <li>问题1：柴油发电机选型的时候以哪种功率定义为标准(多选)&nbsp;&nbsp;&nbsp;回答(请填写字母)：
-                  <input type="text" id="questionOne" name="questionOne" ref={input => this.inputMHI = input}
+                    <li>
+                      <input type="text" id="questionOne" name="questionOne" ref={input => this.inputMHI = input}
                         defaultValue={this.state.questionOne} onChange={this.handleTextChange} /></li>
-                    <li>选项：A: PRP  B: COP  C: DCP  D: ESP  E: 其他</li>
-                    <li>问题2：基于上述功率定义选择,中国市场主流柴油发电机功率范围(多选)&nbsp;&nbsp;回答(请填写字母)：
-                  <input type="text" id="questionTwo" name="questionTwo" ref={input => this.inputMHI = input}
+                    <li>
+                      <input type="text" id="questionTwo" name="questionTwo" ref={input => this.inputMHI = input}
                         defaultValue={this.state.questionTwo} onChange={this.handleTextChange} /></li>
-                    <li>选项：A: 1800kw  B: 2000kw  C: 2200kw  D: 2400kw  E: 其他</li>
-                    <li>问题3：预测今后中国数据中心应用的柴油发电机主流安装方式&nbsp;&nbsp;回答(请填写字母)：
-                  <input type="text" id="questionThree" name="questionThree" ref={input => this.inputMHI = input}
+                    <li>
+                      <input type="text" id="questionThree" name="questionThree" ref={input => this.inputMHI = input}
                         defaultValue={this.state.questionThree} onChange={this.handleTextChange} /></li>
-                    <li>选项：A: 集装箱式，室外  B: 开放式，室内  C: 其他</li>
-                    <li>问题4：柴油发电机选择条件的先后优先度(排序)&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：
-                  <input type="text" id="questionFour" name="questionFour" ref={input => this.inputMHI = input}
+                    <li>
+                      <input type="text" id="questionFour" name="questionFour" ref={input => this.inputMHI = input}
                         defaultValue={this.state.questionFour} onChange={this.handleTextChange} /></li>
-                    <li>选项：A: 喷油方式  B: 质量好，维护方便  C: 价格 D: 品牌 E: 其他</li>
-                    <li>问题5：下述规格中必要配置(多选)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：
-                  <input type="text" id="questionFive" name="questionFive" ref={input => this.inputMHI = input}
+                    <li>
+                      <input type="text" id="questionFive" name="questionFive" ref={input => this.inputMHI = input}
                         defaultValue={this.state.questionFive} onChange={this.handleTextChange} /></li>
-                    <li>选项：A: Dual Start  B: 原厂并机系统  C: 远程监控系统 D: 双轴承发电机  E: 其他</li>
-                    <li>问题6：数据中心常见负载功率因数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：
-                  <input type="text" id="questionSix" name="questionSix" ref={input => this.inputMHI = input}
+                    <li>
+                      <input type="text" id="questionSix" name="questionSix" ref={input => this.inputMHI = input}
                         defaultValue={this.state.questionSix} onChange={this.handleTextChange} /></li>
-                    <li>选项：A: 容性超前0.95  B: 容性超前0.9  C: 阻性1.0  D: 感性滞后0.8   E: 其他</li>
-                    <li>问题7：是否要求发电机组一步带载100%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：
-                  <input type="text" id="questionSeven" name="questionSeven" ref={input => this.inputMHI = input}
+                    <li>
+                      <input type="text" id="questionSeven" name="questionSeven" ref={input => this.inputMHI = input}
                         defaultValue={this.state.questionSeven} onChange={this.handleTextChange} /></li>
-                    <li>选项：A: 是  B: 否</li>
-                    <li>问题8：下述哪些条件是必须的&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：
-                  <input type="text" id="questionEight" name="questionEight" ref={input => this.inputMHI = input}
+                    <li>
+                      <input type="text" id="questionEight" name="questionEight" ref={input => this.inputMHI = input}
                         defaultValue={this.state.questionEight} onChange={this.handleTextChange} /></li>
-                    <li>选项：A: 泰尔认证  B: Uptime认证  C: 国三排放  D: 其他</li>
-                    <li>问题9：通常希望发电机组的交货周期是多长时间&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;回答(请填写字母)：
-                  <input type="text" id="questionNine" name="questionNine" ref={input => this.inputMHI = input}
+                    <li>
+                      <input type="text" id="questionNine" name="questionNine" ref={input => this.inputMHI = input}
                         defaultValue={this.state.questionNine} onChange={this.handleTextChange} /></li>
-                    <li>选项：A: 2个月  B: 3个月  C: 4个月以上也可以  D: 其他</li>
-                    <li>问题10：是否使用过或者了解过三菱重工的柴油发电机组或者发动机产品&nbsp;&nbsp;回答(请填写字母)：
-                  <input type="text" id="questionTen" name="questionTen" ref={input => this.inputMHI = input}
+                    <li>
+                      <input type="text" id="questionTen" name="questionTen" ref={input => this.inputMHI = input}
                         defaultValue={this.state.questionTen} onChange={this.handleTextChange} /></li>
-                    <li>选项：A: 是  B: 否</li>
                   </ul>
                 </div>
                 <div className="footContent">
                   <ul>
-                    <li>请对三菱重工MGSCN产品提出宝贵意见(请使用正楷书写)</li>
                     <li><input type="text" id="mitsubishiComment" name="mitsubishiComment" ref={input => this.inputMHI = input}
                       defaultValue={this.state.mitsubishiComment}
                       onChange={this.handleTextChange} /></li>
                   </ul>
                 </div>
-                <input type="submit" ref={input => this.inputMHI = input} value="提交修改" />
-              </form>
+                <div>
+                  <ul><li>
+                    <input type="submit" ref={input => this.inputMHI = input} value="提交修改" />
+                  </li></ul>
+                </div>
+              </form> */}
             </div>
           </div>
         </div>
@@ -1328,4 +1256,13 @@ Upload.defaultProps = {
   maxLength: 100,
   suffixs: []
 };
+// HelloMessage.defaultProps = {
+//   name: 'Runoob'
+// };
+// const element = <HelloMessage/>;
+// ReactDOM.render(
+//   // element,
+
+//   document.getElementById('MHIFormDiv')
+// );
 export default Upload;
