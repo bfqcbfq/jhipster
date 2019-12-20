@@ -1,0 +1,21 @@
+import React from 'react';
+import PropTypes, { any, number } from 'prop-types';
+import { PhotoProvider, PhotoConsumer } from 'react-photo-view';
+import ReactDOM from 'react-dom';
+
+class HelloMessage extends React.Component {
+  render() {
+    // return (
+    //   <h1>Hello, {this.props.name}</h1>
+    // );
+    return (
+      <PhotoProvider>
+        {
+          <PhotoConsumer src={file}>
+            <img src={file} alt="" />
+          </PhotoConsumer>
+        }
+      </PhotoProvider>
+    );
+  }
+}

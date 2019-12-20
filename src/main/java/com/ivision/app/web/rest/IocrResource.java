@@ -1,3 +1,6 @@
+/**
+ * Copyright 2019 ivision.com 
+ */
 package com.ivision.app.web.rest;
 
 import java.awt.image.BufferedImage;
@@ -206,7 +209,7 @@ public class IocrResource {
 
 					if (templateSign.equals(templateId1)) {
 						invoice = new Invoice();
-						invoice = jsonToInvoiceF(jsonObject);
+						invoice = jsonToYfInvoice(jsonObject);
 						invoice.setTemplateType("神丰科技发货单");
 						invoice.setType(CommonConstant.OCR_IOCR_YINGFENG_TYPE);
 						// 将数据放在缓存中
@@ -501,7 +504,7 @@ public class IocrResource {
 	 * @param jsonObject
 	 * @return Invoice
 	 */
-	public Invoice jsonToInvoiceF(JSONObject jsonObject) {
+	public Invoice jsonToYfInvoice(JSONObject jsonObject) {
 
 		Invoice invoice = new Invoice();
 		DeliverMessage deliverMessage = new DeliverMessage();
