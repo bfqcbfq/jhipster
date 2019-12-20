@@ -209,7 +209,7 @@ public class IocrResource {
 
 					if (templateSign.equals(templateId1)) {
 						invoice = new Invoice();
-						invoice = jsonToYfInvoice(jsonObject);
+						invoice = jsonToSfInvoice(jsonObject);
 						invoice.setTemplateType("神丰科技发货单");
 						invoice.setType(CommonConstant.OCR_IOCR_YINGFENG_TYPE);
 						// 将数据放在缓存中
@@ -504,7 +504,7 @@ public class IocrResource {
 	 * @param jsonObject
 	 * @return Invoice
 	 */
-	public Invoice jsonToYfInvoice(JSONObject jsonObject) {
+	public Invoice jsonToSfInvoice(JSONObject jsonObject) {
 
 		Invoice invoice = new Invoice();
 		DeliverMessage deliverMessage = new DeliverMessage();
