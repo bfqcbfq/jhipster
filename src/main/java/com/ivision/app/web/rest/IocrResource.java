@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -138,47 +139,33 @@ public class IocrResource {
 		YdInvoice ydInvoice = null;
 		MitsubishiSurvey mitsubishiSurvey = null;
 		BaseResource baseResource = null;
-		// 判断文件夹是否存在,不存在则创建
-		File file = new File(filePath);
-
-		if (!file.exists()) {
-			file.mkdirs();
-		}
 
 		if (uploadFile == null) {
-
 			// 参数错误，返回400，没有响应体
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 
 		// 获取原始图片的扩展名
 		String originalFileName = uploadFile.getOriginalFilename();
-
 		// 获取文件类型
 		String fileType = originalFileName.substring(originalFileName.lastIndexOf("."));
-
 		Date now = new Date();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-
-		// 定义文件下载本地新名称
+		// 定义文件上传新名称
 		String newFileName = dateFormat.format(now) + System.nanoTime();
+		String fileProjectPath = new String("src/main/webapp/" + filePath);
 
+		File file = new File(fileProjectPath);
+		if (!file.exists()) {
+			file.mkdirs();
+		}
+		String newFile = newFileName + fileType;
+		String newFilePath = file.getAbsolutePath() + File.separator + newFile;
 		// 新文件的路径
-		String newFilePath = filePath + newFileName + fileType;
-
+		File newPathFile = new File(newFilePath);
 		try {
-
 			// 将传来的文件写入新建的文件
-
-			uploadFile.transferTo(new File(newFilePath));
-			/*
-			 * BufferedImage image = ImageIO.read(new File(newFilePath));
-			 * 
-			 * BufferedImage newImage = resetMaxSize(image);
-			 * 
-			 * ImageIO.write(newImage, "jpg", new File(newFilePath));
-			 */
-
+			uploadFile.transferTo(newPathFile);
 			List<JSONObject> jsonObjectList = getResultByIocr(newFilePath);
 
 			for (JSONObject jsonObject : jsonObjectList) {
@@ -325,7 +312,6 @@ public class IocrResource {
 				return ResponseEntity.ok(msList.get(1));
 			case 3:
 				return ResponseEntity.ok(msList.get(2));
-				
 
 			}
 		}
@@ -342,8 +328,7 @@ public class IocrResource {
 	 * @return
 	 */
 	@GetMapping("/download")
-	public void exportExcel(@RequestParam(value = "filepathType") String filepathType,
-			HttpServletResponse response) {
+	public void exportExcel(@RequestParam(value = "filepathType") String filepathType, HttpServletResponse response) {
 
 		response.setContentType("application/force-download;charset=UTF-8");
 
@@ -389,9 +374,9 @@ public class IocrResource {
 //				this.exportFencers(head, headnum, null, headnum1, titles, out, null, null, ydInvoiceCacheList);
 //			} else if (filepathType.equals(CommonConstant.OCR_IOCR_SANLING_TYPE)) {
 
-				MitsubishiSurvey updatedMs = mitsubishiService.findUpdatedByFilepath(filepathType);
-				this.exportExcel(out,updatedMs);
-			//}
+			MitsubishiSurvey updatedMs = mitsubishiService.findUpdatedByFilepath(filepathType);
+			this.exportExcel(out, updatedMs);
+			// }
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -446,7 +431,6 @@ public class IocrResource {
 		mitsubishiService.save(mitsubishiSurvey);
 
 //		mitsubishiService.updateByFilepath(filepath);
-
 
 		return ResponseEntity.status(HttpStatus.OK).body(null);
 
@@ -1858,33 +1842,33 @@ public class IocrResource {
 			XSSFSheet sheet = workBook.cloneSheet(0);
 			workBook.setSheetName(0, "调查问卷结果"); // 给sheet命名
 
-			//List<MitsubishiSurvey> findList = mitsubishiService.find();
+			// List<MitsubishiSurvey> findList = mitsubishiService.find();
 
 			// 插入行
 			// sheet.shiftRows(4, 4 + mitsubishiSurveyList.size(),
 			// mitsubishiSurveyList.size(), false, false);//
 			// 第1个参数是指要开始插入的行，第2个参数是结尾行数,第三个参数表示动态添加的行数
-			//for (int i = 0; i < findList.size(); i++) {
-				XSSFRow creRow = sheet.createRow(4);
+			// for (int i = 0; i < findList.size(); i++) {
+			XSSFRow creRow = sheet.createRow(4);
 
-				creRow.setRowStyle(sheet.getRow(4).getRowStyle());
-				creRow.createCell(0).setCellValue(1);
-				creRow.createCell(1).setCellValue(updatedMs.getMitsubishiName());
-				creRow.createCell(2).setCellValue(updatedMs.getMitsubishiCompanyName());
-				creRow.createCell(3).setCellValue(updatedMs.getMitsubishiTelphone());
-				creRow.createCell(4).setCellValue(updatedMs.getMitsubishiEmail());
-				creRow.createCell(5).setCellValue(updatedMs.getQuestionOne());
-				creRow.createCell(6).setCellValue(updatedMs.getQuestionTwo());
-				creRow.createCell(7).setCellValue(updatedMs.getQuestionThree());
-				creRow.createCell(8).setCellValue(updatedMs.getQuestionFour());
-				creRow.createCell(9).setCellValue(updatedMs.getQuestionFive());
-				creRow.createCell(10).setCellValue(updatedMs.getQuestionSix());
-				creRow.createCell(11).setCellValue(updatedMs.getQuestionSeven());
-				creRow.createCell(12).setCellValue(updatedMs.getQuestionEight());
-				creRow.createCell(13).setCellValue(updatedMs.getQuestionNine());
-				creRow.createCell(14).setCellValue(updatedMs.getQuestionTen());
-				creRow.createCell(15).setCellValue(updatedMs.getMitsubishiComment());
-			//}
+			creRow.setRowStyle(sheet.getRow(4).getRowStyle());
+			creRow.createCell(0).setCellValue(1);
+			creRow.createCell(1).setCellValue(updatedMs.getMitsubishiName());
+			creRow.createCell(2).setCellValue(updatedMs.getMitsubishiCompanyName());
+			creRow.createCell(3).setCellValue(updatedMs.getMitsubishiTelphone());
+			creRow.createCell(4).setCellValue(updatedMs.getMitsubishiEmail());
+			creRow.createCell(5).setCellValue(updatedMs.getQuestionOne());
+			creRow.createCell(6).setCellValue(updatedMs.getQuestionTwo());
+			creRow.createCell(7).setCellValue(updatedMs.getQuestionThree());
+			creRow.createCell(8).setCellValue(updatedMs.getQuestionFour());
+			creRow.createCell(9).setCellValue(updatedMs.getQuestionFive());
+			creRow.createCell(10).setCellValue(updatedMs.getQuestionSix());
+			creRow.createCell(11).setCellValue(updatedMs.getQuestionSeven());
+			creRow.createCell(12).setCellValue(updatedMs.getQuestionEight());
+			creRow.createCell(13).setCellValue(updatedMs.getQuestionNine());
+			creRow.createCell(14).setCellValue(updatedMs.getQuestionTen());
+			creRow.createCell(15).setCellValue(updatedMs.getMitsubishiComment());
+			// }
 
 			// 输出为一个新的Excel，也就是动态修改完之后的excel
 			// String fileName = "test" + System.currentTimeMillis() + ".xlsx";
