@@ -170,4 +170,5 @@ iocr:
     
 file:
   downLoad:
-    path: D:\FilesAndDatas\aupload\
+    path: D:\FilesAndDatas\upload\
+    projectPath: content/images/ocr/upload/

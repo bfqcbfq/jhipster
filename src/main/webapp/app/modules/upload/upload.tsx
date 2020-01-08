@@ -576,7 +576,29 @@ class Upload extends React.Component<any, ImgProps, []> {
           // tslint:disable-next-line: no-console
           console.log(message);
           const templatetype = _.data.templateType;
-          const filepath = _.data.filepath;
+          const tempfilepath = _.data.filepath;
+          let filepath;
+          if (tempfilepath === 'content/images/ocr/upload/001.png') {
+            filepath = tempfilepath;
+          } else if (tempfilepath === 'content/images/ocr/upload/002.png') {
+            filepath = tempfilepath;
+          } else if (tempfilepath === 'content/images/ocr/upload/003.png') {
+            filepath = tempfilepath;
+          } else if (tempfilepath === 'content/images/ocr/upload/004.png') {
+            filepath = tempfilepath;
+          } else if (tempfilepath === 'content/images/ocr/upload/005.png') {
+            filepath = tempfilepath;
+          } else if (tempfilepath === 'content/images/ocr/upload/006.png') {
+            filepath = tempfilepath;
+          } else if (tempfilepath === 'content/images/ocr/upload/007.png') {
+            filepath = tempfilepath;
+          } else if (tempfilepath === 'content/images/ocr/upload/008.png') {
+            filepath = tempfilepath;
+          } else if (tempfilepath === 'content/images/ocr/upload/009.png') {
+            filepath = tempfilepath;
+          } else if (tempfilepath === 'content/images/ocr/upload/010.png') {
+            filepath = tempfilepath;
+          }
           if (filepathType !== null && filepathType !== undefined && filepathType !== '') {
             // tslint:disable-next-line: no-console
             console.log(filepathType);
@@ -798,98 +820,77 @@ class Upload extends React.Component<any, ImgProps, []> {
   // 显示扫描详情
   handleShowClick = (file: any) => {
     const filepaths: string = file.filepath;
+    // const preFilePath = './../../../';
+    // const projectFilepaths: string = preFilePath + filepaths;
     const filepathTypes: string = file.filepathType;
     // }
-    axios.get(
-      'http://localhost:8080/api/ocr/iocr/showDetails',
-      {
-        params: {
-          filepath: filepaths,
-          filepathType: filepathTypes
-        }
-      })
-      // tslint:disable-next-line: only-arrow-functions
-      .then((response: any) => {
-        // tslint:disable-next-line: no-console
-        console.log(response);
-        // tslint:disable-next-line: no-inferrable-types
-        // 根据后台返回数据 用type判断用哪个模板
-        const type = response.data.type;
-        if (type === '4') {
-          const titles = response.data.title;
-          const mitsubishiNames = response.data.mitsubishiName;
-          const mitsubishiCompanyNames = response.data.mitsubishiCompanyName;
-          const mitsubishiTelphones = response.data.mitsubishiTelphone;
-          const mitsubishiEmails = response.data.mitsubishiEmail;
-          const questionOnes = response.data.questionOne;
-          const questionTwos = response.data.questionTwo;
-          const questionThrees = response.data.questionThree;
-          const questionFours = response.data.questionFour;
-          const questionFives = response.data.questionFive;
-          const questionSixs = response.data.questionSix;
-          const questionSevens = response.data.questionSeven;
-          const questionEights = response.data.questionEight;
-          const questionNines = response.data.questionNine;
-          const questionTens = response.data.questionTen;
-          const mitsubishiComments = response.data.mitsubishiComment;
-          // const filepaths = response.data.filepath;
-          this.setState({
-            displayFour: 'block',
-            title: titles,
-            mitsubishiName: mitsubishiNames,
-            mitsubishiCompanyName: mitsubishiCompanyNames,
-            mitsubishiTelphone: mitsubishiTelphones,
-            mitsubishiEmail: mitsubishiEmails,
-            questionOne: questionOnes,
-            questionTwo: questionTwos,
-            questionThree: questionThrees,
-            questionFour: questionFours,
-            questionFive: questionFives,
-            questionSix: questionSixs,
-            questionSeven: questionSevens,
-            questionEight: questionEights,
-            questionNine: questionNines,
-            questionTen: questionTens,
-            mitsubishiComment: mitsubishiComments,
-            filepath: filepaths,
-            type: filepathTypes
-          });
-        }
-        const uploadFile = document.getElementById('file');
-        const container = document.getElementById('MHIFormDiv');
-        const img = document.createElement('img');
-        if (container.hasChildNodes()) {
-          container.removeChild(img);
-        }
-        // if (container.hasChildNodes) {
-        //   container.remove();
-        //   container.remove();
-        // }
-        // for(let i=0;i<files.length;i++){
-        // img.height = 4096;
-        // img.src = window.URL.createObjectURL(file);
-        img.alt = 'demoImg';
-        img.setAttribute('src', file.filepath);
-        // img.src = {this.state.filepath};
-        // img.onload = () => {
-        //   window.URL.revokeObjectURL(img.src);
-        // };
-        container.appendChild(img);
-        return (
-          <PhotoProvider>
-            {
-              <PhotoConsumer src={file}>
-                <img src={file} alt="" />
-              </PhotoConsumer>
-            }
-          </PhotoProvider>
-        );
-      })
-      // tslint:disable-next-line: only-arrow-functions
-      .catch(function (error) {
-
-      });
-
+    // axios.get(
+    //   'http://localhost:8080/api/ocr/iocr/showDetails',
+    //   {
+    //     params: {
+    //       filepath: filepaths,
+    //       filepathType: filepathTypes
+    //     }
+    //   })
+    // tslint:disable-next-line: only-arrow-functions
+    // .then((response: any) => {
+    //   // tslint:disable-next-line: no-console
+    //   console.log(response);
+    //   // tslint:disable-next-line: no-inferrable-types
+    //   // 根据后台返回数据 用type判断用哪个模板
+    //   const type = response.data.type;
+    //   if (type === '4') {
+    //     const titles = response.data.title;
+    //     const mitsubishiNames = response.data.mitsubishiName;
+    //     const mitsubishiCompanyNames = response.data.mitsubishiCompanyName;
+    //     const mitsubishiTelphones = response.data.mitsubishiTelphone;
+    //     const mitsubishiEmails = response.data.mitsubishiEmail;
+    //     const questionOnes = response.data.questionOne;
+    //     const questionTwos = response.data.questionTwo;
+    //     const questionThrees = response.data.questionThree;
+    //     const questionFours = response.data.questionFour;
+    //     const questionFives = response.data.questionFive;
+    //     const questionSixs = response.data.questionSix;
+    //     const questionSevens = response.data.questionSeven;
+    //     const questionEights = response.data.questionEight;
+    //     const questionNines = response.data.questionNine;
+    //     const questionTens = response.data.questionTen;
+    //     const mitsubishiComments = response.data.mitsubishiComment;
+    this.setState({
+      displayFour: 'block',
+      // title: titles,
+      // mitsubishiName: mitsubishiNames,
+      // mitsubishiCompanyName: mitsubishiCompanyNames,
+      // mitsubishiTelphone: mitsubishiTelphones,
+      // mitsubishiEmail: mitsubishiEmails,
+      // questionOne: questionOnes,
+      // questionTwo: questionTwos,
+      // questionThree: questionThrees,
+      // questionFour: questionFours,
+      // questionFive: questionFives,
+      // questionSix: questionSixs,
+      // questionSeven: questionSevens,
+      // questionEight: questionEights,
+      // questionNine: questionNines,
+      // questionTen: questionTens,
+      // mitsubishiComment: mitsubishiComments,
+      filepath: filepaths,
+      type: filepathTypes
+    });
+    // }
+    const container = document.getElementById('MHIFormDiv');
+    // const image = document.getElementById('showImage');
+    // if (image.hasChildNodes()) {
+    //   image.remove();
+    // }
+    const img = document.createElement('img');
+    // img.id = 'showImage';
+    img.src = require('./../../../' + this.state.filepath);
+    container.appendChild(img);
+    // })
+    // tslint:disable-next-line: only-arrow-functions
+    // .catch(function (error) {
+    // });
   }
   //  详情关闭
   clockClick(event: any) {
@@ -908,8 +909,6 @@ class Upload extends React.Component<any, ImgProps, []> {
     document.getElementById('dragfile').setAttribute('webkitdirectory', ' ');
     document.getElementById('dragfile').setAttribute('directory', ' ');
     document.getElementById('dragfile').setAttribute('multiple', ' ');
-    // document.getElementById('MHIInput').setAttribute('value', '请编辑修改');
-
   }
   // 编辑输入框中的值，当输入框发生改变时重新赋值
   handleTextChange = event => {
@@ -918,126 +917,65 @@ class Upload extends React.Component<any, ImgProps, []> {
     const value = target.value;
     if (name === 'mitsubishiName') {
       this.setState({
-        // mitsubishiName: event.target.value,
-        // mitsubishiCompanyName: event.target.value,
-        // mitsubishiTelphone: event.target.value,
-        // mitsubishiEmail: event.target.value
         mitsubishiName: value
       });
     } else if (name === 'mitsubishiCompanyName') {
       this.setState({
-        // mitsubishiName: event.target.value,
-        // mitsubishiCompanyName: event.target.value,
-        // mitsubishiTelphone: event.target.value,
-        // mitsubishiEmail: event.target.value
         mitsubishiCompanyName: value
       });
     } else if (name === 'mitsubishiTelphone') {
       this.setState({
-        // mitsubishiName: event.target.value,
-        // mitsubishiCompanyName: event.target.value,
-        // mitsubishiTelphone: event.target.value,
-        // mitsubishiEmail: event.target.value
         mitsubishiTelphone: value
       });
     } else if (name === 'mitsubishiEmail') {
       this.setState({
-        // mitsubishiName: event.target.value,
-        // mitsubishiCompanyName: event.target.value,
-        // mitsubishiTelphone: event.target.value,
-        // mitsubishiEmail: event.target.value
         mitsubishiEmail: value
       });
     } else if (name === 'questionOne') {
       this.setState({
-        // mitsubishiName: event.target.value,
-        // mitsubishiCompanyName: event.target.value,
-        // mitsubishiTelphone: event.target.value,
-        // mitsubishiEmail: event.target.value
         questionOne: value
       });
     } else if (name === 'questionTwo') {
       this.setState({
-        // mitsubishiName: event.target.value,
-        // mitsubishiCompanyName: event.target.value,
-        // mitsubishiTelphone: event.target.value,
-        // mitsubishiEmail: event.target.value
         questionTwo: value
       });
     } else if (name === 'questionThree') {
       this.setState({
-        // mitsubishiName: event.target.value,
-        // mitsubishiCompanyName: event.target.value,
-        // mitsubishiTelphone: event.target.value,
-        // mitsubishiEmail: event.target.value
         questionThree: value
       });
     } else if (name === 'questionFour') {
       this.setState({
-        // mitsubishiName: event.target.value,
-        // mitsubishiCompanyName: event.target.value,
-        // mitsubishiTelphone: event.target.value,
-        // mitsubishiEmail: event.target.value
         questionFour: value
       });
     } else if (name === 'questionFive') {
       this.setState({
-        // mitsubishiName: event.target.value,
-        // mitsubishiCompanyName: event.target.value,
-        // mitsubishiTelphone: event.target.value,
-        // mitsubishiEmail: event.target.value
         questionFive: value
       });
     } else if (name === 'questionSix') {
       this.setState({
-        // mitsubishiName: event.target.value,
-        // mitsubishiCompanyName: event.target.value,
-        // mitsubishiTelphone: event.target.value,
-        // mitsubishiEmail: event.target.value
         questionSix: value
       });
     } else if (name === 'questionSeven') {
       this.setState({
-        // mitsubishiName: event.target.value,
-        // mitsubishiCompanyName: event.target.value,
-        // mitsubishiTelphone: event.target.value,
-        // mitsubishiEmail: event.target.value
         questionSeven: value
       });
     } else if (name === 'questionEight') {
       this.setState({
-        // mitsubishiName: event.target.value,
-        // mitsubishiCompanyName: event.target.value,
-        // mitsubishiTelphone: event.target.value,
-        // mitsubishiEmail: event.target.value
         questionEight: value
       });
     } else if (name === 'questionNine') {
       this.setState({
-        // mitsubishiName: event.target.value,
-        // mitsubishiCompanyName: event.target.value,
-        // mitsubishiTelphone: event.target.value,
-        // mitsubishiEmail: event.target.value
         questionNine: value
       });
     } else if (name === 'questionTen') {
       this.setState({
-        // mitsubishiName: event.target.value,
-        // mitsubishiCompanyName: event.target.value,
-        // mitsubishiTelphone: event.target.value,
-        // mitsubishiEmail: event.target.value
         questionTen: value
       });
     } else if (name === 'mitsubishiComment') {
       this.setState({
-        // mitsubishiName: event.target.value,
-        // mitsubishiCompanyName: event.target.value,
-        // mitsubishiTelphone: event.target.value,
-        // mitsubishiEmail: event.target.value
         mitsubishiComment: value
       });
     }
-
   }
   // 初始化页面
   render() {
@@ -1139,74 +1077,7 @@ class Upload extends React.Component<any, ImgProps, []> {
         <div className="popLayer" style={{ display: this.state.displayFour }}>
           <span className="close" onClick={this.clockClick}>关闭</span>
           <div className="popBox">
-            <div className="MHIFormDiv" id="MHIFormDiv" >
-              {/* <img src={require('D:\FilesAndDatas\aupload\20191218122755239149693937000.png')} /> */}
-              {/* <form className="MHIForm" onSubmit={this.handleSubmit}>
-                <div className="title" />
-                <div className="topContent">
-                  <ul>
-                    <li><input id="mitsubishiName" name="mitsubishiName" type="text" ref={input => this.inputMHI = input}
-                      defaultValue={this.state.mitsubishiName}
-                      onChange={this.handleTextChange} /></li>
-                    <li><input type="text" id="mitsubishiCompanyName" name="mitsubishiCompanyName" ref={input => this.inputMHI = input}
-                      defaultValue={this.state.mitsubishiCompanyName}
-                      onChange={this.handleTextChange} /></li>
-                    <li><input type="text" id="mitsubishiTelphone" name="mitsubishiTelphone" ref={input => this.inputMHI = input}
-                      defaultValue={this.state.mitsubishiTelphone}
-                      onChange={this.handleTextChange} /></li>
-                    <li><input type="text" id="mitsubishiEmail" name="mitsubishiEmail" ref={input => this.inputMHI = input}
-                      defaultValue={this.state.mitsubishiEmail}
-                      onChange={this.handleTextChange} /></li>
-                  </ul>
-                </div>
-                <div className="mainContent">
-                  <ul>
-                    <li>
-                      <input type="text" id="questionOne" name="questionOne" ref={input => this.inputMHI = input}
-                        defaultValue={this.state.questionOne} onChange={this.handleTextChange} /></li>
-                    <li>
-                      <input type="text" id="questionTwo" name="questionTwo" ref={input => this.inputMHI = input}
-                        defaultValue={this.state.questionTwo} onChange={this.handleTextChange} /></li>
-                    <li>
-                      <input type="text" id="questionThree" name="questionThree" ref={input => this.inputMHI = input}
-                        defaultValue={this.state.questionThree} onChange={this.handleTextChange} /></li>
-                    <li>
-                      <input type="text" id="questionFour" name="questionFour" ref={input => this.inputMHI = input}
-                        defaultValue={this.state.questionFour} onChange={this.handleTextChange} /></li>
-                    <li>
-                      <input type="text" id="questionFive" name="questionFive" ref={input => this.inputMHI = input}
-                        defaultValue={this.state.questionFive} onChange={this.handleTextChange} /></li>
-                    <li>
-                      <input type="text" id="questionSix" name="questionSix" ref={input => this.inputMHI = input}
-                        defaultValue={this.state.questionSix} onChange={this.handleTextChange} /></li>
-                    <li>
-                      <input type="text" id="questionSeven" name="questionSeven" ref={input => this.inputMHI = input}
-                        defaultValue={this.state.questionSeven} onChange={this.handleTextChange} /></li>
-                    <li>
-                      <input type="text" id="questionEight" name="questionEight" ref={input => this.inputMHI = input}
-                        defaultValue={this.state.questionEight} onChange={this.handleTextChange} /></li>
-                    <li>
-                      <input type="text" id="questionNine" name="questionNine" ref={input => this.inputMHI = input}
-                        defaultValue={this.state.questionNine} onChange={this.handleTextChange} /></li>
-                    <li>
-                      <input type="text" id="questionTen" name="questionTen" ref={input => this.inputMHI = input}
-                        defaultValue={this.state.questionTen} onChange={this.handleTextChange} /></li>
-                  </ul>
-                </div>
-                <div className="footContent">
-                  <ul>
-                    <li><input type="text" id="mitsubishiComment" name="mitsubishiComment" ref={input => this.inputMHI = input}
-                      defaultValue={this.state.mitsubishiComment}
-                      onChange={this.handleTextChange} /></li>
-                  </ul>
-                </div>
-                <div>
-                  <ul><li>
-                    <input type="submit" ref={input => this.inputMHI = input} value="提交修改" />
-                  </li></ul>
-                </div>
-              </form> */}
-            </div>
+            <div className="MHIFormDiv" id="MHIFormDiv" />
           </div>
         </div>
         <div>
@@ -1256,13 +1127,5 @@ Upload.defaultProps = {
   maxLength: 100,
   suffixs: []
 };
-// HelloMessage.defaultProps = {
-//   name: 'Runoob'
-// };
-// const element = <HelloMessage/>;
-// ReactDOM.render(
-//   // element,
 
-//   document.getElementById('MHIFormDiv')
-// );
 export default Upload;

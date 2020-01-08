@@ -37,8 +37,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -86,15 +84,6 @@ public class IocrResource {
 		this.mitsubishiService = mitsubishiService;
 	}
 
-	// 缓存同一模板List
-	private static List<Invoice> invoiceCacheList = new ArrayList<>();
-	private static List<MxInvoice> mxInvoiceCacheList = new ArrayList<>();
-	private static List<YdInvoice> ydInvoiceCacheList = new ArrayList<>();
-	private static List<MitsubishiSurvey> mitsubishiSurveyList = new ArrayList<>();
-
-	@Value("${jhipster.clientApp.name}")
-	private String applicationName;
-
 	// 设置APPID/AK/SK
 	@Value("${iocr.app.id}")
 	private String appId;
@@ -105,23 +94,17 @@ public class IocrResource {
 	@Value("${iocr.secret.key}")
 	private String secretKey;
 
-	// 設置模板ID
-	@Value("${iocr.template.id1}")
-	private String templateId1;
-
-	@Value("${iocr.template.id2}")
-	private String templateId2;
-
-	@Value("${iocr.template.id3}")
-	private String templateId3;
-
 	@Value("${iocr.template.id4}")
 	private String templateId4;
 
 	// 定义上传文件的存放位置
 	@Value("${file.downLoad.path}")
 	private String filePath;
-
+	
+	// 定义上传文件的存放位置
+	@Value("${file.downLoad.projectPath}")
+	private String projectPath;
+	
 	/**
 	 * 实现文件上传
 	 * 
@@ -136,126 +119,97 @@ public class IocrResource {
 
 		List<String> errorMessageList = new ArrayList<String>();
 
-		Invoice invoice = null;
-		MxInvoice mxInvoice = null;
-		YdInvoice ydInvoice = null;
 		MitsubishiSurvey mitsubishiSurvey = null;
 		BaseResource baseResource = null;
-		// 判断文件夹是否存在,不存在则创建
-		File file = new File(filePath);
-
-		if (!file.exists()) {
-			file.mkdirs();
-		}
 
 		if (uploadFile == null) {
-
 			// 参数错误，返回400，没有响应体
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 
 		// 获取原始图片的扩展名
 		String originalFileName = uploadFile.getOriginalFilename();
-
+		String projectFileName = null;
+		if(originalFileName.equals("001.png")) {
+			 projectFileName = projectPath+"001.png";
+		}
+		if(originalFileName.equals("002.png")) {
+			 projectFileName = projectPath+"002.png";
+		}
+		if(originalFileName.equals("003.png")) {
+			 projectFileName = projectPath+"003.png";
+		}
+		
+		if(originalFileName.equals("004.png")) {
+			 projectFileName = projectPath+"004.png";
+		}
+		if(originalFileName.equals("005.png")) {
+			 projectFileName = projectPath+"005.png";
+		}
+		if(originalFileName.equals("006.png")) {
+			 projectFileName = projectPath+"006.png";
+		}
+		if(originalFileName.equals("007.png")) {
+			 projectFileName = projectPath+"007.png";
+		}
+		if(originalFileName.equals("008.png")) {
+			 projectFileName = projectPath+"008.png";
+		}
+		if(originalFileName.equals("009.png")) {
+			 projectFileName = projectPath+"009.png";
+		}
+		if(originalFileName.equals("010.png")) {
+			 projectFileName = projectPath+"010.png";
+		}
 		// 获取文件类型
 		String fileType = originalFileName.substring(originalFileName.lastIndexOf("."));
-
 		Date now = new Date();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+		// 定义文件新名称
+		String newFileName = dateFormat.format(now) + System.nanoTime();
 
-		// 定义文件下载本地新名称
-		String newFileName = dateFormat.format(now) + System.nanoTime()+ fileType;
-
-		// 新文件的路径
-		String newFilePath = filePath + newFileName;
-
+		File newPathFile = new File(filePath);
+		
+		if (!newPathFile.exists()) {
+			newPathFile.mkdirs();
+		}
+		String newFile = newFileName + fileType;
+		String newFilePath = newPathFile.getAbsolutePath() + File.separator + newFile;
+		File newPathFile1 = new File(newFilePath);
 		try {
-
 			// 将传来的文件写入新建的文件
+			uploadFile.transferTo(newPathFile1);
+			JSONObject jsonObject = getResultByIocr(newFilePath);
 
-			uploadFile.transferTo(new File(newFilePath));
-			/*
-			 * BufferedImage image = ImageIO.read(new File(newFilePath));
-			 * 
-			 * BufferedImage newImage = resetMaxSize(image);
-			 * 
-			 * ImageIO.write(newImage, "jpg", new File(newFilePath));
-			 */
+			IocrBaseResource iocrBaseResource = JSON.parseObject(jsonObject.toString(), IocrBaseResource.class);
+			int error_code = iocrBaseResource.getError_code();
+			baseResource = new BaseResource();
 
-			List<JSONObject> jsonObjectList = getResultByIocr(newFilePath);
+			String errorCode = error_code + "";
+			if (!errorCode.equals(CommonConstant.OCR_IOCR_ERRORCODE)) {
+				errorMessageList.add(errorCode);
+			}
 
-			for (JSONObject jsonObject : jsonObjectList) {
-				IocrBaseResource iocrBaseResource = JSON.parseObject(jsonObject.toString(), IocrBaseResource.class);
-				int error_code = iocrBaseResource.getError_code();
-				baseResource = new BaseResource();
+			else {
+				String templateSign = jsonObject.getJSONObject("data").get("templateSign").toString();
 
-				String errorCode = error_code + "";
-				if (!errorCode.equals(CommonConstant.OCR_IOCR_ERRORCODE)) {
-					errorMessageList.add(errorCode);
-					// 上传错误，返回错误信息
-					if (errorMessageList.size() == jsonObjectList.size()) {
-						baseResource.setErrorMessage("您上传的文件有误，请再确认一下");
+				if (templateSign.equals(templateId4)) {
+					mitsubishiSurvey = new MitsubishiSurvey();
 
-						return ResponseEntity.ok(baseResource);
+					mitsubishiSurvey = jsonToMitsubishiSurvey(jsonObject);
 
-					} else {
+					mitsubishiSurvey.setTemplateType("三菱重工问卷");
+					mitsubishiSurvey.setType(CommonConstant.OCR_IOCR_SANLING_TYPE);
+					mitsubishiSurvey.setFilepath(projectFileName);
 
-						continue;
-					}
+					baseResource.setTemplateType("三菱重工问卷");
+					baseResource.setType(CommonConstant.OCR_IOCR_SANLING_TYPE);
+					baseResource.setfilepath(projectFileName);
+					Cache.put("baseResource", baseResource, Cache.CACHE_HOLD_TIME_24H);
+					mitsubishiService.save(mitsubishiSurvey);
+					return ResponseEntity.ok(baseResource);
+
 				}
-
-				else {
-					String templateSign = jsonObject.getJSONObject("data").get("templateSign").toString();
-
-					if (templateSign.equals(templateId1)) {
-						invoice = new Invoice();
-						invoice = jsonToSfInvoice(jsonObject);
-						invoice.setTemplateType("神丰科技发货单");
-						invoice.setType(CommonConstant.OCR_IOCR_YINGFENG_TYPE);
-						// 将数据放在缓存中
-						Cache.put("invoice", invoice, Cache.CACHE_HOLD_TIME_24H);
-						invoiceCacheList.add(invoice);
-						return ResponseEntity.ok(invoice);
-					} else if (templateSign.equals(templateId2)) {
-						mxInvoice = new MxInvoice();
-						mxInvoice = jsonToMxInvoice(jsonObject);
-						mxInvoice.setTemplateType("明歆制衣出货单");
-						mxInvoice.setType(CommonConstant.OCR_IOCR_MINGXING_TYPE);
-
-						Cache.put("mxInvoice", mxInvoice, Cache.CACHE_HOLD_TIME_24H);
-						mxInvoiceCacheList.add(mxInvoice);
-						return ResponseEntity.ok(mxInvoice);
-					} else if (templateSign.equals(templateId3)) {
-						mxInvoice = new MxInvoice();
-						ydInvoice = jsonToYdInvoice(jsonObject);
-						ydInvoice.setTemplateType("易达软件出库单");
-						ydInvoice.setType(CommonConstant.OCR_IOCR_YIDA_TYPE);
-
-						Cache.put("ydInvoice", ydInvoice, Cache.CACHE_HOLD_TIME_24H);
-						ydInvoiceCacheList.add(ydInvoice);
-						return ResponseEntity.ok(ydInvoice);
-
-					} else if (templateSign.equals(templateId4)) {
-						mitsubishiSurvey = new MitsubishiSurvey();
-
-						mitsubishiSurvey = jsonToMitsubishiSurvey(jsonObject);
-
-						mitsubishiSurvey.setTemplateType("三菱重工问卷");
-						mitsubishiSurvey.setType(CommonConstant.OCR_IOCR_SANLING_TYPE);
-						mitsubishiSurvey.setFilepath(newFilePath);
-
-						baseResource.setTemplateType("三菱重工问卷");
-						baseResource.setType(CommonConstant.OCR_IOCR_SANLING_TYPE);
-						baseResource.setfilepath(newFilePath);
-						Cache.put("baseResource", baseResource, Cache.CACHE_HOLD_TIME_24H);
-//						Cache.put("mitsubishiSurvey", mitsubishiSurvey, Cache.CACHE_HOLD_TIME_24H);
-						mitsubishiService.save(mitsubishiSurvey);
-//						mitsubishiSurveyList.add(mitsubishiSurvey);
-						return ResponseEntity.ok(baseResource);
-
-					}
-				}
-
 			}
 
 		} catch (FileAlreadyExistsException e) {
@@ -281,41 +235,6 @@ public class IocrResource {
 	public ResponseEntity<Object> showUploadFileDetails(@RequestParam(value = "filepathType") String filepathType,
 			@RequestParam(value = "filepath") String filepath) throws IOException {
 
-//		BaseResource baseResource = (BaseResource) Cache.get("baseResource");
-//
-//		if (baseResource != null) {
-//			String filpathType = baseResource.getFilpathType();
-
-		if (filepathType.equals(CommonConstant.OCR_IOCR_YINGFENG_TYPE)) {
-			Invoice invoice = (Invoice) Cache.get("invoice");
-			if (invoice == null) {
-
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-			}
-
-			return ResponseEntity.ok(invoice);
-		}
-
-		if (filepathType.equals(CommonConstant.OCR_IOCR_MINGXING_TYPE)) {
-			MxInvoice mxInvoice = (MxInvoice) Cache.get("mxInvoice");
-			if (mxInvoice == null) {
-
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-			}
-
-			return ResponseEntity.ok(mxInvoice);
-
-		}
-		if (filepathType.equals(CommonConstant.OCR_IOCR_YIDA_TYPE)) {
-			YdInvoice ydInvoice = (YdInvoice) Cache.get("ydInvoice");
-			if (ydInvoice == null) {
-
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-			}
-
-			return ResponseEntity.ok(ydInvoice);
-		}
-
 		if (filepathType.equals(CommonConstant.OCR_IOCR_SANLING_TYPE)) {
 
 			List<MitsubishiSurvey> msList = mitsubishiService.findByFilepath(filepath);
@@ -328,7 +247,6 @@ public class IocrResource {
 				return ResponseEntity.ok(msList.get(1));
 			case 3:
 				return ResponseEntity.ok(msList.get(2));
-				
 
 			}
 		}
@@ -345,8 +263,7 @@ public class IocrResource {
 	 * @return
 	 */
 	@GetMapping("/download")
-	public void exportExcel(@RequestParam(value = "filepathType") String filepathType,
-			HttpServletResponse response) {
+	public void exportExcel(@RequestParam(value = "filepathType") String filepathType, HttpServletResponse response) {
 
 		response.setContentType("application/force-download;charset=UTF-8");
 
@@ -360,41 +277,8 @@ public class IocrResource {
 			String fileName = new String((newFileName).getBytes(), "UTF-8");
 			response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xlsx");
 
-			// HttpSession session = request.getSession();
-
-//			if (filepathType.equals(CommonConstant.OCR_IOCR_YINGFENG_TYPE)) {
-//				// 获取表头1
-//				String title = CommonConstant.OCR_IOCR_YINGFENG_TITLE;
-//				String[] head = { title };
-//				String[] headnum = { "0,0,0,15" };
-//				String[] titles = { "仓库", "料号", "品牌", "单位", "数量", "单重", "合计重量", "批次号", "出货日期", "备注" };
-//				this.exportFencers(head, headnum, null, null, titles, out, invoiceCacheList, null, null);
-//
-//			} else if (filepathType.equals(CommonConstant.OCR_IOCR_MINGXING_TYPE)) {
-//				String title = CommonConstant.OCR_IOCR_MINGXING_TITLE;
-//
-//				// 获取表头1
-//				String[] head = { title };
-//				String[] headnum = { "0,0,0,15" };
-//				String[] headnum1 = { "1,1,0,15" };
-//				String[] titles = { "款号", "款式", "颜色", "单位", "S", "M", "L", "小计", "单价", "金额", "备注" };
-//
-//				this.exportFencers(head, headnum, null, headnum1, titles, out, null, mxInvoiceCacheList, null);
-//			} else if (filepathType.equals(CommonConstant.OCR_IOCR_YIDA_TYPE)) {
-//				// 获取表头1
-//				String title = CommonConstant.OCR_IOCR_YIDA_TITLE;
-//				String[] head = { title };
-//				String[] headnum = { "0,0,0,15" };
-//				// 获取表头2
-//				String[] headnum1 = { "1,1,0,15" };
-//				String[] titles = { "序号", "配件编号", "配件名称", "车型", "产地", "单位", "单价", "数量", "金额", "备注" };
-//
-//				this.exportFencers(head, headnum, null, headnum1, titles, out, null, null, ydInvoiceCacheList);
-//			} else if (filepathType.equals(CommonConstant.OCR_IOCR_SANLING_TYPE)) {
-
-				MitsubishiSurvey updatedMs = mitsubishiService.findUpdatedByFilepath(filepathType);
-				this.exportExcel(out,updatedMs);
-			//}
+			MitsubishiSurvey updatedMs = mitsubishiService.findUpdatedByFilepath(filepathType);
+			this.exportExcel(out, updatedMs);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -440,16 +324,8 @@ public class IocrResource {
 		mitsubishiSurvey.setQuestionTen(questionTen);
 		mitsubishiSurvey.setMitsubishiComment(mitsubishiComment);
 
-//		System.out.println(mitsubishiSurvey);
-//		mitsubishiSurveyList.add(0, mitsubishiSurvey);
-
-//		Cache.put("mitsubishiSurvey", mitsubishiSurvey, Cache.CACHE_HOLD_TIME_24H);
 		mitsubishiService.updateByFilepath(filepath);
-
 		mitsubishiService.save(mitsubishiSurvey);
-
-//		mitsubishiService.updateByFilepath(filepath);
-
 
 		return ResponseEntity.status(HttpStatus.OK).body(null);
 
@@ -464,38 +340,22 @@ public class IocrResource {
 	 * @return JSONObject
 	 * @throws IOException
 	 */
-	public List<JSONObject> getResultByIocr(String iocrFilepath) throws IOException {
+	public JSONObject getResultByIocr(String iocrFilepath) throws IOException {
 
 		// 上传图片进行预处理，调整图片大小及分辨率
-
-		List<JSONObject> jbList = new ArrayList<JSONObject>();
-
 		AipOcr client = new AipOcr(appId, apiKey, secretKey);
 
 		client.setConnectionTimeoutInMillis(10000);
 		client.setSocketTimeoutInMillis(180000);
 
-		List<String> templateSignList = new ArrayList<String>();
-
-//		 templateSignList.add(templateId1); 
-//		 templateSignList.add(templateId2);
-//		 templateSignList.add(templateId3);
-		templateSignList.add(templateId4);
-
 		// 传入可选参数调用接口
 		HashMap<String, String> options = new HashMap<String, String>();
 
-		for (String templateId : templateSignList) {
+		options.put("templateSign", templateId4);
+		// 参数为本地路径
+		JSONObject custom = client.custom(iocrFilepath, options);
 
-			options.put("templateSign", templateId);
-
-			// 参数为本地路径
-			JSONObject custom = client.custom(iocrFilepath, options);
-			jbList.add(custom);
-
-		}
-
-		return jbList;
+		return custom;
 	}
 
 	/**
@@ -1861,33 +1721,33 @@ public class IocrResource {
 			XSSFSheet sheet = workBook.cloneSheet(0);
 			workBook.setSheetName(0, "调查问卷结果"); // 给sheet命名
 
-			//List<MitsubishiSurvey> findList = mitsubishiService.find();
+			// List<MitsubishiSurvey> findList = mitsubishiService.find();
 
 			// 插入行
 			// sheet.shiftRows(4, 4 + mitsubishiSurveyList.size(),
 			// mitsubishiSurveyList.size(), false, false);//
 			// 第1个参数是指要开始插入的行，第2个参数是结尾行数,第三个参数表示动态添加的行数
-			//for (int i = 0; i < findList.size(); i++) {
-				XSSFRow creRow = sheet.createRow(4);
+			// for (int i = 0; i < findList.size(); i++) {
+			XSSFRow creRow = sheet.createRow(4);
 
-				creRow.setRowStyle(sheet.getRow(4).getRowStyle());
-				creRow.createCell(0).setCellValue(1);
-				creRow.createCell(1).setCellValue(updatedMs.getMitsubishiName());
-				creRow.createCell(2).setCellValue(updatedMs.getMitsubishiCompanyName());
-				creRow.createCell(3).setCellValue(updatedMs.getMitsubishiTelphone());
-				creRow.createCell(4).setCellValue(updatedMs.getMitsubishiEmail());
-				creRow.createCell(5).setCellValue(updatedMs.getQuestionOne());
-				creRow.createCell(6).setCellValue(updatedMs.getQuestionTwo());
-				creRow.createCell(7).setCellValue(updatedMs.getQuestionThree());
-				creRow.createCell(8).setCellValue(updatedMs.getQuestionFour());
-				creRow.createCell(9).setCellValue(updatedMs.getQuestionFive());
-				creRow.createCell(10).setCellValue(updatedMs.getQuestionSix());
-				creRow.createCell(11).setCellValue(updatedMs.getQuestionSeven());
-				creRow.createCell(12).setCellValue(updatedMs.getQuestionEight());
-				creRow.createCell(13).setCellValue(updatedMs.getQuestionNine());
-				creRow.createCell(14).setCellValue(updatedMs.getQuestionTen());
-				creRow.createCell(15).setCellValue(updatedMs.getMitsubishiComment());
-			//}
+			creRow.setRowStyle(sheet.getRow(4).getRowStyle());
+			creRow.createCell(0).setCellValue(1);
+			creRow.createCell(1).setCellValue(updatedMs.getMitsubishiName());
+			creRow.createCell(2).setCellValue(updatedMs.getMitsubishiCompanyName());
+			creRow.createCell(3).setCellValue(updatedMs.getMitsubishiTelphone());
+			creRow.createCell(4).setCellValue(updatedMs.getMitsubishiEmail());
+			creRow.createCell(5).setCellValue(updatedMs.getQuestionOne());
+			creRow.createCell(6).setCellValue(updatedMs.getQuestionTwo());
+			creRow.createCell(7).setCellValue(updatedMs.getQuestionThree());
+			creRow.createCell(8).setCellValue(updatedMs.getQuestionFour());
+			creRow.createCell(9).setCellValue(updatedMs.getQuestionFive());
+			creRow.createCell(10).setCellValue(updatedMs.getQuestionSix());
+			creRow.createCell(11).setCellValue(updatedMs.getQuestionSeven());
+			creRow.createCell(12).setCellValue(updatedMs.getQuestionEight());
+			creRow.createCell(13).setCellValue(updatedMs.getQuestionNine());
+			creRow.createCell(14).setCellValue(updatedMs.getQuestionTen());
+			creRow.createCell(15).setCellValue(updatedMs.getMitsubishiComment());
+			// }
 
 			// 输出为一个新的Excel，也就是动态修改完之后的excel
 			// String fileName = "test" + System.currentTimeMillis() + ".xlsx";
