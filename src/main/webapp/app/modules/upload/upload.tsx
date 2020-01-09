@@ -324,7 +324,7 @@ class Upload extends React.Component<any, ImgProps, []> {
       }],
       displayTwo: 'none',
       displayThree: 'none',
-      displayFour: 'block',
+      displayFour: 'none',
       adress: any,
       companyPhone: any,
       csahier: any,
