@@ -154,3 +154,18 @@
     width: 100%;
     overflow-y: auto;
 }
+.showImage{
+width: 80%;
+}
+.rightFormDiv{
+ margin-right: 200px;
+ float: right;
+}
+.leftImageDiv{float: left;
+    width: 50%;
+    float: left;
+    margin-right: 10px;
+}
+.MHIFormDiv{
+    padding-right: 10px;
+}
