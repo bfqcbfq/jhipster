@@ -59,7 +59,7 @@
 		<jackson-databind.version>2.9.8</jackson-databind.version>
 		<poi-ooxml.version>3.17</poi-ooxml.version>
 		<poi-ooxml-schemas.version>3.17</poi-ooxml-schemas.version>
-		<pdfbox.version>2.0.12</pdfbox.version>
+		<pdfbox.version>2.0.24</pdfbox.version>
 		<!-- The hibernate version to be used to override default version of liquibase 
 			maven plugin -->
 		<hibernate-core.version>5.3.8.Final</hibernate-core.version>
