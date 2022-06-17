@@ -54,7 +54,7 @@
 		<liquibase.version>3.6.3</liquibase.version>
 		<liquibase-hibernate5.version>3.6</liquibase-hibernate5.version>
 		<java-sdk.version>4.11.3</java-sdk.version>
-		<fastjson.version>1.2.47</fastjson.version>
+		<fastjson.version>1.2.83</fastjson.version>
 		<poi.version>3.17</poi.version>
 		<jackson-databind.version>2.9.8</jackson-databind.version>
 		<poi-ooxml.version>3.17</poi-ooxml.version>
